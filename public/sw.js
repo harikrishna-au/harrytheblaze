@@ -5,7 +5,7 @@
  * the network, so a deploy is live immediately and payments/login are never served stale.
  * It never touches requests to other origins (Clerk, Supabase, Razorpay, fonts, analytics).
  */
-const VERSION = "v1";
+const VERSION = "v2";
 const SHELL_CACHE = `hb-shell-${VERSION}`;
 const ASSET_CACHE = `hb-assets-${VERSION}`;
 const SHELL = ["/offline.html", "/favicon.svg", "/icons/icon-192.png"];

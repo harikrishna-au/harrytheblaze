@@ -9,7 +9,7 @@ CHROME=${CHROME:-"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"}
 TMP=$(mktemp -d)
 SVG=$(cat public/favicon.svg)
 render() { # name size scale background("transparent" | "brand")
-  local bg="transparent"; [ "$4" = "brand" ] && bg="linear-gradient(135deg,#18181a,#2c2b2e)"
+  local bg="transparent"; [ "$4" = "brand" ] && bg="#15140F"
   cat > "$TMP/$1.html" <<HTML
 <!doctype html><html><body style="margin:0;width:$2px;height:$2px;background:$bg;display:flex;align-items:center;justify-content:center;overflow:hidden">
 <div style="width:$(python3 -c "print(round($2*$3))")px;height:$(python3 -c "print(round($2*$3))")px">$SVG</div>
