@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 
-// Same cream as the video's own background, so its edges disappear into the page.
-const GROUND = '#F2EFE9';
-const EDGE_FADE = 'linear-gradient(to right, transparent, #000 8%, #000 92%, transparent), linear-gradient(to bottom, transparent, #000 8%, #000 92%, transparent)';
+// Same cream as the video's own background, so the video blends into the page with no visible edge.
+const GROUND = '#F2EFE8';
 
 const SplashScreen = ({ onFinish }: { onFinish: () => void }) => {
     const [phase, setPhase] = useState<'in' | 'out'>('in');
@@ -29,7 +28,7 @@ const SplashScreen = ({ onFinish }: { onFinish: () => void }) => {
             role="img"
             aria-label="Harry The Blaze"
             onClick={skip}
-            className="fixed inset-0 z-[100] flex items-center justify-center transition-opacity duration-500 ease-in-out"
+            className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden transition-opacity duration-500 ease-in-out"
             style={{
                 background: GROUND,
                 opacity: phase === 'out' ? 0 : 1,
@@ -46,14 +45,9 @@ const SplashScreen = ({ onFinish }: { onFinish: () => void }) => {
                     playsInline
                     preload="auto"
                     onError={() => setVideoFailed(true)}
-                    className="block w-[min(92vw,820px)]"
-                    style={{
-                        aspectRatio: '2 / 1',
-                        WebkitMaskImage: EDGE_FADE,
-                        maskImage: EDGE_FADE,
-                        WebkitMaskComposite: 'source-in',
-                        maskComposite: 'intersect',
-                    }}
+                    // Full frame: the pen sweeps across the whole screen before it writes the logo.
+                    // On phones (portrait) it is scaled up so the logo is a readable size.
+                    className="block h-full w-full object-cover portrait:h-auto portrait:w-[200vw] portrait:max-w-none portrait:object-contain"
                 />
             )}
         </div>
