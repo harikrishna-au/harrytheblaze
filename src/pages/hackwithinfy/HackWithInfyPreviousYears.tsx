@@ -441,7 +441,10 @@ const HackWithInfyPreviousYears = () => {
             Real HackWithInfy Problems
           </h1>
           <p className="text-stone-500 text-[0.88rem] font-['Inter'] font-light">
-            {QUESTIONS.length} verified questions from 2019–2025. Click any card to see the problem and solution link.
+            {QUESTIONS.length} questions from 2019–2025, compiled from public discussions and candidate reports. Click any card to see the problem and solution link.
+          </p>
+          <p className="text-stone-400 text-[0.75rem] font-['Inter'] mt-1">
+            Unofficial practice material. Not affiliated with or endorsed by Infosys. Problem rights belong to their original owners.
           </p>
         </div>
 

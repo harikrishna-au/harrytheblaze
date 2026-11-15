@@ -110,11 +110,14 @@ export default function CodingQuestionsPage() {
               className="font-display font-normal uppercase leading-[0.95] tracking-[0.005em]"
               style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.5rem)" }}
             >
-              The questions Infosys actually asked
+              Infosys questions, reported by candidates
             </h1>
             <p data-intro className="mt-4 max-w-[60ch] text-base leading-snug sm:text-lg">
-              These questions were collected from a large survey of people who got into the Infosys SP and DSE roles,
+              These questions were collected from a survey of people who got into the Infosys SP and DSE roles,
               with references for every one. The full set is for Premium members.
+            </p>
+            <p data-intro className="mt-2 max-w-[60ch] text-xs leading-snug opacity-70">
+              Community-reported practice material, not official. Not affiliated with or endorsed by Infosys.
             </p>
           </div>
 

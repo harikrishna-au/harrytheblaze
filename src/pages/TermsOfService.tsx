@@ -16,6 +16,18 @@ const terms = [
     body: 'The materials on this website are provided "as is". We make no warranties, expressed or implied, and hereby disclaim and negate all other warranties, including without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.',
   },
   {
+    title: "No Affiliation With Companies",
+    body: "This website is an independent practice platform. It is not affiliated with, sponsored by or endorsed by Infosys, Accenture, Cognizant or any other company mentioned. Company and product names are used only to describe the kind of practice material offered, and belong to their respective owners.",
+  },
+  {
+    title: "Practice Material and Sources",
+    body: "Practice questions and games are community-reported or written by us in the style of public assessment formats. They are not official or current company test content, and we do not guarantee that any question will appear in a real test. We do not knowingly publish confidential or proprietary test material.",
+  },
+  {
+    title: "Contributions and Takedown Requests",
+    body: "If you share information about a hiring process, share only what you are free to share and do not breach any confidentiality agreement you signed. If you are a rights holder and believe something on this site should be removed or corrected, email nallanahk@gmail.com with the page link and details. We will review it promptly and remove content where appropriate.",
+  },
+  {
     title: "Limitations",
     body: "In no event shall we or our suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on this website, even if we or an authorised representative has been notified orally or in writing of the possibility of such damage.",
   },

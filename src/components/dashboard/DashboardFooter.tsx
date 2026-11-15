@@ -49,6 +49,10 @@ export const DashboardFooter = ({ onFeedbackClick, onSupportClick }: DashboardFo
           <Button asChild variant="link" className="h-auto justify-start p-0 text-[15px] font-semibold text-foreground md:justify-end">
             <Link to="/hackwithinfy">Preparing for Infosys? Start here</Link>
           </Button>
+          <p className="max-w-xs text-xs leading-relaxed text-foreground/60 md:text-right">
+            Independent practice platform, not affiliated with or endorsed by Infosys, Accenture, Cognizant or any other company.{" "}
+            <Link to="/terms" className="underline">Terms and takedown requests</Link>
+          </p>
           <div className="flex gap-2">
             {SOCIALS.map(({ label, href, icon: Icon, external }) => (
               <Button key={label} asChild variant="outline" size="icon" className="h-11 w-11">
