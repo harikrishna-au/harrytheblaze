@@ -86,7 +86,9 @@ serve(async (req: Request) => {
                     .select('order_id')
                     .eq('order_id', orderId)
                     .maybeSingle();
-                if (seLookupError) throw seLookupError;
+                // 42P01 = table does not exist yet (migration not run): treat as "not an SE order"
+                // so ordinary Premium and Connect payments are never blocked by this lookup.
+                if (seLookupError && seLookupError.code !== '42P01') throw seLookupError;
                 if (sePurchase) {
                     const result = await fulfilSePurchase(supabaseAdmin, {
                         orderId,
