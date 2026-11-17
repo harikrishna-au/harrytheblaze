@@ -25,3 +25,30 @@ export async function seCall<T = Record<string, unknown>>(
 }
 
 export const seFunctionUrl = FN;
+
+// ── Sign-in handoff ───────────────────────────────────────────────────────────
+// A visitor who is not signed in taps "Unlock", signs up, and must come back to the
+// page they were on with the checkout open. This is kept apart from the older
+// `auto_open_payment` flag, which opens the lifetime-Premium popup on the dashboard.
+const RETURN_KEY = "se_unlock_return";
+
+export function rememberSeUnlock(path: string): void {
+  try { localStorage.setItem(RETURN_KEY, path); } catch { /* storage blocked: they just land on the dashboard */ }
+}
+
+/** Where the login screen should send the user, if they came from the SE pages. */
+export function seReturnPath(): string | null {
+  try {
+    const v = localStorage.getItem(RETURN_KEY);
+    return v && v.startsWith("/infosys-se") ? v : null;
+  } catch { return null; }
+}
+
+/** True once, on the page the user asked to unlock from. */
+export function takeSeUnlock(path: string): boolean {
+  try {
+    if (localStorage.getItem(RETURN_KEY) !== path) return false;
+    localStorage.removeItem(RETURN_KEY);
+    return true;
+  } catch { return false; }
+}

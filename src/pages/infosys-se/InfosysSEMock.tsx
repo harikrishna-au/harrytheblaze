@@ -8,7 +8,7 @@ import {
 import SEO from "@/components/SEO";
 import SePaymentPopup from "@/components/SePaymentPopup";
 import { useSeAccess } from "@/hooks/useSeAccess";
-import { SE_LIST_PRICE, SE_PRICE, seCall } from "@/lib/sePremium";
+import { SE_LIST_PRICE, SE_PRICE, rememberSeUnlock, seCall, takeSeUnlock } from "@/lib/sePremium";
 import type { MockQuestion, MockSection } from "./mockTypes";
 
 // ─── Shared styles (same vocabulary as the rest of the site) ──────────────────
@@ -57,6 +57,12 @@ export default function InfosysSEMock() {
   const [loadError, setLoadError] = useState("");
 
   const plan = useMemo(() => sections ?? [], [sections]);
+
+  // Back from sign-up: open the checkout they asked for (or just clear the flag if they already own the pack).
+  useEffect(() => {
+    if (loading || !isSignedIn) return;
+    if (takeSeUnlock(window.location.pathname) && !access) setShowPayment(true);
+  }, [loading, isSignedIn, access]);
 
   const [phase, setPhase] = useState<Phase>("intro");
   const [sIdx, setSIdx] = useState(0);
@@ -174,7 +180,7 @@ export default function InfosysSEMock() {
 
   const unlock = () => {
     if (!isSignedIn) {
-      try { localStorage.setItem("auto_open_payment", "true"); } catch { /* ignore */ }
+      rememberSeUnlock(window.location.pathname);
       window.location.href = "/login";
       return;
     }

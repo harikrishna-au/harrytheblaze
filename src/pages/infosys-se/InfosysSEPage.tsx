@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@clerk/clerk-react";
 import { ArrowRight, ArrowUpRight, Check, ExternalLink, Lock } from "lucide-react";
@@ -11,7 +11,7 @@ import SePaymentPopup from "@/components/SePaymentPopup";
 import { useSeAccess } from "@/hooks/useSeAccess";
 import { toast } from "sonner";
 import { useGsapReveal } from "@/hooks/useGsapReveal";
-import { SE_LIST_PRICE, SE_PRICE, seCall } from "@/lib/sePremium";
+import { SE_LIST_PRICE, SE_PRICE, rememberSeUnlock, seCall, takeSeUnlock } from "@/lib/sePremium";
 import {
   ELIGIBILITY, DOCUMENTS, ROUTES, STAGES, WHAT_DECIDES,
   TEST_SECTIONS, CAMPUS_VARIANT, TOPICS, TEST_RULES, INTERVIEW_CHECKS,
@@ -74,6 +74,12 @@ export default function InfosysSEPage() {
 
   const owned = !loading && access;
 
+  // Back from sign-up: open the checkout they asked for (or just clear the flag if they already own the pack).
+  useEffect(() => {
+    if (loading || !isSignedIn) return;
+    if (takeSeUnlock(window.location.pathname) && !access) setShowPayment(true);
+  }, [loading, isSignedIn, access]);
+
   const downloadGuide = async () => {
     setBusy("guide");
     try {
@@ -104,7 +110,7 @@ export default function InfosysSEPage() {
 
   const unlock = () => {
     if (!isSignedIn) {
-      try { localStorage.setItem("auto_open_payment", "true"); } catch { /* ignore */ }
+      rememberSeUnlock(window.location.pathname);
       window.location.href = "/login";
       return;
     }

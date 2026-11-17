@@ -1,3 +1,4 @@
+import { seReturnPath } from "@/lib/sePremium";
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { usePremiumStatus } from "@/hooks/usePremiumStatus";
@@ -64,7 +65,7 @@ export default function Landing() {
 
   useEffect(() => {
     if (isLoaded && isSignedIn) {
-      navigate("/dashboard");
+      navigate(seReturnPath() ?? "/dashboard");
     }
   }, [isLoaded, isSignedIn, navigate]);
 
