@@ -213,6 +213,13 @@ export const CompanySelection = ({ onSelectCompany, isPremium, onSubscribe }: Co
           to="/hackwithinfy"
         />
         <Tool
+          icon={GraduationCap}
+          title="Infosys System Engineer"
+          body="Eligibility, hiring stages, test topics and interview questions, plus the SE prep guide."
+          note="SE"
+          to="/infosys-se"
+        />
+        <Tool
           icon={FolderOpen}
           title="Study Resources"
           body="Prep materials and guides for MNC hiring rounds."

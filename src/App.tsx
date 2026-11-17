@@ -39,6 +39,7 @@ import HackWithInfyTips from "./pages/hackwithinfy/HackWithInfyTips";
 import HackWithInfyPreviousYears from "./pages/hackwithinfy/HackWithInfyPreviousYears";
 import ForgePage from "./pages/ForgePage";
 import ForgeProfilePage from "./pages/ForgeProfilePage";
+import InfosysSEPage from "./pages/infosys-se/InfosysSEPage";
 import CodingQuestionsPage from "./pages/coding-questions/CodingQuestionsPage";
 import PrivateRoute from "@/components/PrivateRoute";
 import RadarPage from "./pages/RadarPage";
@@ -210,6 +211,9 @@ const App = () => {
               <Route path="/hackwithinfy/resources" element={<PremiumRoute><HackWithInfyResources /></PremiumRoute>} />
               <Route path="/hackwithinfy/tips" element={<PremiumRoute><HackWithInfyTips /></PremiumRoute>} />
               <Route path="/hackwithinfy/previous-years" element={<PremiumRoute><HackWithInfyPreviousYears /></PremiumRoute>} />
+
+              {/* Infosys System Engineer: explainer for signed-in users, guide gated inside the page */}
+              <Route path="/infosys-se" element={<PrivateRoute><InfosysSEPage /></PrivateRoute>} />
 
               {/* Coding Questions — Premium */}
               <Route path="/coding-questions" element={<CodingQuestionsPage />} />
