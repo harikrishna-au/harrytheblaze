@@ -43,6 +43,7 @@ const NAV = [
   { id: "topics", label: "Topics" },
   { id: "interview", label: "Interview" },
   { id: "plan", label: "Plan" },
+  { id: "mock", label: "Mock test" },
   { id: "guide", label: "The guide" },
 ];
 
@@ -170,6 +171,10 @@ export default function InfosysSEPage() {
             </div>
             <p data-intro className="mt-5 max-w-[46ch] text-xs leading-snug opacity-70">
               Independent prep material from candidate reports and Infosys notices. Not affiliated with or endorsed by Infosys.
+            </p>
+            <p data-intro className="mt-3 text-[15px]">
+              New: a full 54-question mock with real section timers.{" "}
+              <Link to="/infosys-se/mock" className="font-semibold underline underline-offset-4">Take section 1 free</Link>
             </p>
           </div>
 
@@ -523,6 +528,25 @@ export default function InfosysSEPage() {
                 </AccordionItem>
               ))}
             </Accordion>
+          </div>
+        </section>
+
+        {/* ══ Mock test ══ */}
+        <section id="mock" className={`${WRAP} scroll-mt-16 pt-14 sm:pt-20`}>
+          <div data-drop="-1" className="grid items-center gap-6 bg-[var(--color-accent)] p-6 shadow-[var(--shadow-sheet)] sm:p-9 lg:grid-cols-12">
+            <div className="lg:col-span-8">
+              <h2 className={`${DISPLAY} text-[clamp(2.25rem,5vw,4rem)] leading-[0.98]`}>Sit the full SE mock.</h2>
+              <p className="mt-4 max-w-[54ch] text-lg leading-snug">
+                54 fresh questions in the real pattern, each section on its own timer, with a score against the reported cut-offs and an
+                explanation for every answer. Section 1 (maths) is free.
+              </p>
+            </div>
+            <div className="lg:col-span-4 lg:text-right">
+              <Link to="/infosys-se/mock" className={BTN_INK}>
+                Start the mock <ArrowRight className="h-4 w-4" aria-hidden />
+              </Link>
+              <p className="mt-3 text-sm">100 minutes · no sign-up for the free section</p>
+            </div>
           </div>
         </section>
 
