@@ -5,13 +5,14 @@ import { ArrowRight, ArrowUpRight, Check, ExternalLink, Lock, X } from "lucide-r
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SEO from "@/components/SEO";
 import PaymentPopup from "@/components/PaymentPopup";
 import { usePremiumStatus } from "@/hooks/usePremiumStatus";
 import { useGsapReveal } from "@/hooks/useGsapReveal";
 import { PROMO_ACTIVE, PROMO_PRICE, REGULAR_PRICE } from "@/lib/promo";
 import {
-  SNAPSHOT, ELIGIBILITY, DOCUMENTS, ROUTES, STAGES, WHAT_DECIDES,
+  ELIGIBILITY, DOCUMENTS, ROUTES, STAGES, WHAT_DECIDES,
   TEST_SECTIONS, CAMPUS_VARIANT, TOPICS, TEST_RULES, INTERVIEW_CHECKS,
   INTRO_TEMPLATE, INTERVIEW_QA, UNSURE_ANSWER, PLAN, PLAN_HEADERS, FAQ,
   SE_GUIDE, SE_GUIDE_MAP, SE_GUIDE_DRIVE_ID, GUIDE_INSIDE,
@@ -49,12 +50,14 @@ const price = PROMO_ACTIVE ? PROMO_PRICE : REGULAR_PRICE;
 const TOTAL_MIN = TEST_SECTIONS.reduce((a, t) => a + t.min, 0);
 
 const SectionHead = ({ id, num, title, lead }: { id: string; num: string; title: string; lead?: string }) => (
-  <div id={id} className="scroll-mt-20" data-reveal>
-    <p className={`${DISPLAY} text-6xl leading-none text-[var(--color-accent)] sm:text-7xl`} style={{ WebkitTextStroke: "1.5px var(--color-ink)" }}>
-      {num}
-    </p>
-    <h2 className={`${DISPLAY} mt-2 max-w-[20ch] text-[clamp(2.25rem,5vw,4rem)] leading-[0.98]`}>{title}</h2>
-    {lead && <p className="mt-4 max-w-[58ch] text-lg leading-snug">{lead}</p>}
+  <div id={id} className="scroll-mt-16" data-reveal>
+    <div className="flex items-baseline gap-4">
+      <p className={`${DISPLAY} text-5xl leading-none text-[var(--color-accent)] sm:text-6xl`} style={{ WebkitTextStroke: "1.5px var(--color-ink)" }}>
+        {num}
+      </p>
+      <h2 className={`${DISPLAY} text-[clamp(1.9rem,3.6vw,3rem)] leading-[1]`}>{title}</h2>
+    </div>
+    {lead && <p className="mt-3 max-w-[70ch] text-base leading-snug">{lead}</p>}
   </div>
 );
 
@@ -140,7 +143,7 @@ export default function InfosysSEPage() {
 
       <main>
         {/* ══ Hero ══ */}
-        <section className={`${WRAP} grid items-center gap-12 pb-20 pt-12 lg:grid-cols-12 lg:gap-8 lg:pb-28 lg:pt-16`}>
+        <section className={`${WRAP} grid items-center gap-12 pb-12 pt-8 lg:grid-cols-12 lg:gap-8 lg:pb-16 lg:pt-10`}>
           <div className="lg:col-span-7">
             <p data-intro className="inline-block bg-[var(--color-accent)] px-2.5 py-1 text-xs font-semibold">
               Infosys · System Engineer
@@ -210,8 +213,8 @@ export default function InfosysSEPage() {
 
         {/* Toner band */}
         <div className="bg-[var(--color-ink)] text-[var(--color-paper)]">
-          <div className={`${WRAP} py-10 sm:py-14`}>
-            <p data-reveal className={`${DISPLAY} max-w-[24ch] text-[clamp(2.25rem,5.5vw,4.75rem)] sm:max-w-none`}>
+          <div className={`${WRAP} py-6 sm:py-8`}>
+            <p data-reveal className={`${DISPLAY} text-[clamp(1.75rem,4vw,3rem)]`}>
               Five sections. Five cut-offs. {TOTAL_MIN} minutes.
             </p>
           </div>
@@ -233,49 +236,36 @@ export default function InfosysSEPage() {
           </ul>
         </nav>
 
-        {/* Snapshot */}
-        <section className={`${WRAP} pt-14`}>
-          <div data-reveal-group className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            {SNAPSHOT.map((s) => (
-              <div key={s.label} className={`${SHEET} p-5`}>
-                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-muted)]">{s.label}</p>
-                <p className={`${DISPLAY} mt-2 text-3xl leading-none sm:text-4xl`}>{s.value}</p>
-                <p className="mt-2 text-sm leading-snug text-[var(--color-muted)]">{s.sub}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
         {/* ══ 01 Eligibility ══ */}
-        <section className={`${WRAP} pt-24 sm:pt-32`}>
+        <section className={`${WRAP} pt-14 sm:pt-20`}>
           <SectionHead
             id="eligibility"
             num="01"
             title="Who can apply"
             lead="The 2026-cycle rules as stated in Infosys drive notices. Your own drive's notice is the final word, so read it before you apply."
           />
-          <div data-reveal-group className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div data-reveal-group className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {ELIGIBILITY.map((e) => (
-              <div key={e.title} className={`${SHEET} p-6`}>
-                <h3 className="text-xl font-semibold">{e.title}</h3>
-                <p className="mt-2 text-[15px] leading-relaxed">{e.body}</p>
+              <div key={e.title} className={`${SHEET} p-5`}>
+                <h3 className="text-lg font-semibold">{e.title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed">{e.body}</p>
               </div>
             ))}
           </div>
 
-          <div className="mt-8 grid items-start gap-6 lg:grid-cols-12">
-            <div data-drop="-1" className="bg-[var(--color-accent)] p-6 shadow-[var(--shadow-sheet)] sm:p-8 lg:col-span-5">
-              <h3 className={`${DISPLAY} text-3xl leading-none sm:text-4xl`}>Your marks must match your documents</h3>
-              <p className="mt-4 text-base leading-relaxed">
+          <div className="mt-5 grid items-start gap-5 lg:grid-cols-12">
+            <div data-drop="-1" className="bg-[var(--color-accent)] p-5 shadow-[var(--shadow-sheet)] sm:p-6 lg:col-span-5">
+              <h3 className={`${DISPLAY} text-2xl leading-none sm:text-3xl`}>Your marks must match your documents</h3>
+              <p className="mt-3 text-sm leading-relaxed">
                 Infosys verifies every mark sheet during onboarding and background verification. A percentage typed wrongly on the
                 application, for example a CGPA converted with the wrong formula, can delay or cancel an offer.
               </p>
             </div>
-            <div data-reveal className={`${SHEET} p-6 sm:p-8 lg:col-span-7`}>
-              <h3 className="text-xl font-semibold">Keep these ready before you apply</h3>
-              <ul className="mt-4">
+            <div data-reveal className={`${SHEET} p-5 sm:p-6 lg:col-span-7`}>
+              <h3 className="text-lg font-semibold">Keep these ready before you apply</h3>
+              <ul className="mt-3 sm:columns-2 sm:gap-6">
                 {DOCUMENTS.map((d) => (
-                  <li key={d} className="flex items-start gap-3 border-t border-[var(--color-rule)] py-3 text-[15px] leading-snug">
+                  <li key={d} className="flex break-inside-avoid items-start gap-3 border-t border-[var(--color-rule)] py-2 text-sm leading-snug">
                     <span aria-hidden className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center border-2 border-[var(--color-ink)]" />
                     {d}
                   </li>
@@ -286,7 +276,7 @@ export default function InfosysSEPage() {
         </section>
 
         {/* ══ 02 Stages ══ */}
-        <section className={`${WRAP} pt-24 sm:pt-32`}>
+        <section className={`${WRAP} pt-14 sm:pt-20`}>
           <SectionHead
             id="stages"
             num="02"
@@ -294,64 +284,63 @@ export default function InfosysSEPage() {
             lead="You can reach the SE test two ways. The test and interview are the same, only the invitation differs."
           />
 
-          <div data-reveal-group className="mt-10 grid gap-5 md:grid-cols-2">
+          <div data-reveal-group className="mt-6 grid gap-4 md:grid-cols-2">
             {ROUTES.map((r) => (
-              <div key={r.title} className={`${SHEET} p-6`}>
-                <h3 className={`${DISPLAY} text-3xl leading-none`}>{r.title}</h3>
-                <p className="mt-3 text-[15px] leading-relaxed">{r.steps}</p>
-                <p className="mt-3 border-t border-[var(--color-rule)] pt-3 text-sm leading-snug text-[var(--color-muted)]">{r.note}</p>
+              <div key={r.title} className={`${SHEET} p-5`}>
+                <h3 className={`${DISPLAY} text-2xl leading-none`}>{r.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed">{r.steps}</p>
+                <p className="mt-2 border-t border-[var(--color-rule)] pt-2 text-xs leading-snug text-[var(--color-muted)]">{r.note}</p>
               </div>
             ))}
           </div>
 
-          <ol data-reveal-group className="mt-8 space-y-5">
+          <ol data-reveal-group className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {STAGES.map((s) => (
-              <li key={s.n} className={`${SHEET} grid gap-x-8 gap-y-3 p-6 sm:grid-cols-[5.5rem_minmax(0,1fr)] sm:p-8`}>
-                <p className={`${DISPLAY} text-6xl leading-none sm:text-7xl`}>{s.n}</p>
-                <div className="min-w-0">
-                  <h3 className="text-xl font-semibold">{s.title}</h3>
-                  <p className="mt-2 text-base leading-relaxed">{s.detail}</p>
-                  <p className="mt-3 inline-block bg-[var(--color-accent)] px-2.5 py-1 text-sm font-semibold">{s.gap}</p>
-                  <p className="mt-3 text-[15px] leading-relaxed text-[var(--color-muted)]">
-                    <span className="font-semibold text-[var(--color-ink)]">While you wait: </span>
-                    {s.meanwhile}
-                  </p>
-                </div>
+              <li key={s.n} className={`${SHEET} flex flex-col p-4`}>
+                <p className={`${DISPLAY} text-5xl leading-none`}>{s.n}</p>
+                <h3 className="mt-2 text-base font-semibold leading-tight">{s.title}</h3>
+                <p className="mt-1.5 text-[13px] leading-snug">{s.detail}</p>
+                <p className="mt-2 self-start bg-[var(--color-accent)] px-2 py-0.5 text-xs font-semibold leading-snug">{s.gap}</p>
+                <p className="mt-2 text-xs leading-snug text-[var(--color-muted)]">
+                  <span className="font-semibold text-[var(--color-ink)]">While you wait: </span>
+                  {s.meanwhile}
+                </p>
               </li>
             ))}
           </ol>
-          <p className="mt-3 text-xs text-[var(--color-muted)]">
+          <p className="mt-2 text-xs text-[var(--color-muted)]">
             Timings come from 2024–26 candidate reports. Infosys does not publish them and they vary by drive.
           </p>
 
-          <div data-reveal className={`${SHEET} mt-10`}>
-            <div className="border-b-2 border-[var(--color-ink)] px-5 py-3">
-              <h3 className={`${DISPLAY} text-3xl leading-none`}>What decides the result</h3>
+          <div className="mt-6 grid items-start gap-5 lg:grid-cols-12">
+            <div data-reveal className={`${SHEET} lg:col-span-7`}>
+              <div className="border-b-2 border-[var(--color-ink)] px-4 py-2.5">
+                <h3 className={`${DISPLAY} text-2xl leading-none`}>What decides the result</h3>
+              </div>
+              <ul>
+                {WHAT_DECIDES.map((w) => (
+                  <li key={w.stage} className="grid gap-1 border-b border-[var(--color-rule)] px-4 py-3 last:border-b-0 sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:gap-4">
+                    <p className="text-sm font-semibold">{w.stage}</p>
+                    <div>
+                      <p className="text-sm leading-snug">{w.measured}</p>
+                      <p className="mt-0.5 text-xs text-[var(--color-muted)]">{w.how}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <ul>
-              {WHAT_DECIDES.map((w) => (
-                <li key={w.stage} className="grid gap-1 border-b border-[var(--color-rule)] px-5 py-4 last:border-b-0 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6">
-                  <p className="font-semibold">{w.stage}</p>
-                  <div>
-                    <p className="text-[15px] leading-snug">{w.measured}</p>
-                    <p className="mt-1 text-sm text-[var(--color-muted)]">{w.how}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div data-reveal className="mt-8 bg-[var(--color-ink)] p-6 text-[var(--color-paper)] sm:p-8">
-            <h3 className={`${DISPLAY} text-3xl leading-none sm:text-4xl`}>Infosys never charges a fee</h3>
-            <p className="mt-3 max-w-[70ch] text-base leading-relaxed">
-              Real mail comes only from @infosys.com addresses. Infosys never interviews over chat apps and never asks for bank or card
-              details during recruitment. Check any offer on the official page: career.infosys.com/offerValidation.
-            </p>
+            <div data-reveal className="bg-[var(--color-ink)] p-5 text-[var(--color-paper)] sm:p-6 lg:col-span-5">
+              <h3 className={`${DISPLAY} text-2xl leading-none sm:text-3xl`}>Infosys never charges a fee</h3>
+              <p className="mt-3 text-sm leading-relaxed">
+                Real mail comes only from @infosys.com addresses. Infosys never interviews over chat apps and never asks for bank or card
+                details. Check any offer at career.infosys.com/offerValidation.
+              </p>
+            </div>
           </div>
         </section>
 
         {/* ══ 03 Test ══ */}
-        <section className={`${WRAP} pt-24 sm:pt-32`}>
+        <section className={`${WRAP} pt-14 sm:pt-20`}>
           <SectionHead
             id="test"
             num="03"
@@ -359,48 +348,47 @@ export default function InfosysSEPage() {
             lead="Five timed sections. Each has its own timer and its own cut-off, and you cannot go back once a section closes."
           />
 
-          <div data-reveal className={`${SHEET} mt-10`}>
-            <div className="flex items-baseline justify-between gap-3 border-b-2 border-[var(--color-ink)] px-5 py-3">
-              <h3 className={`${DISPLAY} text-3xl leading-none`}>Where the {TOTAL_MIN} minutes go</h3>
-              <p className="text-sm text-[var(--color-muted)]">{TEST_SECTIONS.reduce((a, t) => a + t.q, 0)} questions</p>
+          <div className="mt-6 grid items-start gap-5 lg:grid-cols-12">
+            <div data-reveal className={`${SHEET} lg:col-span-7`}>
+              <div className="flex items-baseline justify-between gap-3 border-b-2 border-[var(--color-ink)] px-4 py-2.5">
+                <h3 className={`${DISPLAY} text-2xl leading-none`}>Where the {TOTAL_MIN} minutes go</h3>
+                <p className="text-xs text-[var(--color-muted)]">{TEST_SECTIONS.reduce((a, t) => a + t.q, 0)} questions</p>
+              </div>
+              <ul>
+                {TEST_SECTIONS.map((t) => (
+                  <li key={t.name} className="border-b border-[var(--color-rule)] px-4 py-2.5 last:border-b-0">
+                    <div className="flex flex-wrap items-baseline justify-between gap-x-4">
+                      <p className="text-[15px] font-semibold">{t.name}</p>
+                      <p className="text-xs tabular-nums"><b className="font-semibold">{t.q}</b> Q · <b className="font-semibold">{t.min}</b> min</p>
+                    </div>
+                    <div className="mt-1.5 h-2 bg-[var(--color-paper-2)]" aria-hidden>
+                      <div className="h-full bg-[var(--color-accent)]" style={{ width: `${(t.min / TOTAL_MIN) * 100}%` }} />
+                    </div>
+                    <p className="mt-1 text-xs text-[var(--color-muted)]">{t.level}</p>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <ul>
-              {TEST_SECTIONS.map((t) => (
-                <li key={t.name} className="border-b border-[var(--color-rule)] px-5 py-4 last:border-b-0">
-                  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                    <p className="text-lg font-semibold">{t.name}</p>
-                    <p className="text-sm tabular-nums">
-                      <b className="font-semibold">{t.q}</b> questions · <b className="font-semibold">{t.min}</b> min
-                    </p>
-                  </div>
-                  <div className="mt-2 h-3 bg-[var(--color-paper-2)]" aria-hidden>
-                    <div className="h-full bg-[var(--color-accent)]" style={{ width: `${(t.min / TOTAL_MIN) * 100}%` }} />
-                  </div>
-                  <p className="mt-2 text-sm text-[var(--color-muted)]">{t.level}</p>
-                </li>
-              ))}
-            </ul>
+            <div className="space-y-5 lg:col-span-5">
+              <div data-drop="-1" className="bg-[var(--color-accent)] p-5 shadow-[var(--shadow-sheet)]">
+                <h3 className={`${DISPLAY} text-2xl leading-none sm:text-3xl`}>The cut-off rule</h3>
+                <p className="mt-3 text-sm leading-relaxed">
+                  Candidates consistently report sectional cut-offs. You must clear each section (reports put the bar between 60% and 75%
+                  depending on the drive), not just the total. A brilliant maths score cannot rescue a weak verbal or pseudocode section.
+                </p>
+              </div>
+              <div data-reveal className={`${SHEET} p-5`}>
+                <h3 className="text-base font-semibold">Campus variant with grammar and essay</h3>
+                <p className="mt-2 text-sm leading-relaxed">{CAMPUS_VARIANT}</p>
+              </div>
+            </div>
           </div>
 
-          <div className="mt-8 grid items-start gap-6 lg:grid-cols-12">
-            <div data-drop="-1" className="bg-[var(--color-accent)] p-6 shadow-[var(--shadow-sheet)] sm:p-8 lg:col-span-7">
-              <h3 className={`${DISPLAY} text-3xl leading-none sm:text-4xl`}>The cut-off rule</h3>
-              <p className="mt-4 max-w-[52ch] text-base leading-relaxed">
-                Candidates consistently report sectional cut-offs. You must clear each section (reports put the bar between 60% and 75%
-                depending on the drive), not just the total. A brilliant maths score cannot rescue a weak verbal or pseudocode section.
-              </p>
-            </div>
-            <div data-reveal className={`${SHEET} p-6 sm:p-8 lg:col-span-5`}>
-              <h3 className="text-xl font-semibold">Campus variant with grammar and essay</h3>
-              <p className="mt-3 text-[15px] leading-relaxed">{CAMPUS_VARIANT}</p>
-            </div>
-          </div>
-
-          <div data-reveal className={`${SHEET} mt-8 p-6 sm:p-8`}>
-            <h3 className="text-xl font-semibold">Rules that save marks</h3>
-            <ul className="mt-3">
+          <div data-reveal className={`${SHEET} mt-5 p-5`}>
+            <h3 className="text-base font-semibold">Rules that save marks</h3>
+            <ul className="mt-2 sm:columns-2 sm:gap-8">
               {TEST_RULES.map((r) => (
-                <li key={r} className="flex items-start gap-3 border-t border-[var(--color-rule)] py-3 text-[15px] leading-snug">
+                <li key={r} className="flex break-inside-avoid items-start gap-3 border-t border-[var(--color-rule)] py-2 text-sm leading-snug">
                   <Check className="mt-0.5 h-4 w-4 flex-shrink-0" strokeWidth={3} aria-hidden />
                   {r}
                 </li>
@@ -410,30 +398,30 @@ export default function InfosysSEPage() {
         </section>
 
         {/* ══ 04 Topics ══ */}
-        <section className={`${WRAP} pt-24 sm:pt-32`}>
+        <section className={`${WRAP} pt-14 sm:pt-20`}>
           <SectionHead
             id="topics"
             num="04"
             title="Topics, section by section"
             lead="What to expect in each section, from 2018–2025 candidate reports and old Infosys papers."
           />
-          <div data-reveal-group className="mt-10 grid gap-5 md:grid-cols-2">
+          <div data-reveal-group className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {TOPICS.map((t) => (
-              <div key={t.section} className={`${SHEET} p-6`}>
-                <h3 className={`${DISPLAY} text-3xl leading-none`}>{t.section}</h3>
-                <ul className="mt-4 flex flex-wrap gap-2">
+              <div key={t.section} className={`${SHEET} p-5`}>
+                <h3 className={`${DISPLAY} text-2xl leading-none`}>{t.section}</h3>
+                <ul className="mt-3 flex flex-wrap gap-1.5">
                   {t.topics.map((x) => (
-                    <li key={x} className="bg-[var(--color-paper-2)] px-2.5 py-1 text-sm">{x}</li>
+                    <li key={x} className="bg-[var(--color-paper-2)] px-2 py-0.5 text-[13px]">{x}</li>
                   ))}
                 </ul>
-                <p className="mt-4 border-t border-[var(--color-rule)] pt-3 text-[15px] leading-relaxed">{t.tip}</p>
+                <p className="mt-3 border-t border-[var(--color-rule)] pt-2.5 text-[13px] leading-snug">{t.tip}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* ══ 05 Interview ══ */}
-        <section className={`${WRAP} pt-24 sm:pt-32`}>
+        <section className={`${WRAP} pt-14 sm:pt-20`}>
           <SectionHead
             id="interview"
             num="05"
@@ -441,72 +429,83 @@ export default function InfosysSEPage() {
             lead="One conversation of 15–30 minutes, usually driven by your résumé. It mixes programming basics, OOP, DBMS, SDLC and HR. These are questions SE candidates reported."
           />
 
-          <div data-reveal-group className="mt-10 grid gap-5 md:grid-cols-2">
-            <div className={`${SHEET} p-6`}>
-              <h3 className="text-xl font-semibold">Can you be trained?</h3>
-              <ul className="mt-3">
-                {INTERVIEW_CHECKS.trainable.map((x) => (
-                  <li key={x} className="border-t border-[var(--color-rule)] py-2.5 text-[15px] leading-snug">{x}</li>
-                ))}
-              </ul>
-            </div>
-            <div className={`${SHEET} p-6`}>
-              <h3 className="text-xl font-semibold">Will you fit the job?</h3>
-              <ul className="mt-3">
-                {INTERVIEW_CHECKS.fit.map((x) => (
-                  <li key={x} className="border-t border-[var(--color-rule)] py-2.5 text-[15px] leading-snug">{x}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <div data-reveal className="mt-6 bg-[var(--color-accent)] p-6 shadow-[var(--shadow-sheet)] sm:p-8">
-            <h3 className={`${DISPLAY} text-3xl leading-none sm:text-4xl`}>Your 60-second introduction</h3>
-            <p className="mt-4 max-w-[80ch] text-base leading-relaxed">{INTRO_TEMPLATE}</p>
-            <p className="mt-3 text-sm">
-              Keep it under a minute, skip family details unless asked, and end on something you are happy to be questioned about.
-            </p>
-          </div>
-
-          <div className="mt-10 space-y-8">
-            {INTERVIEW_QA.map((g) => (
-              <div key={g.group} data-reveal>
-                <h3 className={`${DISPLAY} mb-3 text-3xl leading-none`}>{g.group}</h3>
-                <Accordion type="multiple" className={ACC_BOX}>
-                  {g.items.map((it, i) => (
-                    <AccordionItem key={it.q} value={`${g.group}-${i}`} className={ACC_ITEM}>
-                      <AccordionTrigger className={ACC_TRIGGER}>{it.q}</AccordionTrigger>
-                      <AccordionContent className={ACC_BODY}>{it.a}</AccordionContent>
-                    </AccordionItem>
+          <div className="mt-6 grid items-start gap-5 lg:grid-cols-12">
+            <div data-reveal-group className="grid gap-4 sm:grid-cols-2 lg:col-span-7">
+              <div className={`${SHEET} p-5`}>
+                <h3 className="text-base font-semibold">Can you be trained?</h3>
+                <ul className="mt-2">
+                  {INTERVIEW_CHECKS.trainable.map((x) => (
+                    <li key={x} className="border-t border-[var(--color-rule)] py-2 text-sm leading-snug">{x}</li>
                   ))}
-                </Accordion>
+                </ul>
               </div>
-            ))}
+              <div className={`${SHEET} p-5`}>
+                <h3 className="text-base font-semibold">Will you fit the job?</h3>
+                <ul className="mt-2">
+                  {INTERVIEW_CHECKS.fit.map((x) => (
+                    <li key={x} className="border-t border-[var(--color-rule)] py-2 text-sm leading-snug">{x}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="bg-[var(--color-ink)] p-5 text-[var(--color-paper)] sm:col-span-2">
+                <h3 className={`${DISPLAY} text-2xl leading-none`}>If you don't know the answer</h3>
+                <p className="mt-2 text-sm leading-relaxed">{UNSURE_ANSWER}</p>
+              </div>
+            </div>
+            <div data-reveal className="bg-[var(--color-accent)] p-5 shadow-[var(--shadow-sheet)] lg:col-span-5">
+              <h3 className={`${DISPLAY} text-2xl leading-none sm:text-3xl`}>Your 60-second introduction</h3>
+              <p className="mt-3 text-sm leading-relaxed">{INTRO_TEMPLATE}</p>
+              <p className="mt-2 text-xs">Keep it under a minute, skip family details unless asked, and end on something you are happy to be questioned about.</p>
+            </div>
           </div>
 
-          <div data-reveal className="mt-8 bg-[var(--color-ink)] p-6 text-[var(--color-paper)] sm:p-8">
-            <h3 className={`${DISPLAY} text-3xl leading-none sm:text-4xl`}>If you don't know the answer</h3>
-            <p className="mt-3 max-w-[70ch] text-base leading-relaxed">{UNSURE_ANSWER}</p>
+          <div data-reveal className="mt-8">
+            <h3 className={`${DISPLAY} mb-3 text-2xl leading-none sm:text-3xl`}>Questions candidates reported</h3>
+            <Tabs defaultValue={INTERVIEW_QA[0].group}>
+              <TabsList className="h-auto w-full flex-wrap justify-start gap-2 rounded-none bg-transparent p-0">
+                {INTERVIEW_QA.map((g) => (
+                  <TabsTrigger
+                    key={g.group}
+                    value={g.group}
+                    className={`rounded-none bg-[var(--color-paper-3)] px-3 py-2 text-sm font-semibold shadow-[var(--shadow-card)] data-[state=active]:bg-[var(--color-ink)] data-[state=active]:text-[var(--color-paper)] data-[state=active]:shadow-none ${FOCUS}`}
+                  >
+                    {g.group}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              {INTERVIEW_QA.map((g) => (
+                <TabsContent key={g.group} value={g.group} className="mt-3">
+                  <Accordion type="multiple" className={ACC_BOX}>
+                    {g.items.map((it, i) => (
+                      <AccordionItem key={it.q} value={`${g.group}-${i}`} className={ACC_ITEM}>
+                        <AccordionTrigger className={ACC_TRIGGER}>{it.q}</AccordionTrigger>
+                        <AccordionContent className={ACC_BODY}>{it.a}</AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </TabsContent>
+              ))}
+            </Tabs>
           </div>
         </section>
 
         {/* ══ 06 Plan ══ */}
-        <section className={`${WRAP} pt-24 sm:pt-32`}>
+        <section className={`${WRAP} pt-14 sm:pt-20`}>
           <SectionHead
             id="plan"
             num="06"
             title="A 4-week plan"
             lead="One block of topics per slot. Log every mistake in the mock and attack that section next."
           />
-          <div data-reveal-group className="mt-10 grid gap-5 md:grid-cols-2">
+          <div data-reveal-group className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {PLAN.map((p) => (
-              <div key={p.week} className={`${SHEET} p-6`}>
-                <h3 className={`${DISPLAY} text-4xl leading-none`}>{p.week}</h3>
-                <dl className="mt-4">
+              <div key={p.week} className={`${SHEET} p-5`}>
+                <h3 className={`${DISPLAY} text-3xl leading-none`}>{p.week}</h3>
+                <dl className="mt-3">
                   {[p.a, p.b, p.c].map((v, i) => (
-                    <div key={i} className="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-3 border-t border-[var(--color-rule)] py-2.5">
-                      <dt className="text-sm font-semibold text-[var(--color-muted)]">{PLAN_HEADERS[i]}</dt>
-                      <dd className="text-[15px] leading-snug">{v}</dd>
+                    <div key={i} className="border-t border-[var(--color-rule)] py-2">
+                      <dt className="text-xs font-semibold text-[var(--color-muted)]">{PLAN_HEADERS[i]}</dt>
+                      <dd className="text-sm leading-snug">{v}</dd>
                     </div>
                   ))}
                 </dl>
@@ -514,8 +513,8 @@ export default function InfosysSEPage() {
             ))}
           </div>
 
-          <div data-reveal className="mt-16">
-            <h3 className={`${DISPLAY} mb-3 text-3xl leading-none sm:text-4xl`}>Common questions</h3>
+          <div data-reveal className="mt-10">
+            <h3 className={`${DISPLAY} mb-3 text-2xl leading-none sm:text-3xl`}>Common questions</h3>
             <Accordion type="multiple" className={ACC_BOX}>
               {FAQ.map((f, i) => (
                 <AccordionItem key={f.q} value={`faq-${i}`} className={ACC_ITEM}>
@@ -528,40 +527,48 @@ export default function InfosysSEPage() {
         </section>
 
         {/* ══ The guide: the sale ══ */}
-        <section id="guide" className="mt-24 scroll-mt-16 bg-[var(--color-ink)] text-[var(--color-paper)] sm:mt-32">
-          <div className={`${WRAP} py-20 sm:py-28`}>
+        <section id="guide" className="mt-14 scroll-mt-16 bg-[var(--color-ink)] text-[var(--color-paper)] sm:mt-20">
+          <div className={`${WRAP} py-12 sm:py-16`}>
             <div className="grid items-start gap-10 lg:grid-cols-12 lg:gap-12">
               <div className="lg:col-span-7">
                 <p className="inline-block bg-[var(--color-accent)] px-2.5 py-1 text-xs font-semibold text-[var(--color-ink)]">The prep guide</p>
-                <h2 data-reveal className={`${DISPLAY} mt-4 text-[clamp(2.75rem,6.5vw,5.5rem)] leading-[0.95]`}>
+                <h2 data-reveal className={`${DISPLAY} mt-3 text-[clamp(2.25rem,5vw,4rem)] leading-[0.98]`}>
                   Everything above, drilled until it's automatic.
                 </h2>
-                <p data-reveal className="mt-6 max-w-[52ch] text-lg leading-snug">
+                <p data-reveal className="mt-4 max-w-[52ch] text-base leading-snug">
                   This page tells you what the test asks. The guide gives you the questions, solved, for every section, plus the
                   interview answers and a full timed mock.
                 </p>
 
-                <ul data-reveal-group className="mt-10 grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3">
+                <ul data-reveal-group className="mt-7 grid grid-cols-2 gap-x-5 gap-y-5 sm:grid-cols-3">
                   {GUIDE_INSIDE.map((g) => (
                     <li key={g.label} className="border-t-2 border-[var(--color-accent)] pt-3">
-                      <p className={`${DISPLAY} text-5xl leading-none sm:text-6xl`}>{g.n}</p>
-                      <p className="mt-2 text-sm leading-snug opacity-85">{g.label}</p>
+                      <p className={`${DISPLAY} text-4xl leading-none sm:text-5xl`}>{g.n}</p>
+                      <p className="mt-1.5 text-xs leading-snug opacity-85">{g.label}</p>
                     </li>
                   ))}
                 </ul>
 
-                <h3 className={`${DISPLAY} mt-14 text-3xl leading-none`}>What to read for SE</h3>
-                <ul data-reveal className="mt-4 bg-[var(--color-paper-3)] text-[var(--color-ink)] shadow-[4px_4px_0_var(--color-accent)]">
-                  {SE_GUIDE_MAP.map((m) => (
-                    <li key={m.part} className="flex items-start justify-between gap-4 border-b border-[var(--color-rule)] px-4 py-3 last:border-b-0 sm:px-5">
-                      <div className="min-w-0">
-                        <p className="text-[15px] font-semibold leading-snug">{m.part}</p>
-                        <p className="mt-0.5 text-sm leading-snug text-[var(--color-muted)]">{m.what}</p>
-                      </div>
-                      <p className="whitespace-nowrap text-xs tabular-nums text-[var(--color-muted)]">{m.pages}</p>
-                    </li>
-                  ))}
-                </ul>
+                <Accordion type="single" collapsible className="mt-8 bg-[var(--color-paper-3)] px-4 text-[var(--color-ink)] shadow-[4px_4px_0_var(--color-accent)]">
+                  <AccordionItem value="map" className="border-0">
+                    <AccordionTrigger className="py-3.5 text-left text-[15px] font-semibold hover:no-underline">
+                      What to read for SE: {SE_GUIDE_MAP.length} chapters
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <ul>
+                        {SE_GUIDE_MAP.map((m) => (
+                          <li key={m.part} className="flex items-start justify-between gap-4 border-t border-[var(--color-rule)] py-2.5">
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold leading-snug">{m.part}</p>
+                              <p className="text-xs leading-snug text-[var(--color-muted)]">{m.what}</p>
+                            </div>
+                            <p className="whitespace-nowrap text-xs tabular-nums text-[var(--color-muted)]">{m.pages}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </div>
 
               {/* Buy sheet */}
@@ -615,7 +622,7 @@ export default function InfosysSEPage() {
         </section>
 
         {/* Footer note */}
-        <div className={`${WRAP} py-10`}>
+        <div className={`${WRAP} py-6`}>
           <p className="max-w-[70ch] text-xs leading-relaxed text-[var(--color-muted)]">
             Figures are from Infosys pages and candidate reports for the 2025–26 cycles, and Infosys changes patterns between drives, so
             follow your drive's own notice. Independent practice platform, not affiliated with or endorsed by Infosys.{" "}
