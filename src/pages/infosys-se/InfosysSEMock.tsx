@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@clerk/clerk-react";
-import { ArrowLeft, ArrowRight, Check, Clock, Flag, Lock, RotateCcw, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Clock, Flag, Loader2, Lock, RotateCcw, X } from "lucide-react";
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from "@/components/ui/accordion";
 import SEO from "@/components/SEO";
-import PaymentPopup from "@/components/PaymentPopup";
-import { usePremiumStatus } from "@/hooks/usePremiumStatus";
-import { PROMO_ACTIVE, PROMO_PRICE, REGULAR_PRICE } from "@/lib/promo";
-import { MOCK_SECTIONS, type MockQuestion, type MockSection } from "./mockData";
+import SePaymentPopup from "@/components/SePaymentPopup";
+import { useSeAccess } from "@/hooks/useSeAccess";
+import { SE_LIST_PRICE, SE_PRICE, seCall } from "@/lib/sePremium";
+import type { MockQuestion, MockSection } from "./mockTypes";
 
 // ─── Shared styles (same vocabulary as the rest of the site) ──────────────────
 const DISPLAY = "font-display font-normal uppercase tracking-[0.005em]";
@@ -26,26 +26,37 @@ const BTN_PAPER = `${BTN} bg-[var(--color-paper-3)] text-[var(--color-ink)]`;
 const BTN_INK = `${BTN} bg-[var(--color-ink)] !text-[var(--color-paper)] !shadow-[4px_4px_0_var(--color-accent)]`;
 
 const LETTERS = ["A", "B", "C", "D"];
-const price = PROMO_ACTIVE ? PROMO_PRICE : REGULAR_PRICE;
 const STORAGE_KEY = "se_mock_last_v1";
 
 type Answers = Record<string, number>;
 type Phase = "intro" | "running" | "between" | "result";
 
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
-const totalQs = MOCK_SECTIONS.reduce((n, s) => n + s.questions.length, 0);
-const totalMin = MOCK_SECTIONS.reduce((n, s) => n + s.minutes, 0);
+// What the intro screen shows before anything is unlocked. The questions
+// themselves are never in this file: they come from the server after purchase.
+const SECTION_INFO = [
+  { id: "maths", name: "Mathematical ability", minutes: 35, count: 10, blurb: "Long, multi-step questions. Bank the sure ones first." },
+  { id: "reasoning", name: "Logical reasoning", minutes: 25, count: 15, blurb: "Sets first: one diagram pays 3–5 marks." },
+  { id: "verbal", name: "Verbal ability", minutes: 20, count: 20, blurb: "About a minute a question. Reading comes last." },
+  { id: "pseudocode", name: "Pseudocode", minutes: 10, count: 5, blurb: "Trace each program with a table of variables." },
+  { id: "puzzles", name: "Puzzle solving", minutes: 10, count: 4, blurb: "Start with the puzzle you recognise." },
+];
+const totalQs = SECTION_INFO.reduce((n, s) => n + s.count, 0);
+const totalMin = SECTION_INFO.reduce((n, s) => n + s.minutes, 0);
 
 function scoreOf(section: MockSection, answers: Answers) {
   return section.questions.filter((q) => answers[q.id] === q.answer).length;
 }
 
 export default function InfosysSEMock() {
-  const { isSignedIn } = useAuth();
-  const { isPremium, loading } = usePremiumStatus();
+  const { isSignedIn, getToken } = useAuth();
+  const { access, loading, refresh } = useSeAccess();
   const [showPayment, setShowPayment] = useState(false);
+  const [sections, setSections] = useState<MockSection[] | null>(null);
+  const [fetching, setFetching] = useState(false);
+  const [loadError, setLoadError] = useState("");
 
-  const plan = useMemo(() => (isPremium ? MOCK_SECTIONS : MOCK_SECTIONS.filter((s) => s.free)), [isPremium]);
+  const plan = useMemo(() => sections ?? [], [sections]);
 
   const [phase, setPhase] = useState<Phase>("intro");
   const [sIdx, setSIdx] = useState(0);
@@ -59,6 +70,8 @@ export default function InfosysSEMock() {
   const [taken, setTaken] = useState<string[]>([]); // ids of sections that were sat
   const [last, setLast] = useState<{ score: number; total: number; date: string } | null>(null);
   const top = useRef<HTMLDivElement>(null);
+  const sectionsRef = useRef<MockSection[] | null>(null);
+  useEffect(() => { sectionsRef.current = sections; }, [sections]);
   const answersRef = useRef<Answers>({});
   useEffect(() => { answersRef.current = answers; }, [answers]);
 
@@ -104,9 +117,9 @@ export default function InfosysSEMock() {
     // remember the last attempt on this device
     setTimeout(() => {
       try {
-        const sections = MOCK_SECTIONS.filter((s) => sat.includes(s.id));
-        const score = sections.reduce((n, s) => n + scoreOf(s, answersRef.current), 0);
-        const total = sections.reduce((n, s) => n + s.questions.length, 0);
+        const sat2 = (sectionsRef.current ?? []).filter((s) => sat.includes(s.id));
+        const score = sat2.reduce((n, s) => n + scoreOf(s, answersRef.current), 0);
+        const total = sat2.reduce((n, s) => n + s.questions.length, 0);
         const rec = { score, total, date: new Date().toISOString() };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(rec));
         setLast(rec);
@@ -136,6 +149,29 @@ export default function InfosysSEMock() {
     window.setTimeout(scrollTop, 0);
   };
 
+  /** Pulls the questions from the server, which checks the purchase again. */
+  const begin = async () => {
+    setLoadError("");
+    if (sections) return startSection(0);
+    setFetching(true);
+    try {
+      const r = await seCall<{ sections?: MockSection[] }>("mock", getToken);
+      if (!r.ok || !r.data.sections) throw new Error(r.data.error || "Could not load the mock. Please try again.");
+      setSections(r.data.sections);
+      sectionsRef.current = r.data.sections;
+      // startSection reads `plan`, which updates on the next render, so start there.
+      setSIdx(0); setQIdx(0); setConfirming(false);
+      setEndAt(Date.now() + r.data.sections[0].minutes * 60_000);
+      setNow(Date.now());
+      setPhase("running");
+      window.setTimeout(scrollTop, 0);
+    } catch (e) {
+      setLoadError(e instanceof Error ? e.message : "Could not load the mock.");
+    } finally {
+      setFetching(false);
+    }
+  };
+
   const unlock = () => {
     if (!isSignedIn) {
       try { localStorage.setItem("auto_open_payment", "true"); } catch { /* ignore */ }
@@ -155,7 +191,7 @@ export default function InfosysSEMock() {
     <div ref={top} className="min-h-screen bg-[var(--color-paper)] font-sans text-[var(--color-ink)]">
       <SEO
         title="Infosys SE mock test: 54 questions, real section timers | Harry The Blaze"
-        description="A full-length Infosys System Engineer mock: maths, reasoning, verbal, pseudocode and puzzles, each with its own timer. Section 1 is free."
+        description="A full-length Infosys System Engineer mock: maths, reasoning, verbal, pseudocode and puzzles, each with its own timer. Included with the SE Playbook."
         canonical="https://www.harrytheblaze.site/infosys-se/mock"
       />
 
@@ -184,8 +220,8 @@ export default function InfosysSEMock() {
               <p className="text-sm text-[var(--color-muted)]">{totalQs} questions · {totalMin} minutes</p>
             </div>
             <ul>
-              {MOCK_SECTIONS.map((s, i) => {
-                const open = s.free || isPremium;
+              {SECTION_INFO.map((s, i) => {
+                const open = access;
                 return (
                   <li key={s.id} className="flex items-start gap-4 border-b border-[var(--color-rule)] px-4 py-4 last:border-b-0 sm:px-5">
                     <span className={`${DISPLAY} w-9 flex-shrink-0 text-4xl leading-none`}>{String(i + 1).padStart(2, "0")}</span>
@@ -194,11 +230,11 @@ export default function InfosysSEMock() {
                       <p className="mt-1 text-sm text-[var(--color-muted)]">{s.blurb}</p>
                     </div>
                     <div className="flex-shrink-0 text-right text-sm tabular-nums">
-                      <p className="font-semibold">{s.questions.length} Q · {s.minutes} min</p>
+                      <p className="font-semibold">{s.count} Q · {s.minutes} min</p>
                       {open ? (
-                        <p className="mt-1 inline-block bg-[var(--color-accent)] px-1.5 text-xs font-semibold">{s.free && !isPremium ? "Free" : "Open"}</p>
+                        <p className="mt-1 inline-block bg-[var(--color-accent)] px-1.5 text-xs font-semibold">Open</p>
                       ) : (
-                        <p className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-[var(--color-muted)]"><Lock className="h-3 w-3" aria-hidden /> Premium</p>
+                        <p className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-[var(--color-muted)]"><Lock className="h-3 w-3" aria-hidden /> SE pack</p>
                       )}
                     </div>
                   </li>
@@ -238,16 +274,23 @@ export default function InfosysSEMock() {
           </div>
 
           <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-            <button disabled={loading} onClick={() => startSection(0)} className={BTN_FLAME}>
-              {isPremium ? "Start the full mock" : "Start the free section"} <ArrowRight className="h-4 w-4" aria-hidden />
-            </button>
-            {!isPremium && !loading && (
-              <button onClick={unlock} className={BTN_PAPER}>
-                <Lock className="h-4 w-4" aria-hidden /> Unlock all {totalQs} questions · ₹{price}
-                {PROMO_ACTIVE && <span className="text-sm line-through opacity-60">₹{REGULAR_PRICE}</span>}
+            {access ? (
+              <button disabled={loading || fetching} onClick={begin} className={BTN_FLAME}>
+                {fetching ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden /> Loading the mock</> : <>Start the full mock <ArrowRight className="h-4 w-4" aria-hidden /></>}
+              </button>
+            ) : (
+              <button disabled={loading} onClick={unlock} className={BTN_FLAME}>
+                <Lock className="h-4 w-4" aria-hidden /> Unlock the mock · ₹{SE_PRICE}
+                <span className="text-sm line-through opacity-60">₹{SE_LIST_PRICE}</span>
               </button>
             )}
+            {!access && !loading && (
+              <p className="max-w-[40ch] text-sm leading-snug text-[var(--color-muted)]">
+                Included with the SE Playbook: the PDF is emailed to you when you pay, and this mock opens straight away.
+              </p>
+            )}
           </div>
+          {loadError && <p role="alert" className="mt-4 text-sm font-semibold">{loadError}</p>}
           <p className="mt-6 max-w-[70ch] text-xs leading-relaxed text-[var(--color-muted)]">
             Original practice questions written to match reported SE test types. Independent practice platform, not affiliated with or endorsed by Infosys.
           </p>
@@ -415,17 +458,16 @@ export default function InfosysSEMock() {
       {/* ══ RESULT ══ */}
       {phase === "result" && renderResult()}
 
-      <PaymentPopup isOpen={showPayment} onClose={() => setShowPayment(false)} />
+      <SePaymentPopup isOpen={showPayment} onClose={() => setShowPayment(false)} onUnlocked={refresh} />
     </div>
   );
 
   // ───────────────────────── result view ─────────────────────────
   function renderResult() {
-    const sat = MOCK_SECTIONS.filter((s) => taken.includes(s.id));
+    const sat = plan.filter((s) => taken.includes(s.id));
     const score = sat.reduce((n, s) => n + scoreOf(s, answers), 0);
     const total = sat.reduce((n, s) => n + s.questions.length, 0);
     const pct = total ? Math.round((score / total) * 100) : 0;
-    const partial = sat.length < MOCK_SECTIONS.length;
 
     const rows = sat.map((s) => {
       const sc = scoreOf(s, answers);
@@ -446,7 +488,7 @@ export default function InfosysSEMock() {
             {score}<span className="text-[var(--color-muted)]">/{total}</span>
           </h1>
           <p className="max-w-[44ch] text-lg leading-snug lg:col-span-6">
-            {pct}% overall. {partial ? "You sat the free section only; the rest of the mock is in Premium." : "Overall is not what decides the SE test: every section has its own cut-off, so read the bars below."}
+            {pct}% overall. Overall is not what decides the SE test: every section has its own cut-off, so read the bars below.
           </p>
         </div>
 
@@ -484,18 +526,8 @@ export default function InfosysSEMock() {
             )}
           </div>
           <div className={`${SHEET} p-5 sm:p-6`}>
-            {partial ? (
-              <>
-                <h3 className={`${DISPLAY} text-3xl leading-none`}>Sit the other four sections</h3>
-                <p className="mt-3 text-[15px] leading-snug">Reasoning, verbal, pseudocode and puzzles are the sections that fail most people. One payment opens them, plus the Playbook.</p>
-                <button onClick={unlock} className={`${BTN_INK} mt-4`}>Unlock for ₹{price} <ArrowRight className="h-4 w-4" aria-hidden /></button>
-              </>
-            ) : (
-              <>
-                <h3 className={`${DISPLAY} text-3xl leading-none`}>Go again</h3>
-                <p className="mt-3 text-[15px] leading-snug">Questions stay the same, so use the review below to learn the method first, then retake in a week.</p>
-              </>
-            )}
+            <h3 className={`${DISPLAY} text-3xl leading-none`}>Go again</h3>
+            <p className="mt-3 text-[15px] leading-snug">Questions stay the same, so use the review below to learn the method first, then retake in a week.</p>
             <button onClick={reset} className={`${BTN_PAPER} mt-3`}><RotateCcw className="h-4 w-4" aria-hidden /> Back to the start</button>
           </div>
         </div>

@@ -1,36 +1,15 @@
-// Mock test for the Infosys System Engineer online test.
+// Mock test for the Infosys System Engineer online test. SERVER-SIDE ONLY.
 // 54 questions in the real pattern: 10 + 15 + 20 + 5 + 4, with a separate timer per section.
-// These are original practice questions, none of them taken from the Playbook PDF.
+// Served by the se-premium-content edge function to buyers only. Do not import this
+// file from the website: it would put the paid questions and answers in the public bundle.
+// Original practice questions, none taken from the Playbook PDF.
 // Generated and answer-checked by PRODUCT/guides/mock/author.py: edit there, not here.
 
-export type MockQuestion = {
-  id: string;
-  topic: string;
-  stem: string;
-  options: string[];
-  answer: number;
-  explain: string;
-  code?: string;
-  context?: string;
-  contextTitle?: string;
-};
-
-export type MockSection = {
-  id: string;
-  name: string;
-  minutes: number;
-  /** Free sample for everyone; the other sections need Premium. */
-  free?: boolean;
-  blurb: string;
-  questions: MockQuestion[];
-};
-
-export const MOCK_SECTIONS: MockSection[] = [
+export const MOCK_SECTIONS = [
   {
     "id": "maths",
     "name": "Mathematical ability",
     "minutes": 35,
-    "free": true,
     "blurb": "Long, multi-step questions. Bank the sure ones first.",
     "questions": [
       {
@@ -169,7 +148,6 @@ export const MOCK_SECTIONS: MockSection[] = [
     "id": "reasoning",
     "name": "Logical reasoning",
     "minutes": 25,
-    "free": false,
     "blurb": "Sets first: one diagram pays 3–5 marks.",
     "questions": [
       {
@@ -389,7 +367,6 @@ export const MOCK_SECTIONS: MockSection[] = [
     "id": "verbal",
     "name": "Verbal ability",
     "minutes": 20,
-    "free": false,
     "blurb": "About a minute a question. Reading comes last.",
     "questions": [
       {
@@ -664,7 +641,6 @@ export const MOCK_SECTIONS: MockSection[] = [
     "id": "pseudocode",
     "name": "Pseudocode",
     "minutes": 10,
-    "free": false,
     "blurb": "Trace each program with a table of variables.",
     "questions": [
       {
@@ -743,7 +719,6 @@ export const MOCK_SECTIONS: MockSection[] = [
     "id": "puzzles",
     "name": "Puzzle solving",
     "minutes": 10,
-    "free": false,
     "blurb": "Start with the puzzle you recognise.",
     "questions": [
       {

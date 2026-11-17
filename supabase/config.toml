@@ -70,3 +70,13 @@ verify_jwt = false
 
 [functions.admin-coupons]
 verify_jwt = false
+
+# Infosys SE pack: these verify the Clerk session themselves, like the other payment functions.
+[functions.create-se-premium-order]
+verify_jwt = false
+
+[functions.verify-se-premium-payment]
+verify_jwt = false
+
+[functions.se-premium-content]
+verify_jwt = false

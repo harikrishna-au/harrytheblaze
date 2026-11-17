@@ -1,21 +1,22 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@clerk/clerk-react";
-import { ArrowRight, ArrowUpRight, Check, ExternalLink, Lock, X } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, ExternalLink, Lock } from "lucide-react";
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SEO from "@/components/SEO";
-import PaymentPopup from "@/components/PaymentPopup";
-import { usePremiumStatus } from "@/hooks/usePremiumStatus";
+import SePaymentPopup from "@/components/SePaymentPopup";
+import { useSeAccess } from "@/hooks/useSeAccess";
+import { toast } from "sonner";
 import { useGsapReveal } from "@/hooks/useGsapReveal";
-import { PROMO_ACTIVE, PROMO_PRICE, REGULAR_PRICE } from "@/lib/promo";
+import { SE_LIST_PRICE, SE_PRICE, seCall } from "@/lib/sePremium";
 import {
   ELIGIBILITY, DOCUMENTS, ROUTES, STAGES, WHAT_DECIDES,
   TEST_SECTIONS, CAMPUS_VARIANT, TOPICS, TEST_RULES, INTERVIEW_CHECKS,
   INTRO_TEMPLATE, INTERVIEW_QA, UNSURE_ANSWER, PLAN, PLAN_HEADERS, FAQ,
-  SE_GUIDE, SE_GUIDE_MAP, SE_GUIDE_DRIVE_ID, GUIDE_INSIDE,
+  SE_GUIDE, SE_GUIDE_MAP, GUIDE_INSIDE,
 } from "./data";
 
 // ─── Shared styles (same vocabulary as Home and the coding questions page) ────
@@ -47,7 +48,7 @@ const NAV = [
   { id: "guide", label: "The guide" },
 ];
 
-const price = PROMO_ACTIVE ? PROMO_PRICE : REGULAR_PRICE;
+const price = SE_PRICE;
 const TOTAL_MIN = TEST_SECTIONS.reduce((a, t) => a + t.min, 0);
 
 const SectionHead = ({ id, num, title, lead }: { id: string; num: string; title: string; lead?: string }) => (
@@ -62,42 +63,44 @@ const SectionHead = ({ id, num, title, lead }: { id: string; num: string; title:
   </div>
 );
 
-// ─── Guide viewer: Drive preview, kept inside the site ────────────────────────
-const GuideViewer = ({ onClose }: { onClose: () => void }) => (
-  <div className="fixed inset-0 z-[400] flex flex-col bg-[var(--color-ink)]/90" role="dialog" aria-modal="true" aria-label={SE_GUIDE.title}>
-    <div className="flex items-center justify-between gap-3 border-b border-[var(--color-paper)]/20 bg-[var(--color-ink)] px-4 py-3 text-[var(--color-paper)]">
-      <span className={`${DISPLAY} truncate text-xl`}>{SE_GUIDE.title}</span>
-      <button
-        onClick={onClose}
-        aria-label="Close guide"
-        className={`border border-[var(--color-paper)] p-1.5 hover:bg-[var(--color-accent)] hover:text-[var(--color-ink)] ${FOCUS}`}
-      >
-        <X className="h-4 w-4" />
-      </button>
-    </div>
-    <div className="relative flex-1 overflow-hidden">
-      <iframe
-        src={`https://drive.google.com/file/d/${SE_GUIDE_DRIVE_ID}/preview`}
-        title={SE_GUIDE.title}
-        className="absolute inset-0 h-full w-full border-0 bg-[#525659]"
-      />
-      {/* Covers Drive's pop-out button so the viewer stays inside the site */}
-      <div className="absolute right-0 top-0 z-10" style={{ width: 120, height: 52 }} />
-    </div>
-  </div>
-);
-
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function InfosysSEPage() {
   const page = useRef<HTMLDivElement>(null);
-  const { isSignedIn } = useAuth();
-  const { isPremium, loading } = usePremiumStatus();
+  const { isSignedIn, getToken } = useAuth();
+  const { access, loading, refresh } = useSeAccess();
   const [showPayment, setShowPayment] = useState(false);
-  const [showGuide, setShowGuide] = useState(false);
+  const [busy, setBusy] = useState<"" | "guide" | "resend">("");
   useGsapReveal(page);
 
-  const guideReady = SE_GUIDE_DRIVE_ID.length > 0;
-  const owned = !loading && isPremium;
+  const owned = !loading && access;
+
+  const downloadGuide = async () => {
+    setBusy("guide");
+    try {
+      const r = await seCall<{ url?: string }>("guide", getToken);
+      if (!r.ok || !r.data.url) throw new Error(r.data.error || "The guide is not available yet. Please contact support.");
+      window.location.href = r.data.url;
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not fetch the guide.");
+    } finally {
+      setBusy("");
+    }
+  };
+
+  const emailGuide = async () => {
+    setBusy("resend");
+    try {
+      const r = await seCall<{ result?: string }>("resend", getToken);
+      if (r.status === 429) toast.message("Just sent. Give it a minute, then check your inbox and spam.");
+      else if (!r.ok) throw new Error(r.data.error || "Could not send the email.");
+      else if (r.data.result === "no_purchase") toast.message("There is no SE pack purchase on this account to email. Use Download the PDF instead.");
+      else toast.success("Sent. Check your inbox (and spam) for the PDF.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not send the email.");
+    } finally {
+      setBusy("");
+    }
+  };
 
   const unlock = () => {
     if (!isSignedIn) {
@@ -111,7 +114,7 @@ export default function InfosysSEPage() {
   const BuyPrice = ({ className = "" }: { className?: string }) => (
     <span className={`inline-flex items-baseline gap-2 ${className}`}>
       <span className="font-display text-3xl leading-none tabular-nums">₹{price}</span>
-      {PROMO_ACTIVE && <span className="text-sm line-through tabular-nums opacity-70">₹{REGULAR_PRICE}</span>}
+      <span className="text-sm line-through tabular-nums opacity-70">₹{SE_LIST_PRICE}</span>
     </span>
   );
 
@@ -119,7 +122,7 @@ export default function InfosysSEPage() {
     <div ref={page} className={`min-h-screen bg-[var(--color-paper)] font-sans text-[var(--color-ink)] ${owned ? "" : "pb-24 sm:pb-0"}`}>
       <SEO
         title="Infosys System Engineer: eligibility, rounds, test topics and prep guide | Harry The Blaze"
-        description="Who can apply for Infosys System Engineer, every hiring stage, what the online test and interview ask, and a 247-page prep guide."
+        description="Who can apply for Infosys System Engineer, every hiring stage, what the online test and interview ask, and a 53-page prep playbook with a full online mock."
         canonical="https://www.harrytheblaze.site/infosys-se"
       />
 
@@ -174,7 +177,7 @@ export default function InfosysSEPage() {
             </p>
             <p data-intro className="mt-3 text-[15px]">
               New: a full 54-question mock with real section timers.{" "}
-              <Link to="/infosys-se/mock" className="font-semibold underline underline-offset-4">Take section 1 free</Link>
+              <Link to="/infosys-se/mock" className="font-semibold underline underline-offset-4">Included with the Playbook</Link>
             </p>
           </div>
 
@@ -538,14 +541,14 @@ export default function InfosysSEPage() {
               <h2 className={`${DISPLAY} text-[clamp(2.25rem,5vw,4rem)] leading-[0.98]`}>Sit the full SE mock.</h2>
               <p className="mt-4 max-w-[54ch] text-lg leading-snug">
                 54 fresh questions in the real pattern, each section on its own timer, with a score against the reported cut-offs and an
-                explanation for every answer. Section 1 (maths) is free.
+                explanation for every answer. Included with the SE Playbook.
               </p>
             </div>
             <div className="lg:col-span-4 lg:text-right">
               <Link to="/infosys-se/mock" className={BTN_INK}>
                 Start the mock <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
-              <p className="mt-3 text-sm">100 minutes · no sign-up for the free section</p>
+              <p className="mt-3 text-sm">100 minutes · included with the Playbook</p>
             </div>
           </div>
         </section>
@@ -602,26 +605,30 @@ export default function InfosysSEPage() {
                     <>
                       <p className={`${DISPLAY} text-4xl leading-none sm:text-5xl`}>You have access</p>
                       <p className="mt-3 text-base leading-snug">
-                        {guideReady ? "Open the guide and read it in the viewer." : "Your access is active. The guide is being added to this page. Check back shortly."}
+                        Your Playbook was emailed to you when you paid. You can also download it here, or have it sent again.
                       </p>
-                      {guideReady && (
-                        <button onClick={() => setShowGuide(true)} className={`${BTN_INK} mt-6 w-full`}>
-                          Open the guide <ExternalLink className="h-4 w-4" aria-hidden />
-                        </button>
-                      )}
+                      <button onClick={downloadGuide} disabled={busy !== ""} className={`${BTN_INK} mt-6 w-full`}>
+                        {busy === "guide" ? "Preparing your download…" : "Download the PDF"} <ExternalLink className="h-4 w-4" aria-hidden />
+                      </button>
+                      <button onClick={emailGuide} disabled={busy !== ""} className={`${BTN_PAPER} mt-3 w-full`}>
+                        {busy === "resend" ? "Sending…" : "Email it to me again"}
+                      </button>
+                      <Link to="/infosys-se/mock" className={`${BTN_PAPER} mt-3 w-full`}>
+                        Take the online mock <ArrowRight className="h-4 w-4" aria-hidden />
+                      </Link>
                     </>
                   ) : (
                     <>
                       <p className={`${DISPLAY} text-4xl leading-none sm:text-5xl`}>{SE_GUIDE.title}</p>
                       <p className="mt-5 flex items-baseline gap-3">
                         <span className="font-display text-[clamp(3.5rem,12vw,5.5rem)] leading-none tabular-nums">₹{price}</span>
-                        {PROMO_ACTIVE && <span className="text-xl line-through opacity-70 tabular-nums">₹{REGULAR_PRICE}</span>}
+                        <span className="text-xl line-through opacity-70 tabular-nums">₹{SE_LIST_PRICE}</span>
                       </p>
                       <p className="mt-2 text-sm font-semibold">One payment. No subscription, no renewal.</p>
                       <ul className="mt-5 divide-y divide-[var(--color-ink)]/25 border-y border-[var(--color-ink)]/25 text-[15px]">
                         {[
-                          `The ${SE_GUIDE.pages}-page prep guide, read in the viewer`,
-                          "Full Premium: extra game levels, communication rounds, AI interview, Forge and Job Match",
+                          `The ${SE_GUIDE.pages}-page Playbook as a PDF, emailed to you the moment you pay`,
+                          "Two timed half-mocks inside the PDF, plus a full 54-question online mock",
                         ].map((item) => (
                           <li key={item} className="flex items-start gap-3 py-3">
                             <Check className="mt-1 h-4 w-4 flex-shrink-0" strokeWidth={3} aria-hidden />
@@ -668,8 +675,7 @@ export default function InfosysSEPage() {
         </div>
       )}
 
-      <PaymentPopup isOpen={showPayment} onClose={() => setShowPayment(false)} />
-      {showGuide && guideReady && <GuideViewer onClose={() => setShowGuide(false)} />}
+      <SePaymentPopup isOpen={showPayment} onClose={() => setShowPayment(false)} onUnlocked={refresh} />
     </div>
   );
 }

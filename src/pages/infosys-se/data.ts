@@ -3,43 +3,34 @@
 // Figures marked "reported" are candidate reports, not published by Infosys —
 // the page says so where it matters.
 
-// ─── Where the paid guide lives ───────────────────────────────────────────────
-// Upload the PDF to Google Drive (share: "Anyone with the link — Viewer"), then
-// paste the file ID here (the long string in drive.google.com/file/d/<ID>/view).
-// Until this is set the resources card shows "being added" instead of a broken viewer.
-export const SE_GUIDE_DRIVE_ID = "";
+// ─── The paid guide ───────────────────────────────────────────────────────────
+// The PDF itself is never on this page. It is emailed to the buyer when they pay and can be
+// downloaded again from the se-premium-content edge function (a private storage bucket).
 
 export const SE_GUIDE = {
-  title: "Infosys Ultimate Prep Guide 2026–27",
-  pages: 247,
-  note: "Covers SE, DSE and SP. For SE you only need the chapters listed below.",
+  title: "The Infosys SE Playbook",
+  pages: 53,
+  note: "Formulas and questions ranked by how often each type is tested.",
 };
 
-// What the guide holds, counted from its own contents pages and cover.
+// What the Playbook holds, counted from the PDF itself.
 export const GUIDE_INSIDE: { n: string; label: string }[] = [
-  { n: "247", label: "pages in one PDF" },
-  { n: "44", label: "solved maths questions from real Infosys papers" },
-  { n: "30", label: "question full-length SE mini mock, with answer key" },
-  { n: "44", label: "SE interview questions, with answers you can say aloud" },
-  { n: "25", label: "real interview experiences" },
+  { n: "53", label: "pages in one PDF" },
+  { n: "30", label: "formula cards, ranked P1 to P3" },
+  { n: "86", label: "original questions with worked solutions" },
+  { n: "24", label: "SE interview answers you can say aloud" },
+  { n: "2", label: "timed half-mocks inside the PDF" },
   { n: "4", label: "week study plan for the SE test" },
 ];
 
-// Chapters of the guide that matter for an SE candidate (page numbers from the guide's contents).
+// Where to find things in the PDF.
 export const SE_GUIDE_MAP: { part: string; what: string; pages: string }[] = [
-  { part: "Ch 1–3 · Roles, eligibility, timeline", what: "Everything in the first half of this page, in more detail", pages: "p. 9–18" },
-  { part: "Ch 4 · Test blueprint & strategy", what: "Section timings, cut-off rule, test-day plan", pages: "p. 20–22" },
-  { part: "Ch 5 · Mathematical ability", what: "8 formulas + 44 solved questions from real Infosys papers", pages: "p. 23–31" },
-  { part: "Ch 6 · Logical reasoning", what: "Seating, data sufficiency, syllogisms, blood relations, coding–decoding", pages: "p. 32–41" },
-  { part: "Ch 7 · Verbal ability", what: "Six grammar rules, fill-in-the-blanks, voice, speech, reading comprehension", pages: "p. 42–51" },
-  { part: "Ch 8 · Pseudocode", what: "Infosys pseudocode conventions + practice set", pages: "p. 52–59" },
-  { part: "Ch 9 · Puzzles & cryptarithmetic", what: "Cryptarithmetic in five rules + logic and number puzzles", pages: "p. 60–65" },
-  { part: "Ch 10 · The essay round", what: "A model 208-word essay, 12 likely topics, mistakes evaluators see", pages: "p. 66–68" },
-  { part: "Ch 11 · SE mini mock test", what: "A timed full-length mock with answer key", pages: "p. 69–74" },
-  { part: "Ch 21 · The SE interview", what: "60-second intro, 44 reported questions with answers you can say aloud", pages: "p. 177–183" },
-  { part: "Ch 25 · HR round & “Why Infosys?”", what: "Answer frameworks and situational questions", pages: "p. 213–216" },
-  { part: "Ch 27–28 · Offer, onboarding, Mysuru training", what: "Documents, medicals, background check, generic training syllabus", pages: "p. 225–232" },
-  { part: "Ch 30 · Study plan A", what: "The 4-week plan below, plus the night-before checklist", pages: "p. 235–236" },
+  { part: "Start here", what: "The test map, the P1 / P2 / P3 priority system and the routine that works", pages: "p. 2" },
+  { part: "Part 1 · Formula vault", what: "30 ranked formula cards for maths, reasoning, verbal, pseudocode and puzzles, plus the one-page P1 cheat sheet", pages: "p. 3–17" },
+  { part: "Part 2 · Question bank", what: "86 original questions, the most-tested types first. Try before you peek", pages: "p. 18–36" },
+  { part: "Part 3 · Answers & solutions", what: "A worked method for every question, not just the letter", pages: "p. 37–44" },
+  { part: "Part 4 · Interview & essay kit", what: "24 SE interview answers, an essay template and a sample", pages: "p. 45–48" },
+  { part: "Part 5 · Mocks, plan & checklist", what: "Two timed half-mocks, a 4-week plan, a test-day checklist and an error log", pages: "p. 49–51" },
 ];
 
 // ─── Snapshot ─────────────────────────────────────────────────────────────────

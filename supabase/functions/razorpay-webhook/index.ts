@@ -3,6 +3,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { crypto } from "https://deno.land/std@0.168.0/crypto/mod.ts";
 import { LATE_STATUSES, recoverLatePayment } from "../_shared/late-payment.ts";
+import { fulfilSePurchase, SE_PRODUCT } from "../_shared/se-premium.ts";
 
 function escapeHtml(value: string) {
     return value
@@ -188,6 +189,22 @@ serve(async (req: Request) => {
                     await Promise.allSettled(notifications);
                 }
 
+                return new Response(JSON.stringify({ received: true }), {
+                    headers: { "Content-Type": "application/json" }
+                });
+            }
+
+            // ── Infosys SE pack ───────────────────────────────────────────
+            // Handled before the lifetime-premium fallback below, which would
+            // otherwise treat any known order as a Premium purchase.
+            if (paymentType === SE_PRODUCT && orderId) {
+                const result = await fulfilSePurchase(supabaseAdmin, {
+                    orderId,
+                    paymentId: payment.id,
+                    paidAmountPaise: payment.amount,
+                });
+                // Throw if the PDF email has not gone out yet so Razorpay retries the webhook.
+                if (!result.emailed) throw new Error(`SE pack email not sent yet for order ${orderId}`);
                 return new Response(JSON.stringify({ received: true }), {
                     headers: { "Content-Type": "application/json" }
                 });
