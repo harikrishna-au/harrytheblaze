@@ -15,6 +15,16 @@ export const SE_GUIDE = {
   note: "Covers SE, DSE and SP. For SE you only need the chapters listed below.",
 };
 
+// What the guide holds, counted from its own contents pages and cover.
+export const GUIDE_INSIDE: { n: string; label: string }[] = [
+  { n: "247", label: "pages in one PDF" },
+  { n: "44", label: "solved maths questions from real Infosys papers" },
+  { n: "30", label: "question full-length SE mini mock, with answer key" },
+  { n: "44", label: "SE interview questions, with answers you can say aloud" },
+  { n: "25", label: "real interview experiences" },
+  { n: "4", label: "week study plan for the SE test" },
+];
+
 // Chapters of the guide that matter for an SE candidate (page numbers from the guide's contents).
 export const SE_GUIDE_MAP: { part: string; what: string; pages: string }[] = [
   { part: "Ch 1–3 · Roles, eligibility, timeline", what: "Everything in the first half of this page, in more detail", pages: "p. 9–18" },

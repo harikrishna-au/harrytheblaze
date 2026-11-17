@@ -1,176 +1,230 @@
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import {
-  ArrowLeft, BookOpen, CheckCircle2, ChevronRight, ExternalLink, FileText,
-  Lock, ShieldAlert, X, Loader2,
-} from "lucide-react";
+import { useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "@clerk/clerk-react";
+import { ArrowRight, ArrowUpRight, Check, ExternalLink, Lock, X } from "lucide-react";
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from "@/components/ui/accordion";
-import { usePremiumStatus } from "@/hooks/usePremiumStatus";
+import SEO from "@/components/SEO";
 import PaymentPopup from "@/components/PaymentPopup";
+import { usePremiumStatus } from "@/hooks/usePremiumStatus";
+import { useGsapReveal } from "@/hooks/useGsapReveal";
 import { PROMO_ACTIVE, PROMO_PRICE, REGULAR_PRICE } from "@/lib/promo";
-import {
-  INFY_BLUE, INFY_BG, INFY_BDR, GOLD, GOLD_BG, GOLD_BDR,
-} from "../hackwithinfy/theme";
 import {
   SNAPSHOT, ELIGIBILITY, DOCUMENTS, ROUTES, STAGES, WHAT_DECIDES,
   TEST_SECTIONS, CAMPUS_VARIANT, TOPICS, TEST_RULES, INTERVIEW_CHECKS,
   INTRO_TEMPLATE, INTERVIEW_QA, UNSURE_ANSWER, PLAN, PLAN_HEADERS, FAQ,
-  SE_GUIDE, SE_GUIDE_MAP, SE_GUIDE_DRIVE_ID,
+  SE_GUIDE, SE_GUIDE_MAP, SE_GUIDE_DRIVE_ID, GUIDE_INSIDE,
 } from "./data";
+
+// ─── Shared styles (same vocabulary as Home and the coding questions page) ────
+const DISPLAY = "font-display font-normal uppercase tracking-[0.005em]";
+const SHEET = "bg-[var(--color-paper-3)] shadow-[var(--shadow-sheet)]";
+const WRAP = "mx-auto w-full max-w-[1180px] px-4 sm:px-8";
+const FOCUS =
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-focus)]";
+const BTN =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap px-6 py-3.5 text-[15px] font-semibold " +
+  "shadow-[var(--shadow-offset)] transition-[transform,box-shadow] duration-[120ms] hover:translate-x-px hover:translate-y-px " +
+  `hover:shadow-[3px_3px_0_var(--color-ink)] active:translate-x-1 active:translate-y-1 active:shadow-none motion-reduce:transition-none ${FOCUS}`;
+const BTN_FLAME = `${BTN} bg-[var(--color-accent)] text-[var(--color-ink)]`;
+const BTN_PAPER = `${BTN} bg-[var(--color-paper-3)] text-[var(--color-ink)]`;
+const BTN_INK = `${BTN} bg-[var(--color-ink)] !text-[var(--color-paper)] !shadow-[4px_4px_0_var(--color-paper)]`;
+const ACC_BOX = "bg-[var(--color-paper-3)] px-4 shadow-[var(--shadow-card)] sm:px-5";
+const ACC_ITEM = "border-[var(--color-rule)]";
+const ACC_TRIGGER = "py-4 text-left text-[15px] font-semibold leading-snug hover:no-underline";
+const ACC_BODY = "text-[15px] leading-relaxed text-[var(--color-ink-2,var(--color-ink))]";
 
 const NAV = [
   { id: "eligibility", label: "Eligibility" },
-  { id: "stages", label: "Hiring stages" },
-  { id: "test", label: "The online test" },
+  { id: "stages", label: "Stages" },
+  { id: "test", label: "The test" },
   { id: "topics", label: "Topics" },
   { id: "interview", label: "Interview" },
-  { id: "plan", label: "4-week plan" },
-  { id: "resources", label: "Resources" },
+  { id: "plan", label: "Plan" },
+  { id: "guide", label: "The guide" },
 ];
 
 const price = PROMO_ACTIVE ? PROMO_PRICE : REGULAR_PRICE;
+const TOTAL_MIN = TEST_SECTIONS.reduce((a, t) => a + t.min, 0);
 
-// ─── Small building blocks ────────────────────────────────────────────────────
-const Section = ({
-  id, num, title, intro, children,
-}: { id: string; num: string; title: string; intro?: string; children: React.ReactNode }) => (
-  <section id={id} className="scroll-mt-24 mb-14">
-    <div className="flex items-baseline gap-3 mb-2">
-      <span className="text-[11px] font-bold tracking-[0.3em] font-['Inter']" style={{ color: INFY_BLUE }}>
-        {num}
-      </span>
-      <h2 className="text-2xl font-serif text-stone-800 tracking-tight">{title}</h2>
-    </div>
-    {intro && (
-      <p className="text-stone-500 text-[13.5px] font-['Inter'] leading-relaxed max-w-2xl mb-6">{intro}</p>
-    )}
-    {children}
-  </section>
-);
-
-const Card = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
-  <div
-    className={`rounded-2xl bg-white p-5 ${className}`}
-    style={{ border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 2px 12px rgba(0,0,0,0.03)" }}
-  >
-    {children}
+const SectionHead = ({ id, num, title, lead }: { id: string; num: string; title: string; lead?: string }) => (
+  <div id={id} className="scroll-mt-20" data-reveal>
+    <p className={`${DISPLAY} text-6xl leading-none text-[var(--color-accent)] sm:text-7xl`} style={{ WebkitTextStroke: "1.5px var(--color-ink)" }}>
+      {num}
+    </p>
+    <h2 className={`${DISPLAY} mt-2 max-w-[20ch] text-[clamp(2.25rem,5vw,4rem)] leading-[0.98]`}>{title}</h2>
+    {lead && <p className="mt-4 max-w-[58ch] text-lg leading-snug">{lead}</p>}
   </div>
 );
 
-const Callout = ({
-  tone = "blue", icon, title, children,
-}: { tone?: "blue" | "gold"; icon?: React.ReactNode; title: string; children: React.ReactNode }) => {
-  const c = tone === "gold" ? { fg: GOLD, bg: GOLD_BG, bd: GOLD_BDR } : { fg: INFY_BLUE, bg: INFY_BG, bd: INFY_BDR };
-  return (
-    <div className="rounded-2xl p-4 mt-5" style={{ background: c.bg, border: `1px solid ${c.bd}` }}>
-      <div className="flex items-center gap-2 mb-1.5 font-['Inter'] font-semibold text-[13px]" style={{ color: c.fg }}>
-        {icon}
-        {title}
-      </div>
-      <div className="text-[13px] text-stone-600 font-['Inter'] leading-relaxed">{children}</div>
-    </div>
-  );
-};
-
-// ─── Guide viewer (same Drive-preview pattern as the HackWithInfy resources) ──
+// ─── Guide viewer: Drive preview, kept inside the site ────────────────────────
 const GuideViewer = ({ onClose }: { onClose: () => void }) => (
-  <div className="fixed inset-0 z-50 flex flex-col" style={{ background: "rgba(28,25,23,0.88)", backdropFilter: "blur(8px)" }}>
-    <div className="flex items-center justify-between px-5 py-3 shrink-0" style={{ background: "#1c1917" }}>
-      <div className="flex items-center gap-2.5 min-w-0">
-        <FileText className="w-4 h-4 shrink-0" style={{ color: INFY_BLUE }} />
-        <span className="text-white text-sm font-semibold font-['Inter'] truncate">{SE_GUIDE.title}</span>
-      </div>
+  <div className="fixed inset-0 z-[400] flex flex-col bg-[var(--color-ink)]/90" role="dialog" aria-modal="true" aria-label={SE_GUIDE.title}>
+    <div className="flex items-center justify-between gap-3 border-b border-[var(--color-paper)]/20 bg-[var(--color-ink)] px-4 py-3 text-[var(--color-paper)]">
+      <span className={`${DISPLAY} truncate text-xl`}>{SE_GUIDE.title}</span>
       <button
         onClick={onClose}
         aria-label="Close guide"
-        className="w-8 h-8 flex items-center justify-center rounded-xl text-stone-400 hover:text-white hover:bg-stone-700 transition-all"
+        className={`border border-[var(--color-paper)] p-1.5 hover:bg-[var(--color-accent)] hover:text-[var(--color-ink)] ${FOCUS}`}
       >
-        <X className="w-4 h-4" />
+        <X className="h-4 w-4" />
       </button>
     </div>
-    <div className="flex-1 relative overflow-hidden">
+    <div className="relative flex-1 overflow-hidden">
       <iframe
         src={`https://drive.google.com/file/d/${SE_GUIDE_DRIVE_ID}/preview`}
         title={SE_GUIDE.title}
-        className="absolute inset-0 w-full h-full border-0"
-        style={{ background: "#525659" }}
+        className="absolute inset-0 h-full w-full border-0 bg-[#525659]"
       />
       {/* Covers Drive's pop-out button so the viewer stays inside the site */}
-      <div className="absolute top-0 right-0 z-10" style={{ width: 120, height: 52 }} />
+      <div className="absolute right-0 top-0 z-10" style={{ width: 120, height: 52 }} />
     </div>
   </div>
 );
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
-const InfosysSEPage = () => {
-  const navigate = useNavigate();
+export default function InfosysSEPage() {
+  const page = useRef<HTMLDivElement>(null);
+  const { isSignedIn } = useAuth();
   const { isPremium, loading } = usePremiumStatus();
   const [showPayment, setShowPayment] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
+  useGsapReveal(page);
 
   const guideReady = SE_GUIDE_DRIVE_ID.length > 0;
+  const owned = !loading && isPremium;
+
+  const unlock = () => {
+    if (!isSignedIn) {
+      try { localStorage.setItem("auto_open_payment", "true"); } catch { /* ignore */ }
+      window.location.href = "/login";
+      return;
+    }
+    setShowPayment(true);
+  };
+
+  const BuyPrice = ({ className = "" }: { className?: string }) => (
+    <span className={`inline-flex items-baseline gap-2 ${className}`}>
+      <span className="font-display text-3xl leading-none tabular-nums">₹{price}</span>
+      {PROMO_ACTIVE && <span className="text-sm line-through tabular-nums opacity-70">₹{REGULAR_PRICE}</span>}
+    </span>
+  );
 
   return (
-    <>
-      <div className="fixed inset-0 -z-10 bg-[#fcfcf9]">
-        <div
-          className="absolute top-0 left-0 w-full h-[400px]"
-          style={{ background: "radial-gradient(ellipse 70% 40% at 50% 0%, rgba(0,124,195,0.06) 0%, transparent 70%)" }}
-        />
-      </div>
+    <div ref={page} className={`min-h-screen bg-[var(--color-paper)] font-sans text-[var(--color-ink)] ${owned ? "" : "pb-24 sm:pb-0"}`}>
+      <SEO
+        title="Infosys System Engineer: eligibility, rounds, test topics and prep guide | Harry The Blaze"
+        description="Who can apply for Infosys System Engineer, every hiring stage, what the online test and interview ask, and a 247-page prep guide."
+        canonical="https://www.harrytheblaze.site/infosys-se"
+      />
 
-      <div className="w-full max-w-4xl mx-auto px-5 sm:px-6 py-10 min-h-screen">
-        <button
-          onClick={() => navigate("/dashboard")}
-          className="flex items-center gap-1.5 text-stone-400 hover:text-stone-700 text-[13px] font-medium font-['Inter'] transition-colors mb-8 group"
-        >
-          <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
-          Back to Dashboard
-        </button>
+      {/* ── Top bar ── */}
+      <header className="border-b border-[var(--color-rule)]">
+        <div className={`${WRAP} flex items-center justify-between gap-4 py-3`}>
+          <Link to={isSignedIn ? "/dashboard" : "/"} className={`inline-flex items-center gap-2.5 ${FOCUS}`}>
+            <img src="/favicon.svg" alt="" className="h-8 w-8" />
+            <span className={`${DISPLAY} text-xl`}>Harry The Blaze</span>
+          </Link>
+          {owned ? (
+            <Link to="/dashboard" className="text-[15px] underline decoration-[var(--color-rule)] underline-offset-4 hover:decoration-[var(--color-ink)]">
+              Dashboard
+            </Link>
+          ) : (
+            <button onClick={unlock} className={`${BTN_FLAME} !px-4 !py-2 !shadow-[3px_3px_0_var(--color-ink)]`}>
+              Get the guide <BuyPrice className="[&>span:first-child]:!text-base" />
+            </button>
+          )}
+        </div>
+      </header>
 
+      <main>
         {/* ══ Hero ══ */}
-        <header className="mb-8">
-          <div
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-semibold tracking-[0.2em] uppercase font-['Inter'] mb-5"
-            style={{ background: INFY_BG, color: INFY_BLUE, border: `1px solid ${INFY_BDR}` }}
-          >
-            Infosys · System Engineer
+        <section className={`${WRAP} grid items-center gap-12 pb-20 pt-12 lg:grid-cols-12 lg:gap-8 lg:pb-28 lg:pt-16`}>
+          <div className="lg:col-span-7">
+            <p data-intro className="inline-block bg-[var(--color-accent)] px-2.5 py-1 text-xs font-semibold">
+              Infosys · System Engineer
+            </p>
+            <h1 data-intro className={`${DISPLAY} mt-4 text-[clamp(3.25rem,9vw,7.5rem)] leading-[0.92]`}>
+              Infosys SE. Know every round.
+            </h1>
+            <p data-intro className="mt-6 max-w-[40ch] text-[clamp(1.125rem,0.35vw+1rem,1.375rem)] leading-snug">
+              Who can apply, what happens at each stage, what the test and the interview ask. Then the {SE_GUIDE.pages}-page guide that drills all of it.
+            </p>
+            <div data-intro className="mt-9 flex flex-col gap-5 sm:flex-row">
+              {owned ? (
+                <a href="#guide" className={BTN_FLAME}>
+                  Open your guide <ArrowRight className="h-4 w-4" aria-hidden />
+                </a>
+              ) : (
+                <button onClick={unlock} className={BTN_FLAME}>
+                  Get the guide <BuyPrice /> <ArrowRight className="h-4 w-4" aria-hidden />
+                </button>
+              )}
+              <a href="#eligibility" className={BTN_PAPER}>
+                Read the free explainer
+              </a>
+            </div>
+            <p data-intro className="mt-5 max-w-[46ch] text-xs leading-snug opacity-70">
+              Independent prep material from candidate reports and Infosys notices. Not affiliated with or endorsed by Infosys.
+            </p>
           </div>
-          <h1 className="text-3xl md:text-4xl font-serif text-stone-800 tracking-tight leading-[1.15] mb-3">
-            Infosys System Engineer.
-            <br />
-            <span className="text-stone-400 font-light italic">Who can apply, what happens, what they ask.</span>
-          </h1>
-          <p className="text-stone-500 text-[0.9rem] font-['Inter'] font-light max-w-xl leading-relaxed">
-            Read this top to bottom: eligibility, every hiring stage, the online test, the topics, the interview.
-            The prep guide is at the end.
-          </p>
-        </header>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-          {SNAPSHOT.map((s) => (
-            <Card key={s.label} className="!p-4">
-              <div className="text-[10px] font-bold tracking-[0.18em] uppercase text-stone-400 font-['Inter'] mb-1">{s.label}</div>
-              <div className="text-[15px] font-bold text-stone-800 font-['Inter'] leading-tight mb-1">{s.value}</div>
-              <div className="text-[11px] text-stone-400 font-['Inter'] leading-snug">{s.sub}</div>
-            </Card>
-          ))}
+          {/* The ticket: the SE path in five lines */}
+          <div className="relative mx-auto w-full max-w-[26rem] pb-6 pt-10 lg:col-span-5 lg:max-w-none lg:pt-0">
+            <div
+              aria-hidden
+              data-drop="-3"
+              data-parallax="-30"
+              className="absolute inset-x-0 bottom-0 top-6 bg-[var(--color-accent)] shadow-[var(--shadow-sheet)] sm:inset-x-6"
+            />
+            <div data-drop="2" className={`${SHEET} relative lg:mx-4`}>
+              <div className="flex items-start justify-between p-6 pb-5">
+                <div>
+                  <p className={`${DISPLAY} text-5xl sm:text-6xl`}>Admit one</p>
+                  <p className="mt-2 text-[15px] text-[var(--color-muted)]">Infosys System Engineer</p>
+                </div>
+                <img src="/favicon.svg" alt="" className="h-14 w-14" />
+              </div>
+              <div className="relative border-t-2 border-dashed border-[var(--color-ink)]">
+                <span aria-hidden className="absolute -left-3 -top-3 h-6 w-6 rounded-full bg-[var(--color-paper)]" />
+                <span aria-hidden className="absolute -right-3 -top-3 h-6 w-6 rounded-full bg-[var(--color-paper)]" />
+                <ol className="divide-y divide-[var(--color-rule)] p-6 pt-7">
+                  {[
+                    ["Online test", "54 Q · about 100 min"],
+                    ["Interview", "15–30 min"],
+                    ["Offer", "LOI, then offer letter"],
+                    ["Training", "Mysuru, 4–6 months"],
+                    ["2026 package", "₹3.6 LPA"],
+                  ].map(([k, v]) => (
+                    <li key={k} className="flex items-baseline justify-between gap-4 py-3">
+                      <span className="text-[15px] text-[var(--color-muted)]">{k}</span>
+                      <span className="text-right text-lg font-semibold">{v}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Toner band */}
+        <div className="bg-[var(--color-ink)] text-[var(--color-paper)]">
+          <div className={`${WRAP} py-10 sm:py-14`}>
+            <p data-reveal className={`${DISPLAY} max-w-[24ch] text-[clamp(2.25rem,5.5vw,4.75rem)] sm:max-w-none`}>
+              Five sections. Five cut-offs. {TOTAL_MIN} minutes.
+            </p>
+          </div>
         </div>
 
-        {/* Section nav */}
-        <nav
-          aria-label="On this page"
-          className="sticky top-0 z-20 -mx-5 sm:mx-0 px-5 sm:px-0 py-3 mb-10 bg-[#fcfcf9]/90 backdrop-blur overflow-x-auto"
-        >
-          <ul className="flex gap-2 w-max">
+        {/* Section chips */}
+        <nav aria-label="On this page" className="sticky top-0 z-[300] border-b border-[var(--color-rule)] bg-[var(--color-paper)]/95 backdrop-blur">
+          <ul className={`${WRAP} flex gap-2 overflow-x-auto py-3 [scrollbar-width:none]`}>
             {NAV.map((n) => (
-              <li key={n.id}>
+              <li key={n.id} className="flex-shrink-0">
                 <a
                   href={`#${n.id}`}
-                  className="inline-block px-3.5 py-1.5 rounded-full text-[12px] font-semibold font-['Inter'] text-stone-600 bg-white hover:text-stone-900 transition-colors"
-                  style={{ border: "1px solid rgba(0,0,0,0.08)" }}
+                  className={`block bg-[var(--color-paper-3)] px-3.5 py-2 text-sm font-semibold shadow-[var(--shadow-card)] transition-colors hover:bg-[var(--color-accent)] ${FOCUS}`}
                 >
                   {n.label}
                 </a>
@@ -179,228 +233,250 @@ const InfosysSEPage = () => {
           </ul>
         </nav>
 
+        {/* Snapshot */}
+        <section className={`${WRAP} pt-14`}>
+          <div data-reveal-group className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            {SNAPSHOT.map((s) => (
+              <div key={s.label} className={`${SHEET} p-5`}>
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-muted)]">{s.label}</p>
+                <p className={`${DISPLAY} mt-2 text-3xl leading-none sm:text-4xl`}>{s.value}</p>
+                <p className="mt-2 text-sm leading-snug text-[var(--color-muted)]">{s.sub}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* ══ 01 Eligibility ══ */}
-        <Section
-          id="eligibility"
-          num="01"
-          title="Eligibility"
-          intro="The 2026-cycle rules as stated in Infosys drive notices. Your own drive's notice is the final word — read it before you apply."
-        >
-          <div className="grid sm:grid-cols-2 gap-3">
+        <section className={`${WRAP} pt-24 sm:pt-32`}>
+          <SectionHead
+            id="eligibility"
+            num="01"
+            title="Who can apply"
+            lead="The 2026-cycle rules as stated in Infosys drive notices. Your own drive's notice is the final word, so read it before you apply."
+          />
+          <div data-reveal-group className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {ELIGIBILITY.map((e) => (
-              <Card key={e.title}>
-                <h3 className="text-[13.5px] font-bold text-stone-800 font-['Inter'] mb-1.5">{e.title}</h3>
-                <p className="text-[12.5px] text-stone-500 font-['Inter'] leading-relaxed">{e.body}</p>
-              </Card>
+              <div key={e.title} className={`${SHEET} p-6`}>
+                <h3 className="text-xl font-semibold">{e.title}</h3>
+                <p className="mt-2 text-[15px] leading-relaxed">{e.body}</p>
+              </div>
             ))}
           </div>
 
-          <Callout tone="gold" icon={<ShieldAlert className="w-4 h-4" />} title="Your marks must match your documents">
-            Infosys verifies every mark sheet during onboarding and background verification. A percentage typed wrongly on the application
-            (for example, CGPA converted with the wrong formula) can delay or cancel an offer.
-          </Callout>
-
-          <h3 className="text-[15px] font-bold text-stone-800 font-['Inter'] mt-8 mb-3">Keep these ready before you apply</h3>
-          <ul className="space-y-2">
-            {DOCUMENTS.map((d) => (
-              <li key={d} className="flex gap-2.5 text-[13px] text-stone-600 font-['Inter'] leading-relaxed">
-                <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" style={{ color: INFY_BLUE }} />
-                {d}
-              </li>
-            ))}
-          </ul>
-        </Section>
+          <div className="mt-8 grid items-start gap-6 lg:grid-cols-12">
+            <div data-drop="-1" className="bg-[var(--color-accent)] p-6 shadow-[var(--shadow-sheet)] sm:p-8 lg:col-span-5">
+              <h3 className={`${DISPLAY} text-3xl leading-none sm:text-4xl`}>Your marks must match your documents</h3>
+              <p className="mt-4 text-base leading-relaxed">
+                Infosys verifies every mark sheet during onboarding and background verification. A percentage typed wrongly on the
+                application, for example a CGPA converted with the wrong formula, can delay or cancel an offer.
+              </p>
+            </div>
+            <div data-reveal className={`${SHEET} p-6 sm:p-8 lg:col-span-7`}>
+              <h3 className="text-xl font-semibold">Keep these ready before you apply</h3>
+              <ul className="mt-4">
+                {DOCUMENTS.map((d) => (
+                  <li key={d} className="flex items-start gap-3 border-t border-[var(--color-rule)] py-3 text-[15px] leading-snug">
+                    <span aria-hidden className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center border-2 border-[var(--color-ink)]" />
+                    {d}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
 
         {/* ══ 02 Stages ══ */}
-        <Section
-          id="stages"
-          num="02"
-          title="Hiring stages, step by step"
-          intro="You can reach the SE test two ways. The test and interview are the same; only the way you get the invitation differs."
-        >
-          <div className="grid sm:grid-cols-2 gap-3 mb-8">
+        <section className={`${WRAP} pt-24 sm:pt-32`}>
+          <SectionHead
+            id="stages"
+            num="02"
+            title="Hiring stages, step by step"
+            lead="You can reach the SE test two ways. The test and interview are the same, only the invitation differs."
+          />
+
+          <div data-reveal-group className="mt-10 grid gap-5 md:grid-cols-2">
             {ROUTES.map((r) => (
-              <Card key={r.title}>
-                <h3 className="text-[14px] font-bold text-stone-800 font-['Inter'] mb-2">{r.title}</h3>
-                <p className="text-[12.5px] text-stone-600 font-['Inter'] leading-relaxed mb-2">{r.steps}</p>
-                <p className="text-[12px] text-stone-400 font-['Inter'] leading-relaxed">{r.note}</p>
-              </Card>
+              <div key={r.title} className={`${SHEET} p-6`}>
+                <h3 className={`${DISPLAY} text-3xl leading-none`}>{r.title}</h3>
+                <p className="mt-3 text-[15px] leading-relaxed">{r.steps}</p>
+                <p className="mt-3 border-t border-[var(--color-rule)] pt-3 text-sm leading-snug text-[var(--color-muted)]">{r.note}</p>
+              </div>
             ))}
           </div>
 
-          <ol className="space-y-3">
+          <ol data-reveal-group className="mt-8 space-y-5">
             {STAGES.map((s) => (
-              <li key={s.n}>
-                <Card className="flex gap-4">
-                  <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-[13px] font-bold font-['Inter']"
-                    style={{ background: INFY_BG, color: INFY_BLUE, border: `1px solid ${INFY_BDR}` }}
-                  >
-                    {s.n}
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="text-[14.5px] font-bold text-stone-800 font-['Inter'] mb-1">{s.title}</h3>
-                    <p className="text-[12.5px] text-stone-600 font-['Inter'] leading-relaxed mb-2">{s.detail}</p>
-                    <p className="text-[12px] font-['Inter'] font-semibold mb-1" style={{ color: INFY_BLUE }}>{s.gap}</p>
-                    <p className="text-[12px] text-stone-500 font-['Inter'] leading-relaxed">
-                      <span className="font-semibold text-stone-600">While you wait: </span>{s.meanwhile}
-                    </p>
-                  </div>
-                </Card>
+              <li key={s.n} className={`${SHEET} grid gap-x-8 gap-y-3 p-6 sm:grid-cols-[5.5rem_minmax(0,1fr)] sm:p-8`}>
+                <p className={`${DISPLAY} text-6xl leading-none sm:text-7xl`}>{s.n}</p>
+                <div className="min-w-0">
+                  <h3 className="text-xl font-semibold">{s.title}</h3>
+                  <p className="mt-2 text-base leading-relaxed">{s.detail}</p>
+                  <p className="mt-3 inline-block bg-[var(--color-accent)] px-2.5 py-1 text-sm font-semibold">{s.gap}</p>
+                  <p className="mt-3 text-[15px] leading-relaxed text-[var(--color-muted)]">
+                    <span className="font-semibold text-[var(--color-ink)]">While you wait: </span>
+                    {s.meanwhile}
+                  </p>
+                </div>
               </li>
             ))}
           </ol>
-          <p className="text-[11.5px] text-stone-400 font-['Inter'] mt-3">
-            Timings come from 2024–26 candidate reports. Infosys does not publish them, and they vary by drive.
+          <p className="mt-3 text-xs text-[var(--color-muted)]">
+            Timings come from 2024–26 candidate reports. Infosys does not publish them and they vary by drive.
           </p>
 
-          <h3 className="text-[15px] font-bold text-stone-800 font-['Inter'] mt-8 mb-3">What decides the result at each stage</h3>
-          <div className="space-y-3">
-            {WHAT_DECIDES.map((w) => (
-              <Card key={w.stage} className="!p-4">
-                <div className="text-[13px] font-bold text-stone-800 font-['Inter'] mb-1">{w.stage}</div>
-                <div className="text-[12.5px] text-stone-600 font-['Inter'] leading-relaxed">{w.measured}</div>
-                <div className="text-[12px] text-stone-400 font-['Inter'] mt-1">{w.how}</div>
-              </Card>
-            ))}
+          <div data-reveal className={`${SHEET} mt-10`}>
+            <div className="border-b-2 border-[var(--color-ink)] px-5 py-3">
+              <h3 className={`${DISPLAY} text-3xl leading-none`}>What decides the result</h3>
+            </div>
+            <ul>
+              {WHAT_DECIDES.map((w) => (
+                <li key={w.stage} className="grid gap-1 border-b border-[var(--color-rule)] px-5 py-4 last:border-b-0 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6">
+                  <p className="font-semibold">{w.stage}</p>
+                  <div>
+                    <p className="text-[15px] leading-snug">{w.measured}</p>
+                    <p className="mt-1 text-sm text-[var(--color-muted)]">{w.how}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          <Callout icon={<ShieldAlert className="w-4 h-4" />} title="Infosys never charges a fee">
-            Real mail comes only from @infosys.com addresses. Infosys never interviews over chat apps and never asks for bank or card
-            details during recruitment. Check any offer on the official page: career.infosys.com/offerValidation.
-          </Callout>
-        </Section>
+          <div data-reveal className="mt-8 bg-[var(--color-ink)] p-6 text-[var(--color-paper)] sm:p-8">
+            <h3 className={`${DISPLAY} text-3xl leading-none sm:text-4xl`}>Infosys never charges a fee</h3>
+            <p className="mt-3 max-w-[70ch] text-base leading-relaxed">
+              Real mail comes only from @infosys.com addresses. Infosys never interviews over chat apps and never asks for bank or card
+              details during recruitment. Check any offer on the official page: career.infosys.com/offerValidation.
+            </p>
+          </div>
+        </section>
 
         {/* ══ 03 Test ══ */}
-        <Section
-          id="test"
-          num="03"
-          title="The online test"
-          intro="Five timed sections. Each has its own timer and its own cut-off, and you cannot go back once a section closes."
-        >
-          <div className="overflow-x-auto rounded-2xl bg-white" style={{ border: "1px solid rgba(0,0,0,0.07)" }}>
-            <table className="w-full text-left text-[12.5px] font-['Inter'] min-w-[520px]">
-              <thead>
-                <tr className="text-stone-400 text-[11px] uppercase tracking-wider">
-                  <th className="px-4 py-3 font-semibold">Section</th>
-                  <th className="px-4 py-3 font-semibold">Questions</th>
-                  <th className="px-4 py-3 font-semibold">Time</th>
-                  <th className="px-4 py-3 font-semibold">Difficulty reported</th>
-                </tr>
-              </thead>
-              <tbody>
-                {TEST_SECTIONS.map((t) => (
-                  <tr key={t.name} className="border-t border-stone-100">
-                    <td className="px-4 py-3 font-semibold text-stone-800">{t.name}</td>
-                    <td className="px-4 py-3 text-stone-600">{t.q}</td>
-                    <td className="px-4 py-3 text-stone-600">{t.min} min</td>
-                    <td className="px-4 py-3 text-stone-500">{t.level}</td>
-                  </tr>
-                ))}
-                <tr className="border-t border-stone-200 bg-stone-50/60">
-                  <td className="px-4 py-3 font-bold text-stone-800">Total</td>
-                  <td className="px-4 py-3 font-bold text-stone-800">{TEST_SECTIONS.reduce((a, t) => a + t.q, 0)}</td>
-                  <td className="px-4 py-3 font-bold text-stone-800">{TEST_SECTIONS.reduce((a, t) => a + t.min, 0)} min</td>
-                  <td />
-                </tr>
-              </tbody>
-            </table>
+        <section className={`${WRAP} pt-24 sm:pt-32`}>
+          <SectionHead
+            id="test"
+            num="03"
+            title="The online test"
+            lead="Five timed sections. Each has its own timer and its own cut-off, and you cannot go back once a section closes."
+          />
+
+          <div data-reveal className={`${SHEET} mt-10`}>
+            <div className="flex items-baseline justify-between gap-3 border-b-2 border-[var(--color-ink)] px-5 py-3">
+              <h3 className={`${DISPLAY} text-3xl leading-none`}>Where the {TOTAL_MIN} minutes go</h3>
+              <p className="text-sm text-[var(--color-muted)]">{TEST_SECTIONS.reduce((a, t) => a + t.q, 0)} questions</p>
+            </div>
+            <ul>
+              {TEST_SECTIONS.map((t) => (
+                <li key={t.name} className="border-b border-[var(--color-rule)] px-5 py-4 last:border-b-0">
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                    <p className="text-lg font-semibold">{t.name}</p>
+                    <p className="text-sm tabular-nums">
+                      <b className="font-semibold">{t.q}</b> questions · <b className="font-semibold">{t.min}</b> min
+                    </p>
+                  </div>
+                  <div className="mt-2 h-3 bg-[var(--color-paper-2)]" aria-hidden>
+                    <div className="h-full bg-[var(--color-accent)]" style={{ width: `${(t.min / TOTAL_MIN) * 100}%` }} />
+                  </div>
+                  <p className="mt-2 text-sm text-[var(--color-muted)]">{t.level}</p>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          <Callout tone="gold" icon={<ShieldAlert className="w-4 h-4" />} title="The cut-off rule">
-            Candidates consistently report sectional cut-offs — you must clear each section (reports put the bar between 60% and 75%
-            depending on the drive), not just the total. A brilliant maths score cannot rescue a weak verbal or pseudocode section.
-          </Callout>
+          <div className="mt-8 grid items-start gap-6 lg:grid-cols-12">
+            <div data-drop="-1" className="bg-[var(--color-accent)] p-6 shadow-[var(--shadow-sheet)] sm:p-8 lg:col-span-7">
+              <h3 className={`${DISPLAY} text-3xl leading-none sm:text-4xl`}>The cut-off rule</h3>
+              <p className="mt-4 max-w-[52ch] text-base leading-relaxed">
+                Candidates consistently report sectional cut-offs. You must clear each section (reports put the bar between 60% and 75%
+                depending on the drive), not just the total. A brilliant maths score cannot rescue a weak verbal or pseudocode section.
+              </p>
+            </div>
+            <div data-reveal className={`${SHEET} p-6 sm:p-8 lg:col-span-5`}>
+              <h3 className="text-xl font-semibold">Campus variant with grammar and essay</h3>
+              <p className="mt-3 text-[15px] leading-relaxed">{CAMPUS_VARIANT}</p>
+            </div>
+          </div>
 
-          <h3 className="text-[15px] font-bold text-stone-800 font-['Inter'] mt-8 mb-2">Campus variant with grammar and essay</h3>
-          <p className="text-[13px] text-stone-600 font-['Inter'] leading-relaxed">{CAMPUS_VARIANT}</p>
-
-          <h3 className="text-[15px] font-bold text-stone-800 font-['Inter'] mt-8 mb-3">Rules that save marks</h3>
-          <ul className="space-y-2">
-            {TEST_RULES.map((r) => (
-              <li key={r} className="flex gap-2.5 text-[13px] text-stone-600 font-['Inter'] leading-relaxed">
-                <ChevronRight className="w-4 h-4 mt-0.5 shrink-0 text-stone-400" />
-                {r}
-              </li>
-            ))}
-          </ul>
-        </Section>
+          <div data-reveal className={`${SHEET} mt-8 p-6 sm:p-8`}>
+            <h3 className="text-xl font-semibold">Rules that save marks</h3>
+            <ul className="mt-3">
+              {TEST_RULES.map((r) => (
+                <li key={r} className="flex items-start gap-3 border-t border-[var(--color-rule)] py-3 text-[15px] leading-snug">
+                  <Check className="mt-0.5 h-4 w-4 flex-shrink-0" strokeWidth={3} aria-hidden />
+                  {r}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
 
         {/* ══ 04 Topics ══ */}
-        <Section
-          id="topics"
-          num="04"
-          title="Topics, section by section"
-          intro="What to expect in each section, from 2018–2025 candidate reports and old Infosys papers."
-        >
-          <div className="grid sm:grid-cols-2 gap-3">
+        <section className={`${WRAP} pt-24 sm:pt-32`}>
+          <SectionHead
+            id="topics"
+            num="04"
+            title="Topics, section by section"
+            lead="What to expect in each section, from 2018–2025 candidate reports and old Infosys papers."
+          />
+          <div data-reveal-group className="mt-10 grid gap-5 md:grid-cols-2">
             {TOPICS.map((t) => (
-              <Card key={t.section}>
-                <h3 className="text-[14px] font-bold text-stone-800 font-['Inter'] mb-3">{t.section}</h3>
-                <div className="flex flex-wrap gap-1.5 mb-3">
+              <div key={t.section} className={`${SHEET} p-6`}>
+                <h3 className={`${DISPLAY} text-3xl leading-none`}>{t.section}</h3>
+                <ul className="mt-4 flex flex-wrap gap-2">
                   {t.topics.map((x) => (
-                    <span
-                      key={x}
-                      className="px-2.5 py-1 rounded-full text-[11.5px] font-['Inter'] text-stone-600"
-                      style={{ background: INFY_BG, border: `1px solid ${INFY_BDR}` }}
-                    >
-                      {x}
-                    </span>
+                    <li key={x} className="bg-[var(--color-paper-2)] px-2.5 py-1 text-sm">{x}</li>
                   ))}
-                </div>
-                <p className="text-[12px] text-stone-500 font-['Inter'] leading-relaxed">{t.tip}</p>
-              </Card>
+                </ul>
+                <p className="mt-4 border-t border-[var(--color-rule)] pt-3 text-[15px] leading-relaxed">{t.tip}</p>
+              </div>
             ))}
           </div>
-        </Section>
+        </section>
 
         {/* ══ 05 Interview ══ */}
-        <Section
-          id="interview"
-          num="05"
-          title="The interview"
-          intro="One conversation of 15–30 minutes, usually driven by your résumé. It mixes programming basics, OOP, DBMS, SDLC and HR. These are questions SE candidates reported."
-        >
-          <div className="grid sm:grid-cols-2 gap-3 mb-6">
-            <Card>
-              <h3 className="text-[13.5px] font-bold text-stone-800 font-['Inter'] mb-2">Can you be trained?</h3>
-              <ul className="space-y-1.5">
+        <section className={`${WRAP} pt-24 sm:pt-32`}>
+          <SectionHead
+            id="interview"
+            num="05"
+            title="The interview"
+            lead="One conversation of 15–30 minutes, usually driven by your résumé. It mixes programming basics, OOP, DBMS, SDLC and HR. These are questions SE candidates reported."
+          />
+
+          <div data-reveal-group className="mt-10 grid gap-5 md:grid-cols-2">
+            <div className={`${SHEET} p-6`}>
+              <h3 className="text-xl font-semibold">Can you be trained?</h3>
+              <ul className="mt-3">
                 {INTERVIEW_CHECKS.trainable.map((x) => (
-                  <li key={x} className="text-[12.5px] text-stone-600 font-['Inter'] leading-relaxed">• {x}</li>
+                  <li key={x} className="border-t border-[var(--color-rule)] py-2.5 text-[15px] leading-snug">{x}</li>
                 ))}
               </ul>
-            </Card>
-            <Card>
-              <h3 className="text-[13.5px] font-bold text-stone-800 font-['Inter'] mb-2">Will you fit the job?</h3>
-              <ul className="space-y-1.5">
+            </div>
+            <div className={`${SHEET} p-6`}>
+              <h3 className="text-xl font-semibold">Will you fit the job?</h3>
+              <ul className="mt-3">
                 {INTERVIEW_CHECKS.fit.map((x) => (
-                  <li key={x} className="text-[12.5px] text-stone-600 font-['Inter'] leading-relaxed">• {x}</li>
+                  <li key={x} className="border-t border-[var(--color-rule)] py-2.5 text-[15px] leading-snug">{x}</li>
                 ))}
               </ul>
-            </Card>
+            </div>
           </div>
 
-          <Card className="mb-6">
-            <h3 className="text-[13.5px] font-bold text-stone-800 font-['Inter'] mb-2">Your 60-second introduction</h3>
-            <p className="text-[12.5px] text-stone-600 font-['Inter'] leading-relaxed mb-2">{INTRO_TEMPLATE}</p>
-            <p className="text-[12px] text-stone-400 font-['Inter']">
+          <div data-reveal className="mt-6 bg-[var(--color-accent)] p-6 shadow-[var(--shadow-sheet)] sm:p-8">
+            <h3 className={`${DISPLAY} text-3xl leading-none sm:text-4xl`}>Your 60-second introduction</h3>
+            <p className="mt-4 max-w-[80ch] text-base leading-relaxed">{INTRO_TEMPLATE}</p>
+            <p className="mt-3 text-sm">
               Keep it under a minute, skip family details unless asked, and end on something you are happy to be questioned about.
             </p>
-          </Card>
+          </div>
 
-          <div className="space-y-6">
+          <div className="mt-10 space-y-8">
             {INTERVIEW_QA.map((g) => (
-              <div key={g.group}>
-                <h3 className="text-[14px] font-bold text-stone-800 font-['Inter'] mb-2">{g.group}</h3>
-                <Accordion type="multiple" className="rounded-2xl bg-white px-4" style={{ border: "1px solid rgba(0,0,0,0.07)" }}>
+              <div key={g.group} data-reveal>
+                <h3 className={`${DISPLAY} mb-3 text-3xl leading-none`}>{g.group}</h3>
+                <Accordion type="multiple" className={ACC_BOX}>
                   {g.items.map((it, i) => (
-                    <AccordionItem key={it.q} value={`${g.group}-${i}`} className="border-stone-100">
-                      <AccordionTrigger className="text-left text-[13px] font-semibold font-['Inter'] text-stone-700 hover:no-underline">
-                        {it.q}
-                      </AccordionTrigger>
-                      <AccordionContent className="text-[12.5px] text-stone-500 font-['Inter'] leading-relaxed">
-                        {it.a}
-                      </AccordionContent>
+                    <AccordionItem key={it.q} value={`${g.group}-${i}`} className={ACC_ITEM}>
+                      <AccordionTrigger className={ACC_TRIGGER}>{it.q}</AccordionTrigger>
+                      <AccordionContent className={ACC_BODY}>{it.a}</AccordionContent>
                     </AccordionItem>
                   ))}
                 </Accordion>
@@ -408,146 +484,161 @@ const InfosysSEPage = () => {
             ))}
           </div>
 
-          <Callout icon={<CheckCircle2 className="w-4 h-4" />} title="If you don't know the answer">
-            {UNSURE_ANSWER}
-          </Callout>
-        </Section>
-
-        {/* ══ 06 Plan ══ */}
-        <Section
-          id="plan"
-          num="06"
-          title="A 4-week plan for the SE test"
-          intro="One block of topics per slot. Log every mistake in the mock and attack that section next."
-        >
-          <div className="overflow-x-auto rounded-2xl bg-white" style={{ border: "1px solid rgba(0,0,0,0.07)" }}>
-            <table className="w-full text-left text-[12.5px] font-['Inter'] min-w-[600px]">
-              <thead>
-                <tr className="text-stone-400 text-[11px] uppercase tracking-wider">
-                  <th className="px-4 py-3 font-semibold">Week</th>
-                  {PLAN_HEADERS.map((h) => (
-                    <th key={h} className="px-4 py-3 font-semibold">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {PLAN.map((p) => (
-                  <tr key={p.week} className="border-t border-stone-100 align-top">
-                    <td className="px-4 py-3 font-bold text-stone-800 whitespace-nowrap">{p.week}</td>
-                    <td className="px-4 py-3 text-stone-600">{p.a}</td>
-                    <td className="px-4 py-3 text-stone-600">{p.b}</td>
-                    <td className="px-4 py-3 text-stone-600">{p.c}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div data-reveal className="mt-8 bg-[var(--color-ink)] p-6 text-[var(--color-paper)] sm:p-8">
+            <h3 className={`${DISPLAY} text-3xl leading-none sm:text-4xl`}>If you don't know the answer</h3>
+            <p className="mt-3 max-w-[70ch] text-base leading-relaxed">{UNSURE_ANSWER}</p>
           </div>
-        </Section>
-
-        {/* ══ 07 FAQ ══ */}
-        <section className="mb-14">
-          <h2 className="text-xl font-serif text-stone-800 tracking-tight mb-4">Common questions</h2>
-          <Accordion type="multiple" className="rounded-2xl bg-white px-4" style={{ border: "1px solid rgba(0,0,0,0.07)" }}>
-            {FAQ.map((f, i) => (
-              <AccordionItem key={f.q} value={`faq-${i}`} className="border-stone-100">
-                <AccordionTrigger className="text-left text-[13px] font-semibold font-['Inter'] text-stone-700 hover:no-underline">
-                  {f.q}
-                </AccordionTrigger>
-                <AccordionContent className="text-[12.5px] text-stone-500 font-['Inter'] leading-relaxed">
-                  {f.a}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
         </section>
 
-        {/* ══ Resources ══ */}
-        <Section
-          id="resources"
-          num="07"
-          title="Your resources"
-          intro="The full prep guide: solved questions for every test section, the interview answers, and the plan above."
-        >
-          <Card className="!p-6">
-            <div className="flex items-start gap-4">
-              <div
-                className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-                style={{ background: INFY_BG, border: `1px solid ${INFY_BDR}` }}
-              >
-                <BookOpen className="w-5 h-5" style={{ color: INFY_BLUE }} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="text-[16px] font-bold text-stone-800 font-['Inter']">{SE_GUIDE.title}</h3>
-                <p className="text-[12.5px] text-stone-500 font-['Inter'] mt-1">
-                  {SE_GUIDE.pages} pages · {SE_GUIDE.note}
-                </p>
-              </div>
-            </div>
-
-            {loading ? (
-              <div className="flex items-center gap-2 mt-5 text-stone-400 text-[13px] font-['Inter']">
-                <Loader2 className="w-4 h-4 animate-spin" /> Checking your access…
-              </div>
-            ) : isPremium ? (
-              <div className="mt-5">
-                {guideReady ? (
-                  <button
-                    onClick={() => setShowGuide(true)}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-[13px] font-semibold font-['Inter'] transition-transform hover:-translate-y-0.5"
-                    style={{ background: INFY_BLUE }}
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    Open the guide
-                  </button>
-                ) : (
-                  <p className="text-[12.5px] text-stone-500 font-['Inter']">
-                    Your access is active. The guide is being added to this page — check back shortly.
-                  </p>
-                )}
-              </div>
-            ) : (
-              <div className="mt-5 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3" style={{ background: "#f5f5f4" }}>
-                <div className="flex items-center gap-2 text-[13px] text-stone-600 font-['Inter']">
-                  <Lock className="w-4 h-4 text-stone-400" />
-                  Included with Premium
-                  <span className="font-bold text-stone-800">₹{price}</span>
-                  {PROMO_ACTIVE && <span className="line-through text-stone-400">₹{REGULAR_PRICE}</span>}
-                </div>
-                <button
-                  onClick={() => setShowPayment(true)}
-                  className="px-5 py-2.5 rounded-xl text-white text-[13px] font-semibold font-['Inter'] transition-transform hover:-translate-y-0.5"
-                  style={{ background: "#1c1917" }}
-                >
-                  Unlock for ₹{price}
-                </button>
-              </div>
-            )}
-          </Card>
-
-          <h3 className="text-[14px] font-bold text-stone-800 font-['Inter'] mt-8 mb-3">What to read for SE</h3>
-          <div className="rounded-2xl bg-white divide-y divide-stone-100" style={{ border: "1px solid rgba(0,0,0,0.07)" }}>
-            {SE_GUIDE_MAP.map((m) => (
-              <div key={m.part} className="px-4 py-3 flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <div className="text-[13px] font-semibold text-stone-800 font-['Inter']">{m.part}</div>
-                  <div className="text-[12px] text-stone-500 font-['Inter'] mt-0.5">{m.what}</div>
-                </div>
-                <div className="text-[11.5px] text-stone-400 font-['Inter'] whitespace-nowrap">{m.pages}</div>
+        {/* ══ 06 Plan ══ */}
+        <section className={`${WRAP} pt-24 sm:pt-32`}>
+          <SectionHead
+            id="plan"
+            num="06"
+            title="A 4-week plan"
+            lead="One block of topics per slot. Log every mistake in the mock and attack that section next."
+          />
+          <div data-reveal-group className="mt-10 grid gap-5 md:grid-cols-2">
+            {PLAN.map((p) => (
+              <div key={p.week} className={`${SHEET} p-6`}>
+                <h3 className={`${DISPLAY} text-4xl leading-none`}>{p.week}</h3>
+                <dl className="mt-4">
+                  {[p.a, p.b, p.c].map((v, i) => (
+                    <div key={i} className="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-3 border-t border-[var(--color-rule)] py-2.5">
+                      <dt className="text-sm font-semibold text-[var(--color-muted)]">{PLAN_HEADERS[i]}</dt>
+                      <dd className="text-[15px] leading-snug">{v}</dd>
+                    </div>
+                  ))}
+                </dl>
               </div>
             ))}
           </div>
-        </Section>
 
-        <p className="text-[11.5px] text-stone-400 font-['Inter'] text-center pb-10">
-          Figures are from official Infosys pages and candidate reports for the 2025–26 cycles. Infosys changes patterns between
-          drives — always follow your drive's own notification.
-        </p>
-      </div>
+          <div data-reveal className="mt-16">
+            <h3 className={`${DISPLAY} mb-3 text-3xl leading-none sm:text-4xl`}>Common questions</h3>
+            <Accordion type="multiple" className={ACC_BOX}>
+              {FAQ.map((f, i) => (
+                <AccordionItem key={f.q} value={`faq-${i}`} className={ACC_ITEM}>
+                  <AccordionTrigger className={ACC_TRIGGER}>{f.q}</AccordionTrigger>
+                  <AccordionContent className={ACC_BODY}>{f.a}</AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        </section>
+
+        {/* ══ The guide: the sale ══ */}
+        <section id="guide" className="mt-24 scroll-mt-16 bg-[var(--color-ink)] text-[var(--color-paper)] sm:mt-32">
+          <div className={`${WRAP} py-20 sm:py-28`}>
+            <div className="grid items-start gap-10 lg:grid-cols-12 lg:gap-12">
+              <div className="lg:col-span-7">
+                <p className="inline-block bg-[var(--color-accent)] px-2.5 py-1 text-xs font-semibold text-[var(--color-ink)]">The prep guide</p>
+                <h2 data-reveal className={`${DISPLAY} mt-4 text-[clamp(2.75rem,6.5vw,5.5rem)] leading-[0.95]`}>
+                  Everything above, drilled until it's automatic.
+                </h2>
+                <p data-reveal className="mt-6 max-w-[52ch] text-lg leading-snug">
+                  This page tells you what the test asks. The guide gives you the questions, solved, for every section, plus the
+                  interview answers and a full timed mock.
+                </p>
+
+                <ul data-reveal-group className="mt-10 grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3">
+                  {GUIDE_INSIDE.map((g) => (
+                    <li key={g.label} className="border-t-2 border-[var(--color-accent)] pt-3">
+                      <p className={`${DISPLAY} text-5xl leading-none sm:text-6xl`}>{g.n}</p>
+                      <p className="mt-2 text-sm leading-snug opacity-85">{g.label}</p>
+                    </li>
+                  ))}
+                </ul>
+
+                <h3 className={`${DISPLAY} mt-14 text-3xl leading-none`}>What to read for SE</h3>
+                <ul data-reveal className="mt-4 bg-[var(--color-paper-3)] text-[var(--color-ink)] shadow-[4px_4px_0_var(--color-accent)]">
+                  {SE_GUIDE_MAP.map((m) => (
+                    <li key={m.part} className="flex items-start justify-between gap-4 border-b border-[var(--color-rule)] px-4 py-3 last:border-b-0 sm:px-5">
+                      <div className="min-w-0">
+                        <p className="text-[15px] font-semibold leading-snug">{m.part}</p>
+                        <p className="mt-0.5 text-sm leading-snug text-[var(--color-muted)]">{m.what}</p>
+                      </div>
+                      <p className="whitespace-nowrap text-xs tabular-nums text-[var(--color-muted)]">{m.pages}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Buy sheet */}
+              <div className="lg:sticky lg:top-20 lg:col-span-5">
+                <div data-drop="1" className="bg-[var(--color-accent)] p-6 text-[var(--color-ink)] shadow-[var(--shadow-sheet)] sm:p-8">
+                  {owned ? (
+                    <>
+                      <p className={`${DISPLAY} text-4xl leading-none sm:text-5xl`}>You have access</p>
+                      <p className="mt-3 text-base leading-snug">
+                        {guideReady ? "Open the guide and read it in the viewer." : "Your access is active. The guide is being added to this page. Check back shortly."}
+                      </p>
+                      {guideReady && (
+                        <button onClick={() => setShowGuide(true)} className={`${BTN_INK} mt-6 w-full`}>
+                          Open the guide <ExternalLink className="h-4 w-4" aria-hidden />
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <p className={`${DISPLAY} text-4xl leading-none sm:text-5xl`}>{SE_GUIDE.title}</p>
+                      <p className="mt-5 flex items-baseline gap-3">
+                        <span className="font-display text-[clamp(3.5rem,12vw,5.5rem)] leading-none tabular-nums">₹{price}</span>
+                        {PROMO_ACTIVE && <span className="text-xl line-through opacity-70 tabular-nums">₹{REGULAR_PRICE}</span>}
+                      </p>
+                      <p className="mt-2 text-sm font-semibold">One payment. No subscription, no renewal.</p>
+                      <ul className="mt-5 divide-y divide-[var(--color-ink)]/25 border-y border-[var(--color-ink)]/25 text-[15px]">
+                        {[
+                          `The ${SE_GUIDE.pages}-page prep guide, read in the viewer`,
+                          "Full Premium: extra game levels, communication rounds, AI interview, Forge and Job Match",
+                        ].map((item) => (
+                          <li key={item} className="flex items-start gap-3 py-3">
+                            <Check className="mt-1 h-4 w-4 flex-shrink-0" strokeWidth={3} aria-hidden />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                      <button onClick={unlock} disabled={loading} className={`${BTN_INK} mt-6 w-full disabled:opacity-60`}>
+                        {isSignedIn ? `Unlock for ₹${price}` : "Sign up to unlock"}
+                        <ArrowRight className="h-4 w-4" aria-hidden />
+                      </button>
+                      <p className="mt-3 text-xs leading-snug">
+                        Paid through Razorpay. See the{" "}
+                        <Link to="/refund" className="underline underline-offset-2">refund policy</Link>.
+                      </p>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Footer note */}
+        <div className={`${WRAP} py-10`}>
+          <p className="max-w-[70ch] text-xs leading-relaxed text-[var(--color-muted)]">
+            Figures are from Infosys pages and candidate reports for the 2025–26 cycles, and Infosys changes patterns between drives, so
+            follow your drive's own notice. Independent practice platform, not affiliated with or endorsed by Infosys.{" "}
+            <Link to="/terms" className="underline">Terms and takedown requests</Link>
+          </p>
+          <Link to="/hackwithinfy" className="mt-4 inline-flex items-center gap-1.5 text-[15px] font-semibold underline underline-offset-4">
+            Aiming for DSE or SP instead? <ArrowUpRight className="h-4 w-4" aria-hidden />
+          </Link>
+        </div>
+      </main>
+
+      {/* Mobile buy bar */}
+      {!owned && !loading && (
+        <div className="fixed inset-x-0 bottom-0 z-[350] flex items-center justify-between gap-3 border-t-2 border-[var(--color-ink)] bg-[var(--color-paper)] px-4 py-3 sm:hidden">
+          <BuyPrice />
+          <button onClick={unlock} className={`${BTN_FLAME} !px-4 !py-2.5 !shadow-[3px_3px_0_var(--color-ink)]`}>
+            <Lock className="h-4 w-4" aria-hidden /> Get the guide
+          </button>
+        </div>
+      )}
 
       <PaymentPopup isOpen={showPayment} onClose={() => setShowPayment(false)} />
       {showGuide && guideReady && <GuideViewer onClose={() => setShowGuide(false)} />}
-    </>
+    </div>
   );
-};
-
-export default InfosysSEPage;
+}

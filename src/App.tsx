@@ -212,8 +212,8 @@ const App = () => {
               <Route path="/hackwithinfy/tips" element={<PremiumRoute><HackWithInfyTips /></PremiumRoute>} />
               <Route path="/hackwithinfy/previous-years" element={<PremiumRoute><HackWithInfyPreviousYears /></PremiumRoute>} />
 
-              {/* Infosys System Engineer: explainer for signed-in users, guide gated inside the page */}
-              <Route path="/infosys-se" element={<PrivateRoute><InfosysSEPage /></PrivateRoute>} />
+              {/* Infosys System Engineer: public sales page, guide gated inside the page */}
+              <Route path="/infosys-se" element={<InfosysSEPage />} />
 
               {/* Coding Questions — Premium */}
               <Route path="/coding-questions" element={<CodingQuestionsPage />} />
