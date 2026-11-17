@@ -11,12 +11,12 @@ live on the server and are only handed to buyers.
 | --- | --- |
 | `create-se-premium-order` | Verifies the Clerk session, creates the Razorpay order at the **server** price, records it in `se_purchases`. |
 | `verify-se-premium-payment` | Checks the Razorpay signature, marks the order paid, emails the PDF. Called by the browser after checkout. |
-| `razorpay-webhook` (patched) | Same fulfilment if the buyer closes the tab before verify runs. SE orders are caught **before** the lifetime-Premium fallback. |
+| `razorpay-webhook` (patched) | Same fulfilment if the buyer closes the tab before verify runs. SE orders are routed by our own `se_purchases` record of the order id (not by notes on the payment) **before** the lifetime-Premium fallback. |
 | `se-premium-content` | `status`, `mock`, `guide` (5-minute signed link) and `resend`, all behind a purchase check. |
 | `_shared/se-premium.ts` | One idempotent `fulfilSePurchase()` used by both paths: exactly one email, safe to retry. |
 | `_shared/se-mock-data.ts` | The 54 mock questions. **Server only.** Never import it from `src/`. |
 
-Access = a paid `se_purchases` row, **or** an existing lifetime Premium account (they already paid more).
+Access = a paid `se_purchases` row, **or** an existing Premium account that has not expired (lifetime has no expiry; a lapsed subscription does not unlock the pack).
 
 ## Deploy checklist
 

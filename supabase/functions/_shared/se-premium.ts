@@ -34,7 +34,7 @@ export interface Purchase {
   email_sent_at: string | null;
 }
 
-/** Paid SE pack, or an existing lifetime Premium account (they already paid more). */
+/** Paid SE pack, or an existing Premium account that has not expired (lifetime has no expiry). */
 export async function hasSeAccess(db: Db, userId: string): Promise<boolean> {
   const { data: bought } = await db
     .from("se_purchases")
@@ -46,10 +46,12 @@ export async function hasSeAccess(db: Db, userId: string): Promise<boolean> {
   if (bought) return true;
   const { data: profile } = await db
     .from("profiles")
-    .select("is_premium")
+    .select("is_premium, premium_expires_at")
     .eq("user_id", userId)
     .maybeSingle();
-  return !!profile?.is_premium;
+  if (!profile?.is_premium) return false;
+  // Lifetime Premium has no expiry. A lapsed subscription must not unlock the pack.
+  return !profile.premium_expires_at || new Date(profile.premium_expires_at).getTime() > Date.now();
 }
 
 // ───────────────────────── email ─────────────────────────
