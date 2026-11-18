@@ -3,6 +3,8 @@ import { useRef, type ReactNode } from "react";
 import { ArrowUpRight, FileText, FolderOpen, GraduationCap, Lock, Target, type LucideIcon } from "lucide-react";
 import { useGsapReveal } from "@/hooks/useGsapReveal";
 import { cn } from "@/lib/utils";
+import { useSeAccess } from "@/hooks/useSeAccess";
+import { SE_LIST_PRICE, SE_PRICE } from "@/lib/sePremium";
 import { ConnectFeature } from "./ConnectFeature";
 
 const PREMIUM_RESOURCES_URL =
@@ -131,6 +133,7 @@ interface CompanySelectionProps {
 export const CompanySelection = ({ onSelectCompany, isPremium, onSubscribe }: CompanySelectionProps) => {
   const page = useRef<HTMLDivElement>(null);
   useGsapReveal(page);
+  const { access: hasSe, loading: seLoading } = useSeAccess();
 
   return (
     <div ref={page} className="mx-auto w-full max-w-[1360px] px-1 py-6 sm:px-6 sm:py-10">
@@ -173,6 +176,42 @@ export const CompanySelection = ({ onSelectCompany, isPremium, onSubscribe }: Co
         />
       </div>
 
+      {/* Infosys System Engineer: the one flame sheet on the dashboard, right under the rounds. */}
+      <div data-reveal className="mt-10">
+        <Link
+          id="se-playbook-card"
+          to="/infosys-se"
+          className="group grid items-center gap-6 bg-[var(--color-accent)] p-6 text-[var(--color-ink)] shadow-[var(--shadow-sheet)] transition-[transform,box-shadow] duration-[120ms] hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-focus)] sm:p-9 lg:grid-cols-[minmax(0,1fr)_auto]"
+        >
+          <div className="min-w-0">
+            <span className="inline-block bg-[var(--color-ink)] px-2.5 py-1 text-xs font-semibold text-[var(--color-paper)]">
+              {!seLoading && hasSe ? "You have this" : "New · Infosys"}
+            </span>
+            <h2 className="mt-3 font-display text-5xl font-normal uppercase leading-[0.95] sm:text-6xl">
+              Infosys System Engineer
+            </h2>
+            <p className="mt-3 max-w-[58ch] text-lg leading-snug">
+              Eligibility, hiring stages, test topics and interview questions, plus the SE prep guide.
+            </p>
+            <p className="mt-3 text-sm font-semibold">
+              30 formula cards · 86 solved questions · 2 timed half-mocks · a 54-question online mock
+            </p>
+          </div>
+          <div className="flex flex-col items-start gap-3 lg:items-end">
+            {!seLoading && hasSe ? null : (
+              <p className="flex items-baseline gap-2">
+                <span className="font-display text-5xl leading-none">₹{SE_PRICE}</span>
+                <span className="text-base line-through opacity-70">₹{SE_LIST_PRICE}</span>
+              </p>
+            )}
+            <span className="inline-flex items-center gap-2 bg-[var(--color-ink)] px-5 py-3 text-[15px] font-semibold text-[var(--color-paper)] shadow-[4px_4px_0_var(--color-paper)] transition-[transform,box-shadow] duration-[120ms] group-hover:translate-x-px group-hover:translate-y-px group-hover:shadow-[3px_3px_0_var(--color-paper)]">
+              {!seLoading && hasSe ? "Open the Playbook and mock" : "See what's inside"}
+              <ArrowUpRight className="h-4 w-4" aria-hidden />
+            </span>
+          </div>
+        </Link>
+      </div>
+
       {/* Infosys question set: a step below Connect in weight (paper sheet, small flame tag), above the toolkit. */}
       <div data-reveal className="mt-14">
         <Link
@@ -211,13 +250,6 @@ export const CompanySelection = ({ onSelectCompany, isPremium, onSubscribe }: Co
           body="Syllabus by role, previous-year questions, tips and study resources."
           note="Infosys"
           to="/hackwithinfy"
-        />
-        <Tool
-          icon={GraduationCap}
-          title="Infosys System Engineer"
-          body="Eligibility, hiring stages, test topics and interview questions, plus the SE prep guide."
-          note="SE"
-          to="/infosys-se"
         />
         <Tool
           icon={FolderOpen}
