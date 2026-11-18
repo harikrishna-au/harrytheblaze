@@ -1,3 +1,4 @@
+import { seReturnPath } from "@/lib/sePremium";
 import { motion, AnimatePresence } from "framer-motion";
 import { Rise } from "cube-motion/react";
 import {
@@ -171,9 +172,9 @@ export const LandingMobile = ({
                   className="w-full"
                 >
                   {view === "sign-in" ? (
-                    <SignIn routing="hash" forceRedirectUrl="/dashboard" appearance={clerkAppearance} />
+                    <SignIn routing="hash" forceRedirectUrl={seReturnPath() ?? "/dashboard"} appearance={clerkAppearance} />
                   ) : (
-                    <SignUp routing="hash" forceRedirectUrl="/dashboard" appearance={clerkAppearance} />
+                    <SignUp routing="hash" forceRedirectUrl={seReturnPath() ?? "/dashboard"} appearance={clerkAppearance} />
                   )}
                 </motion.div>
               </AnimatePresence>
