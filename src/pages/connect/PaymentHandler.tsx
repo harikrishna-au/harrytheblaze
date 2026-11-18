@@ -168,6 +168,7 @@ const PaymentHandler = ({ expert, date, slot, formData, onSuccess, onError }: Pa
       track("connect_payment_started", { expert_id: expert.id, amount: totalAmount });
       rzp.open();
     } catch (err: any) {
+      track("connect_order_failed", { expert_id: expert.id, reason: String(err?.message ?? "unknown").slice(0, 60) });
       toast.error(err.message || 'Payment failed. Please try again.');
       setLoading(false);
       onError();

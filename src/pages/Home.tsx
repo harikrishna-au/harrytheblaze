@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@clerk/clerk-react";
+import { SE_LIST_PRICE, SE_PRICE } from "@/lib/sePremium";
 import { ArrowRight } from "lucide-react";
 import SEO from "@/components/SEO";
 import { useGsapReveal } from "@/hooks/useGsapReveal";
@@ -74,6 +75,7 @@ export default function Home() {
           </Link>
           <nav className="hidden items-center gap-2 md:flex" aria-label="Main">
             <a href="#rounds" className={NAV_LINK}>Practice</a>
+            <Link to="/infosys-se" className={NAV_LINK}>Infosys SE</Link>
             <a href="#connect" className={NAV_LINK}>Connect 1:1</a>
             <a href="#pricing" className={NAV_LINK}>Pricing</a>
             <Link to="/blog" className={NAV_LINK}>Blog</Link>
@@ -145,6 +147,31 @@ export default function Home() {
                   ))}
                 </ol>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Infosys SE: a second front door for visitors who came for Infosys, not Accenture */}
+        <section aria-labelledby="infosys-se-title" className={`${WRAP} -mt-6 pb-20 sm:-mt-10 sm:pb-28`}>
+          <div data-drop="-1" className="grid items-center gap-6 bg-[var(--color-accent)] p-6 shadow-[var(--shadow-sheet)] sm:p-9 lg:grid-cols-12">
+            <div className="lg:col-span-8">
+              <p className="text-sm font-semibold">Preparing for Infosys?</p>
+              <h2 id="infosys-se-title" className={`${DISPLAY} mt-2 text-[clamp(2.25rem,5vw,4.25rem)]`}>
+                The Infosys SE Playbook. ₹{SE_PRICE}.
+              </h2>
+              <p className="mt-4 max-w-[56ch] text-lg leading-snug">
+                30 ranked formula cards, 86 solved questions, two timed half-mocks, a full 54-question online mock and the interview
+                answers. Written for the Infosys System Engineer test.
+              </p>
+            </div>
+            <div className="lg:col-span-4 lg:text-right">
+              <Link to="/infosys-se" className={BTN_INK}>
+                See the SE Playbook
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </Link>
+              <p className="mt-3 text-sm">
+                <span className="line-through opacity-70">₹{SE_LIST_PRICE}</span> · one payment, PDF to your inbox
+              </p>
             </div>
           </div>
         </section>

@@ -142,6 +142,8 @@ export function recordActivityResult(
   };
 
   write(key, all);
+  // Lets the app react to "someone just finished something" without every game knowing about it.
+  try { window.dispatchEvent(new CustomEvent("hb:activity-recorded", { detail: { activityId } })); } catch { /* not in a browser */ }
   return all;
 }
 

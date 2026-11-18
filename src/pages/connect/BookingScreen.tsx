@@ -1,3 +1,4 @@
+import { track } from "@/lib/analytics";
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   X, ChevronLeft, BadgeCheck, ArrowRight, Check, Link2,
@@ -76,6 +77,10 @@ interface BookingScreenProps {
 const BookingScreen = ({ expert, onClose }: BookingScreenProps) => {
   const { user } = useUser();
   const [step, setStep] = useState<Step>('details');
+  // One event per step reached, so the admin funnel shows exactly where students stop.
+  useEffect(() => {
+    if (step !== 'success') track(`connect_step_${step}`, { expert_id: expert.id });
+  }, [step, expert.id]);
   const [availabilityWindows, setAvailabilityWindows] = useState<AvailabilityWindow[]>([]);
   const [availableDays, setAvailableDays] = useState<number[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();

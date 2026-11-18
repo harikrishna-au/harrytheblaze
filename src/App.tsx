@@ -58,6 +58,7 @@ import { lazy, Suspense, useState } from "react";
 import SplashScreen from "@/components/SplashScreen";
 import CustomerSupport from "@/components/CustomerSupport";
 import { MetaPixelTracker } from "@/components/MetaPixelTracker";
+import PremiumNudge from "@/components/PremiumNudge";
 import { AnalyticsTracker } from "@/components/AnalyticsTracker";
 import { InstallPrompt } from "@/components/InstallPrompt";
 
@@ -82,8 +83,9 @@ const clerkLocalization = {
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(() => {
-    // Only show splash if not already shown in this session
-    return !sessionStorage.getItem('hasShownSplash');
+    // Only on the home page, and only once per session. Visitors who arrive on a landing page
+    // (the Infosys page, login, a blog post) go straight to what they came for.
+    return window.location.pathname === "/" && !sessionStorage.getItem('hasShownSplash');
   });
 
   const handleSplashFinish = () => {
@@ -115,6 +117,7 @@ const App = () => {
             }}
           >
             <MetaPixelTracker />
+            <PremiumNudge />
             <AnalyticsTracker />
             <InstallPrompt />
             <Routes>

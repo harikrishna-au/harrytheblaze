@@ -107,6 +107,10 @@ export function computeStats(rows: EventRow[], rangeDays: number, now: Date = ne
   ]);
   const connectFunnel = mk([
     ["Opened Connect", ["connect_view"]],
+    ["Opened an expert", ["connect_step_details"]],
+    ["Chose a day", ["connect_step_time"]],
+    ["Chose a time", ["connect_step_form"]],
+    ["Reached payment", ["connect_step_payment"]],
     ["Started payment", ["connect_payment_started"]],
     ["Booked a session", ["connect_booking_paid"]],
   ]);

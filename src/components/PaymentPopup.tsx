@@ -1,3 +1,6 @@
+import { Link } from "react-router-dom";
+import { TOTAL_PROBLEMS, FREE_COUNT } from "@/pages/coding-questions/data";
+import { SE_PRICE } from "@/lib/sePremium";
 import { useState, useEffect } from "react";
 import { X, Check, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -118,9 +121,10 @@ const PaymentPopup = ({ isOpen, onClose }: PaymentPopupProps) => {
                 {/* What's included */}
                 <ul className="divide-y divide-[var(--color-rule)] border-y border-[var(--color-rule)] text-[15px]">
                     {[
-                        "Extra levels in Matrix Flow and Hidden Maze",
+                        "Levels 3 to 6 in Matrix Flow and Hidden Maze, and every Balloon Math round",
                         "Full communication rounds (Accenture and Cognizant patterns)",
-                        "AI interview, Forge resume builder and Job Match",
+                        `All ${TOTAL_PROBLEMS} Infosys SP and DSE coding questions, not just the first ${FREE_COUNT}`,
+                        "AI mock interview, Forge resume builder and Job Match",
                     ].map((item) => (
                         <li key={item} className="flex items-start gap-3 py-3">
                             <Check className="w-4 h-4 mt-1 shrink-0" aria-hidden />
@@ -168,6 +172,14 @@ const PaymentPopup = ({ isOpen, onClose }: PaymentPopupProps) => {
                 <p className="text-xs text-center text-[var(--color-muted)]">
                     Secure payment powered by Razorpay. Connect 1:1 calls are booked and paid separately.
                 </p>
+
+                <Link
+                    to="/infosys-se"
+                    onClick={onClose}
+                    className="block border-t border-[var(--color-rule)] pt-4 text-center text-sm underline-offset-4 hover:underline"
+                >
+                    Only preparing for the <b>Infosys SE</b> test? The SE Playbook is <b>₹{SE_PRICE}</b> on its own.
+                </Link>
             </div>
         </div>
     );
