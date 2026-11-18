@@ -13,7 +13,6 @@ import { AuthView } from "./landing/authConfig";
 import { LandingBackground } from "./landing/LandingBackground";
 import { LandingMobile } from "./landing/LandingMobile";
 import { LandingDesktop } from "./landing/LandingDesktop";
-import { ProductHuntBadge } from "@/components/ProductHuntBadge";
 import { PromoBanner } from "@/components/PromoBanner";
 
 const features = [
@@ -113,7 +112,6 @@ export default function Landing() {
       ) : (
         <LandingMobile {...sharedProps} />
       )}
-      <ProductHuntBadge />
     </div>
   );
 }
