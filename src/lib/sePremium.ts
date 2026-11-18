@@ -47,7 +47,8 @@ export function seReturnPath(): string | null {
 /** True once, on the page the user asked to unlock from. */
 export function takeSeUnlock(path: string): boolean {
   try {
-    if (localStorage.getItem(RETURN_KEY) !== path) return false;
+    // The saved value may carry a #hash (e.g. /infosys-se#guide); compare the path only.
+    if ((localStorage.getItem(RETURN_KEY) ?? "").split("#")[0] !== path) return false;
     localStorage.removeItem(RETURN_KEY);
     return true;
   } catch { return false; }

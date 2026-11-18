@@ -74,6 +74,13 @@ export default function InfosysSEPage() {
 
   const owned = !loading && access;
 
+  // Landing on /infosys-se#guide (after sign-up, or from a shared link): scroll to the buy section.
+  useEffect(() => {
+    if (window.location.hash === "#guide") {
+      window.setTimeout(() => document.getElementById("guide")?.scrollIntoView({ block: "start" }), 300);
+    }
+  }, []);
+
   // Back from sign-up: open the checkout they asked for (or just clear the flag if they already own the pack).
   useEffect(() => {
     if (loading || !isSignedIn) return;
@@ -110,7 +117,7 @@ export default function InfosysSEPage() {
 
   const unlock = () => {
     if (!isSignedIn) {
-      rememberSeUnlock(window.location.pathname);
+      rememberSeUnlock(`${window.location.pathname}#guide`); // come back to the buy section
       window.location.href = "/login";
       return;
     }
