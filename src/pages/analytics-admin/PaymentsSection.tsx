@@ -10,7 +10,8 @@ interface Coupon {
   lastUsed: string;
   variants: string[];
 }
-interface Result { totalRedemptions: number; rows: number; truncated: boolean; coupons: Coupon[] }
+interface SeSales { count: number; revenue: number; today: number; last7: number; emailPending: number; lastPaidAt: string | null }
+interface Result { totalRedemptions: number; rows: number; truncated: boolean; coupons: Coupon[]; se?: SeSales | null }
 
 const card = "rounded-xl border border-stone-200 bg-white p-4 shadow-sm";
 const h3 = "font-['Inter'] text-[11px] font-semibold uppercase tracking-widest text-stone-400";
@@ -50,11 +51,8 @@ export default function PaymentsSection() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="font-['Merriweather'] text-xl font-bold text-stone-900">Coupon usage</h2>
-          <p className="font-['Inter'] text-xs text-stone-500">
-            All time. Upper and lower case count as the same coupon.
-            {data?.truncated && " Showing the oldest part only."}
-          </p>
+          <h2 className="font-['Merriweather'] text-xl font-bold text-stone-900">Payments</h2>
+          <p className="font-['Inter'] text-xs text-stone-500">Infosys SE Playbook sales and coupon usage.</p>
         </div>
         <button onClick={load} disabled={loading} aria-label="Refresh"
           className="rounded-lg border border-stone-200 bg-white p-2 text-stone-600 hover:bg-stone-50 disabled:opacity-50">
@@ -64,8 +62,53 @@ export default function PaymentsSection() {
 
       {error && <div className="rounded-xl border border-red-200 bg-red-50 p-4 font-['Inter'] text-sm text-red-700">{error}</div>}
 
+      {data && data.se && (
+        <section aria-label="Infosys SE Playbook sales" className="space-y-3">
+          <div>
+            <h2 className="font-['Merriweather'] text-xl font-bold text-stone-900">Infosys SE Playbook</h2>
+            <p className="font-['Inter'] text-xs text-stone-500">
+              Paid orders for the ₹99 pack, all time
+              {data.se.lastPaidAt && ` · last sale ${day(data.se.lastPaidAt)}`}
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div className={`${card} !border-amber-300 !bg-amber-50`}>
+              <p className={h3}>SE sales</p>
+              <p className="mt-1 font-['Merriweather'] text-3xl font-bold text-stone-900">{data.se.count.toLocaleString("en-IN")}</p>
+              <p className="font-['Inter'] text-xs text-stone-500">₹{data.se.revenue.toLocaleString("en-IN")} collected</p>
+            </div>
+            <div className={card}>
+              <p className={h3}>Today</p>
+              <p className="mt-1 font-['Merriweather'] text-3xl font-bold text-stone-900">{data.se.today.toLocaleString("en-IN")}</p>
+              <p className="font-['Inter'] text-xs text-stone-500">since midnight IST</p>
+            </div>
+            <div className={card}>
+              <p className={h3}>Last 7 days</p>
+              <p className="mt-1 font-['Merriweather'] text-3xl font-bold text-stone-900">{data.se.last7.toLocaleString("en-IN")}</p>
+              <p className="font-['Inter'] text-xs text-stone-500">sales</p>
+            </div>
+            <div className={`${card} ${data.se.emailPending > 0 ? "!border-red-300 !bg-red-50" : ""}`}>
+              <p className={h3}>PDF email not sent</p>
+              <p className={`mt-1 font-['Merriweather'] text-3xl font-bold ${data.se.emailPending > 0 ? "text-red-700" : "text-stone-900"}`}>
+                {data.se.emailPending.toLocaleString("en-IN")}
+              </p>
+              <p className="font-['Inter'] text-xs text-stone-500">
+                {data.se.emailPending > 0 ? "buyers paid but have no PDF yet" : "every buyer has their PDF"}
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+
       {data && (
         <>
+          <div>
+            <h2 className="font-['Merriweather'] text-xl font-bold text-stone-900">Coupon usage</h2>
+            <p className="font-['Inter'] text-xs text-stone-500">
+              All time. Upper and lower case count as the same coupon.
+              {data.truncated && " Showing the oldest part only."}
+            </p>
+          </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <div className={card}>
               <p className={h3}>Total redemptions</p>

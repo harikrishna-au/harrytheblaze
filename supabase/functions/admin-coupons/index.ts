@@ -4,6 +4,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { requireAdmin } from "../_shared/guard.ts";
 import { tallyCoupons, type CouponRow } from "../_shared/coupon.ts";
+import { tallySeSales, type SePurchaseRow } from "../_shared/se-stats.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -37,7 +38,19 @@ serve(async (req: Request) => {
       if (page === MAX_PAGES - 1) truncated = true;
     }
     const coupons = tallyCoupons(rows);
-    return json({ ok: true, truncated, rows: rows.length, totalRedemptions: coupons.reduce((n, c) => n + c.count, 0), coupons });
+
+    // Infosys SE pack sales. se_purchases is locked to the server, so the admin page reads it here.
+    // If the table is missing (migration not run) the rest of the page still works.
+    let se = null;
+    const { data: seRows, error: seError } = await db
+      .from("se_purchases")
+      .select("amount,paid_at,email_sent_at")
+      .eq("status", "paid")
+      .limit(50000);
+    if (!seError) se = tallySeSales((seRows ?? []) as SePurchaseRow[]);
+    else if (seError.code !== "42P01") console.error("[admin-coupons] se_purchases read failed", seError);
+
+    return json({ ok: true, truncated, rows: rows.length, totalRedemptions: coupons.reduce((n, c) => n + c.count, 0), coupons, se });
   } catch (e) {
     console.error(e);
     return json({ error: e instanceof Error ? e.message : "Unexpected error" }, 500);
