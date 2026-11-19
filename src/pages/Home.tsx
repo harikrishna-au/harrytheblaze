@@ -59,8 +59,8 @@ export default function Home() {
   return (
     <div ref={page} className="min-h-screen bg-[var(--color-paper)] font-sans text-[var(--color-ink)]">
       <SEO
-        title="Harry The Blaze: Practice Accenture rounds, then talk to someone placed"
-        description="Practice Accenture-style cognitive games and communication rounds, then book a 20-minute 1:1 with a recently placed senior."
+        title="Harry The Blaze | Placement Practice for Infosys and Accenture"
+        description="Practise real placement rounds: cognitive games, communication tests, AI mock interviews and Infosys coding questions. Then book a 1:1 with someone just placed."
       />
 
       {/* Nav: a sheet of copy paper on the board */}
@@ -336,6 +336,20 @@ export default function Home() {
             </p>
             <InstallAppButton variant="outline" className="h-11 gap-2 self-start rounded-none border-[var(--color-ink)] font-semibold" />
           </div>
+          <nav aria-label="Explore" className="flex flex-wrap gap-x-7 gap-y-2 text-base font-semibold">
+            <Link to="/infosys-se" className="underline decoration-[var(--color-ink)] underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus)]">
+              Infosys System Engineer
+            </Link>
+            <Link to="/coding-questions" className="underline decoration-[var(--color-ink)] underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus)]">
+              Infosys coding questions
+            </Link>
+            <Link to="/hackwithinfy" className="underline decoration-[var(--color-ink)] underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus)]">
+              HackWithInfy prep hub
+            </Link>
+            <Link to="/blog" className="underline decoration-[var(--color-ink)] underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus)]">
+              Placement blog
+            </Link>
+          </nav>
           <nav aria-label="Footer" className="flex flex-wrap gap-x-7 gap-y-2 text-base">
             <Link to="/about" className="underline decoration-[var(--color-rule)] underline-offset-4 hover:decoration-[var(--color-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus)]">
               About

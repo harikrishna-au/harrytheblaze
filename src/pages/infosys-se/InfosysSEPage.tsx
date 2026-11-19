@@ -134,8 +134,8 @@ export default function InfosysSEPage() {
   return (
     <div ref={page} className={`min-h-screen bg-[var(--color-paper)] font-sans text-[var(--color-ink)] ${owned ? "" : "pb-24 sm:pb-0"}`}>
       <SEO
-        title="Infosys System Engineer: eligibility, rounds, test topics and prep guide | Harry The Blaze"
-        description="Who can apply for Infosys System Engineer, every hiring stage, what the online test and interview ask, and a 53-page prep playbook with a full online mock."
+        title="Infosys System Engineer: Eligibility, Test Pattern and SE Playbook"
+        description="Who can apply for Infosys SE, every hiring stage, what the test and interview ask, and a 53-page playbook with a full 54-question timed mock. ₹99."
         canonical="https://www.harrytheblaze.site/infosys-se"
       />
 

@@ -196,7 +196,7 @@ export default function InfosysSEMock() {
   return (
     <div ref={top} className="min-h-screen bg-[var(--color-paper)] font-sans text-[var(--color-ink)]">
       <SEO
-        title="Infosys SE mock test: 54 questions, real section timers | Harry The Blaze"
+        title="Infosys SE Mock Test: 54 Questions with Real Section Timers"
         description="A full-length Infosys System Engineer mock: maths, reasoning, verbal, pseudocode and puzzles, each with its own timer. Included with the SE Playbook."
         canonical="https://www.harrytheblaze.site/infosys-se/mock"
       />

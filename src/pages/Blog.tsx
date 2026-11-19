@@ -53,7 +53,7 @@ export default function Blog() {
   return (
     <div ref={page} className="relative min-h-screen bg-[var(--color-paper)] text-[var(--color-ink)]">
       <SEO
-        title="Campus Placement Blogs | Harry The Blaze"
+        title="Placement Blog: Infosys Roles, Salary and Interview Guides"
         description="Real interview experiences, aptitude strategies, resume tips, and placement success stories — shared by students, for students."
         canonical="https://www.harrytheblaze.site/blog"
         keywords="campus placement blogs, interview experience, aptitude strategy, placement success story, resume tips, off campus placement India, Harry The Blaze"
