@@ -1,7 +1,11 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@clerk/clerk-react";
 import { SE_LIST_PRICE, SE_PRICE } from "@/lib/sePremium";
+import { LIST_PRICE, PROMO_ACTIVE, PROMO_PRICE, REGULAR_PRICE } from "@/lib/promo";
+import { CODING_TOPICS, FREE_COUNT, TOTAL_PROBLEMS } from "@/pages/coding-questions/data";
+import { supabase } from "@/integrations/supabase/client";
+import { joinNames, summariseExperts, type ConnectFacts } from "@/lib/connectStats";
 import { ArrowRight } from "lucide-react";
 import SEO from "@/components/SEO";
 import { useGsapReveal } from "@/hooks/useGsapReveal";
@@ -32,6 +36,15 @@ const ALSO = [
   { title: "Company dashboard", body: "Start with Accenture 2026, with more MNCs after that.", to: "/dashboard" },
 ];
 
+// Everything below about the coding set is counted from the data, so the page can never drift from the product.
+const CQ = (() => {
+  const diff = { Easy: 0, Medium: 0, Hard: 0 };
+  CODING_TOPICS.forEach((t) => t.problems.forEach((p) => { diff[p.difficulty]++; }));
+  const top = [...CODING_TOPICS].sort((a, b) => b.problems.length - a.problems.length).slice(0, 6);
+  return { diff, top, topics: CODING_TOPICS.length };
+})();
+const PREMIUM_PRICE = PROMO_ACTIVE ? PROMO_PRICE : REGULAR_PRICE;
+
 // Paper physics: sheets lift off the board, controls sit on a hard ink offset and drop into it.
 const SHEET = "bg-[var(--color-paper-3)] shadow-[var(--shadow-sheet)]";
 const BTN =
@@ -52,9 +65,21 @@ const NAV_LINK =
 export default function Home() {
   const { isSignedIn } = useAuth();
   const primaryTo = isSignedIn ? "/dashboard" : "/login";
-  const primaryLabel = isSignedIn ? "Go to dashboard" : "Start practicing";
   const page = useRef<HTMLDivElement>(null);
   useGsapReveal(page);
+
+  // Live facts about the Connect seniors (totals only). If it fails, the page just uses the general wording.
+  const [connect, setConnect] = useState<ConnectFacts | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data, error } = await (supabase as any).from("experts").select("company,price_inr").eq("approved", true);
+        if (!cancelled && !error && Array.isArray(data) && data.length) setConnect(summariseExperts(data));
+      } catch { /* keep the fallback wording */ }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   return (
     <div ref={page} className="min-h-screen bg-[var(--color-paper)] font-sans text-[var(--color-ink)]">
@@ -74,8 +99,9 @@ export default function Home() {
             <span className={`${DISPLAY} text-xl max-[400px]:sr-only`}>Harry the Blaze</span>
           </Link>
           <nav className="hidden items-center gap-2 md:flex" aria-label="Main">
-            <a href="#rounds" className={NAV_LINK}>Practice</a>
+            <Link to="/coding-questions" className={NAV_LINK}>SP and DSE questions</Link>
             <Link to="/infosys-se" className={NAV_LINK}>Infosys SE</Link>
+            <a href="#rounds" className={NAV_LINK}>Practice</a>
             <a href="#connect" className={NAV_LINK}>Connect 1:1</a>
             <a href="#pricing" className={NAV_LINK}>Pricing</a>
             <Link to="/blog" className={NAV_LINK}>Blog</Link>
@@ -97,25 +123,26 @@ export default function Home() {
       </header>
 
       <main>
-        {/* Hero (Stage): the headline on the board, the ticket as the paste-up */}
-        <section className={`${WRAP} grid items-center gap-12 pb-24 pt-12 lg:grid-cols-12 lg:gap-8 lg:pb-32 lg:pt-16`}>
+        {/* Hero: the headline on the board, the ticket as the paste-up. The lead offer is the SP and DSE coding set. */}
+        <section className={`${WRAP} grid items-center gap-12 pb-20 pt-12 lg:grid-cols-12 lg:gap-8 lg:pb-28 lg:pt-16`}>
           <div className="lg:col-span-7">
             <h1 data-intro className={`${DISPLAY} text-[clamp(3.25rem,9vw,8rem)] leading-[0.92]`}>Practice the real rounds.</h1>
-            <p data-intro className="mt-6 max-w-[34ch] text-[clamp(1.125rem,0.35vw+1rem,1.375rem)] leading-snug">
-              Then book 20 minutes with someone just placed.
+            <p data-intro className="mt-6 max-w-[40ch] text-[clamp(1.125rem,0.35vw+1rem,1.375rem)] leading-snug">
+              Infosys SP and DSE coding questions, SE test prep, placement games and calls with people just placed.
             </p>
             <div data-intro className="mt-9 flex flex-col gap-5 sm:flex-row">
-              <Link to={primaryTo} className={BTN_PRIMARY}>
-                {primaryLabel}
+              <Link to="/coding-questions" className={BTN_PRIMARY}>
+                Try {FREE_COUNT} coding questions free
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
-              <Link to="/connect" className={BTN_SECONDARY}>
-                Book a Connect 1:1
+              <Link to="/infosys-se" className={BTN_SECONDARY}>
+                Infosys SE Playbook · ₹{SE_PRICE}
               </Link>
             </div>
+            <p data-intro className="mt-4 text-sm text-[var(--color-muted)]">The free questions need no card and no sign-up.</p>
           </div>
 
-          {/* The ticket: states the real offer in three lines */}
+          {/* The ticket: the real numbers of the lead offer */}
           <div className="relative mx-auto w-full max-w-[26rem] pb-6 pt-10 lg:col-span-5 lg:max-w-none lg:pt-0">
             <div
               aria-hidden
@@ -127,7 +154,7 @@ export default function Home() {
               <div className="flex items-start justify-between p-6 pb-5">
                 <div>
                   <p className={`${DISPLAY} text-5xl sm:text-6xl`}>Admit one</p>
-                  <p className="mt-2 text-[15px] text-[var(--color-muted)]">Accenture 2026</p>
+                  <p className="mt-2 text-[15px] text-[var(--color-muted)]">Infosys SP and DSE</p>
                 </div>
                 <img src="/favicon.svg" alt="" className="h-14 w-14" />
               </div>
@@ -136,13 +163,14 @@ export default function Home() {
                 <span aria-hidden className="absolute -right-3 -top-3 h-6 w-6 rounded-full bg-[var(--color-paper)]" />
                 <ol className="divide-y divide-[var(--color-rule)] p-6 pt-7">
                   {[
-                    ["Round 1", "Cognitive games"],
-                    ["Round 2", "Communication"],
-                    ["Round 3", "20 minutes with a senior"],
+                    ["Coding questions", String(TOTAL_PROBLEMS)],
+                    ["Topics", String(CQ.topics)],
+                    ["Free to open", String(FREE_COUNT)],
+                    ["Lifetime Premium", `₹${PREMIUM_PRICE} once`],
                   ].map(([k, v]) => (
                     <li key={k} className="flex items-baseline justify-between gap-4 py-3.5">
                       <span className="text-[15px] text-[var(--color-muted)]">{k}</span>
-                      <span className="text-right text-lg font-semibold">{v}</span>
+                      <span className="num text-right text-lg font-semibold">{v}</span>
                     </li>
                   ))}
                 </ol>
@@ -151,17 +179,77 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Infosys SE: a second front door for visitors who came for Infosys, not Accenture */}
-        <section aria-labelledby="infosys-se-title" className={`${WRAP} -mt-6 pb-20 sm:-mt-10 sm:pb-28`}>
-          <div data-drop="-1" className="grid items-center gap-6 bg-[var(--color-accent)] p-6 shadow-[var(--shadow-sheet)] sm:p-9 lg:grid-cols-12">
+        {/* 1. Infosys SP and DSE coding questions: the lead offer, so the biggest and loudest block */}
+        <section aria-labelledby="spdse-title" className={`${WRAP} -mt-4 pb-14 sm:pb-16`}>
+          <div data-drop="-1" className="grid gap-8 bg-[var(--color-accent)] p-6 shadow-[var(--shadow-sheet)] sm:p-10 lg:grid-cols-12 lg:gap-10">
+            <div className="lg:col-span-7">
+              <span className="inline-block bg-[var(--color-ink)] px-2.5 py-1 text-xs font-semibold text-[var(--color-paper)]">Infosys SP and DSE</span>
+              <h2 id="spdse-title" className={`${DISPLAY} mt-4 text-[clamp(2.5rem,5.5vw,4.75rem)]`}>
+                {TOTAL_PROBLEMS} coding questions for the Infosys SP and DSE test.
+              </h2>
+              <p className="mt-5 max-w-[54ch] text-lg leading-snug">
+                Collected from people who got the roles, section by section, with a direct link for every question. Open {FREE_COUNT} free.
+              </p>
+
+              <div className="mt-7" role="img" aria-label={`${CQ.diff.Easy} easy, ${CQ.diff.Medium} medium, ${CQ.diff.Hard} hard questions`}>
+                <div className="flex h-5 w-full overflow-hidden border-2 border-[var(--color-ink)]">
+                  <span className="bg-[var(--color-paper-3)]" style={{ width: `${(CQ.diff.Easy / TOTAL_PROBLEMS) * 100}%` }} />
+                  <span className="bg-[var(--color-ink)]/45" style={{ width: `${(CQ.diff.Medium / TOTAL_PROBLEMS) * 100}%` }} />
+                  <span className="bg-[var(--color-ink)]" style={{ width: `${(CQ.diff.Hard / TOTAL_PROBLEMS) * 100}%` }} />
+                </div>
+                <p className="num mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm font-semibold">
+                  <span>{CQ.diff.Easy} Easy</span><span>{CQ.diff.Medium} Medium</span><span>{CQ.diff.Hard} Hard</span>
+                  <span className="font-normal">· {Math.round(((CQ.diff.Medium + CQ.diff.Hard) / TOTAL_PROBLEMS) * 100)}% are Medium or Hard</span>
+                </p>
+              </div>
+
+              <ul className="mt-5 flex flex-wrap gap-2">
+                {CQ.top.map((t) => (
+                  <li key={t.id} className="num bg-[var(--color-paper-3)] px-2.5 py-1 text-sm font-semibold">
+                    {t.title} {t.problems.length}
+                  </li>
+                ))}
+                <li className="px-1 py-1 text-sm">+ {CQ.topics - CQ.top.length} more topics</li>
+              </ul>
+
+              <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
+                <Link to="/coding-questions" className={BTN_INK}>
+                  Open {FREE_COUNT} questions free
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                </Link>
+                <p className="num text-sm">Or unlock all {TOTAL_PROBLEMS}: <b>₹{PREMIUM_PRICE}</b> lifetime Premium, once.</p>
+              </div>
+            </div>
+
+            <div className="self-start bg-[var(--color-paper-3)] p-6 text-[var(--color-ink)] shadow-[var(--shadow-offset)] sm:p-8 lg:col-span-5">
+              <p className={`${DISPLAY} text-3xl`}>What Premium unlocks</p>
+              <ul className="mt-4 divide-y divide-[var(--color-rule)] text-base">
+                {[
+                  `All ${TOTAL_PROBLEMS} questions, each with a direct link`,
+                  "A progress checklist saved to your account",
+                  "Levels 3 to 6 in the games and the full communication rounds",
+                  "The AI mock interview, resume builder and job match",
+                  "One payment. No subscription, no renewal",
+                ].map((x) => (
+                  <li key={x} className="py-3 leading-snug">{x}</li>
+                ))}
+              </ul>
+              <p className="mt-4 text-xs text-[var(--color-muted)]">Community-reported practice material, not official. Not affiliated with Infosys.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* 2. Infosys SE Playbook: the second offer, a calmer sheet */}
+        <section aria-labelledby="infosys-se-title" className={`${WRAP} pb-20 sm:pb-28`}>
+          <div className={`${SHEET} grid items-center gap-6 border-l-[10px] border-[var(--color-accent)] p-6 sm:p-9 lg:grid-cols-12`}>
             <div className="lg:col-span-8">
-              <p className="text-sm font-semibold">Preparing for Infosys?</p>
-              <h2 id="infosys-se-title" className={`${DISPLAY} mt-2 text-[clamp(2.25rem,5vw,4.25rem)]`}>
+              <p className="text-sm font-semibold text-[var(--color-muted)]">Preparing for the System Engineer test instead?</p>
+              <h2 id="infosys-se-title" className={`${DISPLAY} mt-2 text-[clamp(2rem,4vw,3.5rem)]`}>
                 The Infosys SE Playbook. ₹{SE_PRICE}.
               </h2>
-              <p className="mt-4 max-w-[56ch] text-lg leading-snug">
+              <p className="mt-3 max-w-[58ch] text-lg leading-snug">
                 30 ranked formula cards, 86 solved questions, two timed half-mocks, a full 54-question online mock and the interview
-                answers. Written for the Infosys System Engineer test.
+                answers.
               </p>
             </div>
             <div className="lg:col-span-4 lg:text-right">
@@ -217,22 +305,32 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Connect: the one flame sheet of this screen, steps on a typed sheet */}
+        {/* 4. Connect: the call. Dark, so the flame stays with the lead offer, with real facts from the data */}
         <section id="connect" className={`${WRAP} pb-24 sm:pb-32`}>
           <div className="grid items-start gap-8 lg:grid-cols-12">
-            <div data-drop="-1" className="bg-[var(--color-accent)] p-6 shadow-[var(--shadow-sheet)] sm:p-10 lg:col-span-7">
-              <h2 className={`${DISPLAY} text-[clamp(2.5rem,5.5vw,4.75rem)]`}>
+            <div data-drop="-1" className="bg-[var(--color-ink)] p-6 text-[var(--color-paper)] shadow-[var(--shadow-sheet)] sm:p-10 lg:col-span-7">
+              <span className="inline-block bg-[var(--color-accent)] px-2.5 py-1 text-xs font-semibold text-[var(--color-ink)]">
+                {connect?.minPrice ? `Calls from ₹${connect.minPrice}` : "Live 1:1 calls"}
+              </span>
+              <h2 className={`${DISPLAY} mt-4 text-[clamp(2.5rem,5.5vw,4.75rem)]`}>
                 20 minutes with someone who sat the same rounds last year.
               </h2>
-              <p className="mt-6 max-w-[46ch] text-lg leading-relaxed">
-                Ask what the interview was really like, what to skip, and what you would do differently. This is a real call
-                with a real senior, not a chatbot and not a marketplace listing.
+              <p className="mt-6 max-w-[48ch] text-lg leading-relaxed">
+                Ask what the interview was really like, what to skip, and what they would do differently. A real call with a real senior,
+                not a chatbot and not a marketplace listing.
               </p>
-              <p className="mt-4 max-w-[46ch] text-base leading-relaxed">
-                Connect is run by hand. After you pay, our team confirms your slot and sends the meeting link. It is not
-                instant, and we would rather say so up front.
+              {connect && (
+                <ul className="num mt-6 flex flex-wrap gap-x-8 gap-y-2 text-base font-semibold">
+                  <li>{connect.count} placed seniors</li>
+                  {connect.companies.length > 0 && <li>{joinNames(connect.companies)}</li>}
+                  {connect.minPrice && <li>from ₹{connect.minPrice} a call</li>}
+                </ul>
+              )}
+              <p className="mt-5 max-w-[48ch] text-base leading-relaxed opacity-80">
+                You see the price before you pay. Connect is run by hand: after you pay, our team confirms your slot and sends the meeting
+                link. It is not instant, and we would rather say so up front.
               </p>
-              <Link to="/connect" className={`${BTN_INK} mt-9`}>
+              <Link to="/connect" className={`${BTN_PRIMARY} mt-9 !shadow-[4px_4px_0_var(--color-paper)] active:!shadow-none`}>
                 Browse seniors
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
@@ -273,37 +371,50 @@ export default function Home() {
           </ul>
         </section>
 
-        {/* Pricing: two sheets, the price set huge because it is the offer */}
+        {/* Pricing: three sheets in the order of what we most want to sell */}
         <section id="pricing" className="bg-[var(--color-paper-2)]">
           <div className={`${WRAP} py-24 sm:py-32`}>
-            <h2 data-reveal className={`${DISPLAY} text-[clamp(2.5rem,6vw,5rem)]`}>Two ways in</h2>
-            <p className="mt-4 max-w-[48ch] text-lg">Practice gets you ready. Connect gets you a real conversation.</p>
+            <h2 data-reveal className={`${DISPLAY} text-[clamp(2.5rem,6vw,5rem)]`}>Three ways in</h2>
+            <p className="mt-4 max-w-[52ch] text-lg">Practice gets you ready. The Playbook focuses it on one test. Connect gets you a real conversation.</p>
 
-            <div className="mt-12 grid max-w-5xl gap-8 md:grid-cols-2">
-              <div data-reveal className={`${SHEET} flex flex-col p-6 sm:p-9`}>
-                <h3 className="text-xl font-semibold">Premium practice</h3>
+            <div className="mt-12 grid gap-8 lg:grid-cols-3">
+              <div data-drop="-1" className="flex flex-col bg-[var(--color-accent)] p-6 shadow-[var(--shadow-sheet)] sm:p-9">
+                <h3 className="text-xl font-semibold">Premium: SP and DSE questions and practice</h3>
                 <p className="mt-4 flex items-baseline gap-4">
-                  <span className={`${DISPLAY} num text-[clamp(4.5rem,8vw,7rem)]`}>₹299</span>
-                  <span className="num text-xl text-[var(--color-muted)] line-through">₹500</span>
+                  <span className={`${DISPLAY} num text-[clamp(4.5rem,8vw,6.5rem)]`}>₹{PREMIUM_PRICE}</span>
+                  {PREMIUM_PRICE < LIST_PRICE && <span className="num text-xl line-through opacity-70">₹{LIST_PRICE}</span>}
                 </p>
                 <p className="mt-3 flex-1 text-lg leading-relaxed">
-                  Opens the full practice suite: the cognitive games and communication rounds.
+                  All {TOTAL_PROBLEMS} Infosys SP and DSE coding questions, the full games and communication rounds, the AI mock interview
+                  and the resume builder. Lifetime, one payment.
                 </p>
-                <Link to={primaryTo} className={`${BTN_SECONDARY} mt-8 w-[calc(100%-4px)]`}>
-                  {isSignedIn ? "Open dashboard" : "Create account"}
+                <Link to="/coding-questions" className={`${BTN_INK} mt-8 w-[calc(100%-4px)]`}>
+                  Start with {FREE_COUNT} free
+                  <ArrowRight className="h-4 w-4" aria-hidden />
                 </Link>
               </div>
 
-              <div data-drop="1" className="flex flex-col bg-[var(--color-accent)] p-6 shadow-[var(--shadow-sheet)] sm:p-9">
-                <h3 className="text-xl font-semibold">Connect 1:1</h3>
-                <p className={`${DISPLAY} mt-4 text-[clamp(3rem,5.5vw,4.75rem)]`}>Priced per senior</p>
-                <p className="mt-3 flex-1 text-lg leading-relaxed">
-                  A 20-minute live call. You see the price before you pay, and you book separately from Premium.
+              <div data-reveal className={`${SHEET} flex flex-col p-6 sm:p-9`}>
+                <h3 className="text-xl font-semibold">Infosys SE Playbook</h3>
+                <p className="mt-4 flex items-baseline gap-4">
+                  <span className={`${DISPLAY} num text-[clamp(4.5rem,8vw,6.5rem)]`}>₹{SE_PRICE}</span>
+                  <span className="num text-xl text-[var(--color-muted)] line-through">₹{SE_LIST_PRICE}</span>
                 </p>
-                <Link to="/connect" className={`${BTN_INK} mt-8 w-[calc(100%-4px)]`}>
-                  See who is available
-                  <ArrowRight className="h-4 w-4" aria-hidden />
-                </Link>
+                <p className="mt-3 flex-1 text-lg leading-relaxed">
+                  Formulas, 86 solved questions, two timed half-mocks and a full 54-question online mock for the System Engineer test.
+                </p>
+                <Link to="/infosys-se" className={`${BTN_SECONDARY} mt-8 w-[calc(100%-4px)]`}>See the Playbook</Link>
+              </div>
+
+              <div data-reveal className={`${SHEET} flex flex-col p-6 sm:p-9`}>
+                <h3 className="text-xl font-semibold">Connect 1:1</h3>
+                <p className="mt-4 flex items-baseline gap-3">
+                  <span className={`${DISPLAY} num text-[clamp(3rem,5.5vw,4.75rem)]`}>{connect?.minPrice ? `From ₹${connect.minPrice}` : "Per senior"}</span>
+                </p>
+                <p className="mt-3 flex-1 text-lg leading-relaxed">
+                  A 20-minute live call with someone recently placed. You see the price before you pay, and you book separately.
+                </p>
+                <Link to="/connect" className={`${BTN_SECONDARY} mt-8 w-[calc(100%-4px)]`}>See who is available</Link>
               </div>
             </div>
           </div>
@@ -316,11 +427,11 @@ export default function Home() {
               Your interview date is already on the calendar. Start today.
             </h2>
             <div className="mt-10 flex flex-col gap-6 sm:flex-row sm:items-center">
-              <Link to={primaryTo} className={`${BTN_PRIMARY} !shadow-[4px_4px_0_var(--color-paper)] active:!shadow-none`}>
-                {primaryLabel}
+              <Link to="/coding-questions" className={`${BTN_PRIMARY} !shadow-[4px_4px_0_var(--color-paper)] active:!shadow-none`}>
+                Try {FREE_COUNT} coding questions free
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
-              <p className="max-w-[34ch] text-base opacity-80">Create an account in under a minute. Works best on a phone or laptop.</p>
+              <p className="max-w-[34ch] text-base opacity-80">No card, no sign-up for the free questions. Works best on a phone or laptop.</p>
             </div>
           </div>
         </section>
