@@ -48,6 +48,14 @@ export const ROUTES = [
     priority: "0.9", freq: "weekly",
   },
   {
+    path: "/infosys-sp-dse",
+    title: "Infosys SP and DSE: Hiring Rounds, Scoring and Coding Questions",
+    description: "How Infosys SP and DSE hiring works: the rounds, how the coding test is scored, a free 5-minute taster, and 327 coding questions collected from people who got the roles.",
+    h1: "Infosys SP and DSE: the hiring rounds, how the coding test is scored and 327 coding questions",
+    blurb: "The online and advanced coding rounds and the interview, how candidates say the first round is scored, a free taster you can sit without an account, and the question set.",
+    priority: "0.9", freq: "weekly",
+  },
+  {
     path: "/hackwithinfy",
     title: "Infosys HackWithInfy Prep: SP and DSE | Harry The Blaze",
     description: "Syllabus by role, previous-year questions, strategy and study resources for HackWithInfy and the Infosys SP and DSE coding tests.",

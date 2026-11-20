@@ -99,7 +99,7 @@ export default function Home() {
             <span className={`${DISPLAY} text-xl max-[400px]:sr-only`}>Harry the Blaze</span>
           </Link>
           <nav className="hidden items-center gap-2 md:flex" aria-label="Main">
-            <Link to="/coding-questions" className={NAV_LINK}>SP and DSE questions</Link>
+            <Link to="/infosys-sp-dse" className={NAV_LINK}>SP and DSE</Link>
             <Link to="/infosys-se" className={NAV_LINK}>Infosys SE</Link>
             <a href="#rounds" className={NAV_LINK}>Practice</a>
             <a href="#connect" className={NAV_LINK}>Connect 1:1</a>
@@ -219,6 +219,11 @@ export default function Home() {
                 </Link>
                 <p className="num text-sm">Or unlock all {TOTAL_PROBLEMS}: <b>₹{PREMIUM_PRICE}</b> lifetime Premium, once.</p>
               </div>
+              <p className="mt-5 text-sm font-semibold">
+                <Link to="/infosys-sp-dse#taster" className="underline underline-offset-4 hover:no-underline">
+                  Not sure yet? See how SP and DSE hiring works and take a 5-minute taster
+                </Link>
+              </p>
             </div>
 
             <div className="self-start bg-[var(--color-paper-3)] p-6 text-[var(--color-ink)] shadow-[var(--shadow-offset)] sm:p-8 lg:col-span-5">
@@ -450,6 +455,9 @@ export default function Home() {
           <nav aria-label="Explore" className="flex flex-wrap gap-x-7 gap-y-2 text-base font-semibold">
             <Link to="/infosys-se" className="underline decoration-[var(--color-ink)] underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus)]">
               Infosys System Engineer
+            </Link>
+            <Link to="/infosys-sp-dse" className="underline decoration-[var(--color-ink)] underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus)]">
+              Infosys SP and DSE hiring
             </Link>
             <Link to="/coding-questions" className="underline decoration-[var(--color-ink)] underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus)]">
               Infosys coding questions

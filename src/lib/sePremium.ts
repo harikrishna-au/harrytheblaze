@@ -31,16 +31,17 @@ export const seFunctionUrl = FN;
 // page they were on with the checkout open. This is kept apart from the older
 // `auto_open_payment` flag, which opens the lifetime-Premium popup on the dashboard.
 const RETURN_KEY = "se_unlock_return";
+const RETURN_OK = ["/infosys-se", "/infosys-sp-dse", "/coding-questions"];
 
 export function rememberSeUnlock(path: string): void {
   try { localStorage.setItem(RETURN_KEY, path); } catch { /* storage blocked: they just land on the dashboard */ }
 }
 
-/** Where the login screen should send the user, if they came from the SE pages. */
+/** Where the login screen should send the user, if they came from the SE or SP/DSE pages. */
 export function seReturnPath(): string | null {
   try {
     const v = localStorage.getItem(RETURN_KEY);
-    return v && v.startsWith("/infosys-se") ? v : null;
+    return v && RETURN_OK.some((p) => v === p || v.startsWith(`${p}#`) || v.startsWith(`${p}/`)) ? v : null;
   } catch { return null; }
 }
 

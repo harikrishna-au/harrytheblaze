@@ -50,7 +50,7 @@ export default function Landing() {
   const navigate = useNavigate();
   // Default new visitors to Sign Up — most first-timers were landing on Sign In,
   // failing to log in (no account yet), and bouncing.
-  const [view, setView] = useState<AuthView>("sign-up");
+  const [view, setView] = useState<AuthView>(searchParams.get("mode") === "sign-in" ? "sign-in" : "sign-up");
   const [clerkStep, setClerkStep] = useState<string>("");
   const { isPremium } = usePremiumStatus();
   const { isLoaded, isSignedIn } = useAuth();

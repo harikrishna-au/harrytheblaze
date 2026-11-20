@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@clerk/clerk-react";
 import { ArrowLeft, Search, X, Check, RotateCcw, ExternalLink, Lock, ArrowRight } from "lucide-react";
@@ -8,6 +8,7 @@ import { usePremiumStatus } from "@/hooks/usePremiumStatus";
 import { useCodingProgress } from "@/hooks/useCodingProgress";
 import { useGsapReveal } from "@/hooks/useGsapReveal";
 import { PROMO_ACTIVE, PROMO_PRICE, REGULAR_PRICE } from "@/lib/promo";
+import { takeSeUnlock } from "@/lib/sePremium";
 import { CODING_TOPICS, TOTAL_PROBLEMS, FREE_COUNT, FREE_IDS, type Difficulty } from "./data";
 
 // Difficulty reads from shape and weight, not from a traffic-light palette.
@@ -33,6 +34,9 @@ export default function CodingQuestionsPage() {
   const { done, toggle, reset, signedIn } = useCodingProgress();
   const [showPayment, setShowPayment] = useState(false);
   useGsapReveal(page);
+
+  // Arrived from sign-up on the SP/DSE page: the "send me here" note has done its job.
+  useEffect(() => { takeSeUnlock("/coding-questions"); }, []);
 
   const unlocked = isPremium;
   const visibleTotal = unlocked ? TOTAL_PROBLEMS : FREE_COUNT;
