@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 import {
@@ -136,11 +137,13 @@ const Header = ({ onStartTour }: HeaderProps) => {
       </Button>
     );
 
-  return (
-    <>
+  // Rendered into <body> via a portal: pages mount the header inside wrappers with overflow,
+  // z-index and animated transforms, which make Safari drop or hide position:fixed children.
+  // translateZ(0) gives the bar its own compositing layer so Safari doesn't skip painting it on scroll.
+  const header = (
       <header
         className={cn(
-          "fixed inset-x-0 top-0 z-50 border-b transition-[background-color,border-color,box-shadow] duration-300",
+          "fixed inset-x-0 top-0 z-50 border-b [transform:translateZ(0)] [-webkit-backface-visibility:hidden] [backface-visibility:hidden] transition-[background-color,border-color,box-shadow] duration-300",
           scrolled ? "border-border bg-[var(--color-paper-3)] shadow-[var(--shadow-card)]" : "border-transparent bg-background",
         )}
       >
@@ -344,6 +347,11 @@ const Header = ({ onStartTour }: HeaderProps) => {
           </div>
         </div>
       </header>
+  );
+
+  return (
+    <>
+      {typeof document !== "undefined" ? createPortal(header, document.body) : header}
 
       <PaymentPopup isOpen={showPayment} onClose={() => setShowPayment(false)} />
     </>
