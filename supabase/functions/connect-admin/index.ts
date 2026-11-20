@@ -1,24 +1,19 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { button, detailRows, emailShell, esc, prettyDate, prettyTime } from "../_shared/email.ts";
+import {
+  adminTransitionError,
+  BOOKING_STATUSES,
+  CAN_SEND_MEETING_DETAILS,
+  SLOT_HOLDING,
+} from "../_shared/booking-status.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-admin-key, x-client-info",
 };
 
-const allowedStatuses = new Set([
-  "paid",
-  "payment_pending",
-  "payment_expired",
-  "payment_failed",
-  "confirmed",
-  "completed",
-  "cancelled",
-  "declined",
-  "refunded",
-  "no_show",
-]);
+const allowedStatuses = new Set<string>(BOOKING_STATUSES);
 const allowedPriorities = new Set(["low", "normal", "high", "urgent"]);
 
 function json(body: unknown, status = 200) {
@@ -306,6 +301,8 @@ serve(async (req: Request) => {
       const updates: Record<string, unknown> = {};
       if (body.status !== undefined) {
         if (!allowedStatuses.has(body.status)) return json({ error: "Invalid status" }, 400);
+        const transitionError = adminTransitionError(current.status, body.status);
+        if (transitionError) return json({ error: transitionError }, 409);
         if (body.status === "confirmed") {
           const nextLink = cleanText(body.meet_link, 1000);
           const meetLink = nextLink !== undefined ? nextLink : current.meet_link;
@@ -354,13 +351,18 @@ serve(async (req: Request) => {
         nextDate !== current.date ||
         nextStart !== current.start_time ||
         nextEnd !== current.end_time;
-      if (scheduleChanged && current.expert_id) {
+      // Reopening a cancelled/declined booking takes the slot back, so check it is still free.
+      const reclaimsSlot =
+        typeof updates.status === "string" &&
+        SLOT_HOLDING.includes(updates.status) &&
+        !SLOT_HOLDING.includes(current.status);
+      if ((scheduleChanged || reclaimsSlot) && current.expert_id) {
         const { data: conflicts, error: conflictError } = await supabase
           .from("bookings")
           .select("id, start_time, end_time")
           .eq("expert_id", current.expert_id)
           .eq("date", nextDate)
-          .in("status", ["payment_pending", "paid", "confirmed"])
+          .in("status", [...SLOT_HOLDING])
           .neq("id", current.id);
         if (conflictError) throw conflictError;
         if ((conflicts ?? []).some((item) => nextStart < item.end_time && nextEnd > item.start_time)) {
@@ -368,13 +370,17 @@ serve(async (req: Request) => {
         }
       }
 
+      // Only write if the status is still what we validated against (another admin or a
+      // payment webhook may have moved it in the meantime).
       const { data, error } = await supabase
         .from("bookings")
         .update(updates)
         .eq("id", body.booking_id)
+        .eq("status", current.status)
         .select("*, experts(id, name, email, title, company, photo_url, price_inr)")
-        .single();
+        .maybeSingle();
       if (error) throw error;
+      if (!data) return json({ error: "This booking changed while you were editing it. Reload and try again." }, 409);
 
       await supabase.from("booking_events").insert({
         booking_id: body.booking_id,
@@ -401,6 +407,9 @@ serve(async (req: Request) => {
         .eq("id", body.booking_id)
         .single();
       if (error || !booking) throw error ?? new Error("Booking not found");
+      if (!CAN_SEND_MEETING_DETAILS.includes(booking.status)) {
+        return json({ error: `Can't send meeting details for a ${booking.status.replaceAll("_", " ")} booking` }, 409);
+      }
       if (!booking.meet_link) return json({ error: "Add a meeting link first" }, 400);
       if (!booking.user_email) return json({ error: "Student email is missing" }, 400);
 
@@ -453,9 +462,11 @@ serve(async (req: Request) => {
           meet_link_sent_at: sentAt,
         })
         .eq("id", booking.id)
+        .in("status", [...CAN_SEND_MEETING_DETAILS])
         .select("*, experts(id, name, email, title, company, photo_url, price_inr)")
-        .single();
+        .maybeSingle();
       if (updateError) throw updateError;
+      if (!updated) return json({ error: "This booking changed status before it could be confirmed. Reload and check it." }, 409);
 
       await supabase.from("booking_events").insert({
         booking_id: booking.id,

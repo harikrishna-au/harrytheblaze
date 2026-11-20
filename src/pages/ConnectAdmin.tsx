@@ -26,6 +26,7 @@ import { format, parseISO } from "date-fns";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { getAdminSecret, logoutAdmin, saveAdminSession } from "@/lib/admin-auth";
+import { adminStatusOptions } from "../../supabase/functions/_shared/booking-status";
 
 type Priority = "low" | "normal" | "high" | "urgent";
 type Filter = "action" | "upcoming" | "completed" | "all";
@@ -673,11 +674,10 @@ function BookingWorkspace({
               onChange={(event) => onUpdate({ status: event.target.value }, "Status updated")}
               className="h-10 px-3 rounded-xl border border-stone-200 bg-white text-xs font-semibold capitalize"
             >
-              {["paid", "completed", "cancelled", "declined", "no_show"].map((status) => (
-                <option key={status} value={status}>{status === "paid" ? "Needs review" : status.replace("_", " ")}</option>
+              {/* Only the moves the server allows from the current status (see _shared/booking-status.ts). */}
+              {adminStatusOptions(booking.status).map((status) => (
+                <option key={status} value={status}>{status === "paid" ? "Needs review" : status.replaceAll("_", " ")}</option>
               ))}
-              {booking.status === "confirmed" && <option value="confirmed">confirmed</option>}
-              {booking.status === "refunded" && <option value="refunded">refunded</option>}
             </select>
             <select
               value={booking.priority}
