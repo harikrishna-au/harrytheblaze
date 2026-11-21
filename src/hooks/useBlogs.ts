@@ -120,7 +120,8 @@ export function useAdminBlogs(statusFilter: BlogStatus | 'all' = 'pending') {
     await (supabase as any)
       .from('blogs')
       .update({ status: 'published', published_at: new Date().toISOString() })
-      .eq('id', id);
+      .eq('id', id)
+      .eq('status', 'pending'); // moderation only moves pending posts (DB trigger enforces it too)
     fetch();
   };
 
@@ -128,7 +129,8 @@ export function useAdminBlogs(statusFilter: BlogStatus | 'all' = 'pending') {
     await (supabase as any)
       .from('blogs')
       .update({ status: 'rejected', reject_reason: reason })
-      .eq('id', id);
+      .eq('id', id)
+      .eq('status', 'pending'); // moderation only moves pending posts (DB trigger enforces it too)
     fetch();
   };
 

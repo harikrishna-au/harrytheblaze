@@ -46,7 +46,7 @@ export function adminTransitionError(from: string, to: string): string | null {
   if (from === to) return null;
   if (to === "refunded") return "Use “Issue Razorpay refund” to refund a booking";
   if (ADMIN_TRANSITIONS[from]?.includes(to)) return null;
-  const label = (s: string) => s.replaceAll("_", " ");
+  const label = (s: string) => s.replace(/_/g, " ");
   if (!ADMIN_TRANSITIONS[from]) {
     return `A ${label(from)} booking can't be changed by hand`;
   }

@@ -676,7 +676,7 @@ function BookingWorkspace({
             >
               {/* Only the moves the server allows from the current status (see _shared/booking-status.ts). */}
               {adminStatusOptions(booking.status).map((status) => (
-                <option key={status} value={status}>{status === "paid" ? "Needs review" : status.replaceAll("_", " ")}</option>
+                <option key={status} value={status}>{status === "paid" ? "Needs review" : status.replace(/_/g, " ")}</option>
               ))}
             </select>
             <select

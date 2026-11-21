@@ -159,6 +159,8 @@ const LEVELS = [
 ];
 const TIME_LIMIT = 300; // 5 minutes in seconds
 
+type MazeScreen = 'modeSelect' | 'levelSelect' | 'instructions' | 'playing' | 'locked' | 'finished';
+
 const HiddenMaze = () => {
     const navigate = useNavigate();
 
@@ -166,10 +168,12 @@ const HiddenMaze = () => {
     const [level, setLevel] = useState(1);
     const [levelsWon, setLevelsWon] = useState(0);
     const [timeLeft, setTimeLeft] = useState(TIME_LIMIT);
-    const [isGameActive, setIsGameActive] = useState(true);
-    const [gameFinished, setGameFinished] = useState(false);
-    const [showInstructions, setShowInstructions] = useState(true);
-    const [showLockModal, setShowLockModal] = useState(false);
+    // Which screen is showing. One value instead of six flags, so two screens can never be
+    // "on" at once and the timer only runs while actually playing.
+    //   modeSelect → instructions → playing → finished          (arcade)
+    //   modeSelect → levelSelect → instructions → playing → levelSelect …  (practice)
+    //   playing → locked  (free levels used up)
+    const [screen, setScreen] = useState<MazeScreen>('instructions');
     const [showPaymentPopup, setShowPaymentPopup] = useState(false);
 
     // Hooks
@@ -179,10 +183,8 @@ const HiddenMaze = () => {
 
     // Premium Modes
     const [gameMode, setGameMode] = useState<'arcade' | 'practice'>('arcade');
-    const [showModeSelect, setShowModeSelect] = useState(false);
-    const [showLevelSelect, setShowLevelSelect] = useState(false);
 
-    useRecordOnFinish("/game/hidden-maze", gameFinished, () => ({
+    useRecordOnFinish("/game/hidden-maze", screen === 'finished', () => ({
         score: levelsWon,
         total: LEVELS.length,
         label: "levels",
@@ -192,12 +194,7 @@ const HiddenMaze = () => {
 
     const handleModeSelect = (mode: 'arcade' | 'practice') => {
         setGameMode(mode);
-        setShowModeSelect(false);
-        if (mode === 'arcade') {
-            setShowInstructions(true);
-        } else {
-            setShowLevelSelect(true);
-        }
+        setScreen(mode === 'arcade' ? 'instructions' : 'levelSelect');
     };
 
     const handleLevelSelect = (levelIdx: number) => {
@@ -206,11 +203,8 @@ const HiddenMaze = () => {
             return;
         }
         setLevel(levelIdx + 1);
-        setShowLevelSelect(false);
-        setGameFinished(false);
-        setIsGameActive(true);
         resetLevelState();
-        setShowInstructions(true); // Show instructions briefly or just start? Let's show instructions for practice too so they know controls
+        setScreen('instructions'); // show controls before each practice level
     };
 
 
@@ -239,7 +233,7 @@ const HiddenMaze = () => {
 
     // Timer Logic
     useEffect(() => {
-        if (!isGameActive || gameFinished || showLockModal) return;
+        if (screen !== 'playing') return;
 
         const timer = setInterval(() => {
             setTimeLeft((prev) => {
@@ -253,7 +247,7 @@ const HiddenMaze = () => {
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [isGameActive, gameFinished, level, showLockModal]);
+    }, [screen, level]);
 
     const handleLevelComplete = (won: boolean) => {
         if (won) {
@@ -263,7 +257,7 @@ const HiddenMaze = () => {
         // CHECK PREMIUM STATUS (Arcade Only Gate)
         if (gameMode === 'arcade' && won && level === FREE_LEVELS && !isPremium) {
             setTimeout(() => {
-                setShowLockModal(true);
+                setScreen(s => (s === 'playing' ? 'locked' : s)); // only if still on this level
             }, 500);
             return;
         }
@@ -273,14 +267,12 @@ const HiddenMaze = () => {
             if (won) {
                 toast.success("Level Complete! Returning to grid...", { duration: 2000 });
                 setTimeout(() => {
-                    setShowLevelSelect(true);
-                    setIsGameActive(false);
+                    setScreen(s => (s === 'playing' ? 'levelSelect' : s));
                 }, 2000);
             } else {
                 toast.error("Time's up! Try again.");
                 setTimeout(() => {
-                    setShowLevelSelect(true);
-                    setIsGameActive(false);
+                    setScreen(s => (s === 'playing' ? 'levelSelect' : s));
                 }, 2000);
             }
             return;
@@ -292,13 +284,12 @@ const HiddenMaze = () => {
             resetLevelState();
         } else {
             // Game Over
-            setGameFinished(true);
+            setScreen('finished');
             // We need to wait for the state update of levelsWon if we use it immediately, 
             // but for localStorage we can just use the current value + (won ? 1 : 0)
             // However, for the UI render, the state update will be reflected.
             localStorage.setItem('score_maze', timeLeft.toString());
             localStorage.setItem('completed_maze', 'true');
-            setIsGameActive(false);
         }
     };
 
@@ -331,7 +322,7 @@ const HiddenMaze = () => {
     }, []);
 
     const handleMove = useCallback((dRow: number, dCol: number) => {
-        if (!isGameActive || gameFinished || showLockModal) return;
+        if (screen !== 'playing') return;
 
         const newRow = playerPos.row + dRow;
         const newCol = playerPos.col + dCol;
@@ -395,7 +386,7 @@ const HiddenMaze = () => {
             }
         }
 
-    }, [playerPos, isGameActive, gameFinished, collectedKeys, totalKeys, currentMap, currentEdges, gridSize, resetOnDeath, showLockModal]);
+    }, [playerPos, screen, collectedKeys, totalKeys, currentMap, currentEdges, gridSize, resetOnDeath]);
 
     // Click to Move Logic
     const handleCellClick = (row: number, col: number) => {
@@ -429,12 +420,12 @@ const HiddenMaze = () => {
     };
 
     const handleStartClick = () => {
-        setShowInstructions(false);
+        setScreen('playing');
     };
 
     // Instructions Screen
     // Mode Selection Screen
-    if (showModeSelect) {
+    if (screen === 'modeSelect') {
         return (
             <div className="min-h-screen w-full flex flex-col items-center justify-center bg-white text-neutral-900 overflow-auto pt-24 pb-10">
                 <Header />
@@ -498,7 +489,7 @@ const HiddenMaze = () => {
     }
 
     // Level Selection Screen (Practice Mode)
-    if (showLevelSelect) {
+    if (screen === 'levelSelect') {
         return (
             <div className="min-h-screen w-full flex flex-col items-center justify-center bg-white text-neutral-900 overflow-auto pt-24 pb-10">
                 <Header />
@@ -508,7 +499,7 @@ const HiddenMaze = () => {
                             <h1 className="text-3xl font-black text-neutral-900 tracking-tight">Select Level</h1>
                             <p className="text-neutral-500">Pick a challenge to master.</p>
                         </div>
-                        <Button variant="outline" onClick={() => setShowModeSelect(true)}>Back to Modes</Button>
+                        <Button variant="outline" onClick={() => setScreen('modeSelect')}>Back to Modes</Button>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -537,7 +528,7 @@ const HiddenMaze = () => {
     }
 
     // Instructions Screen
-    if (showInstructions) {
+    if (screen === 'instructions') {
         return (
             <div className="min-h-screen w-full flex flex-col items-center justify-center bg-white text-neutral-900 overflow-auto pt-24 pb-10">
                 <Header />
@@ -578,7 +569,7 @@ const HiddenMaze = () => {
         );
     }
 
-    if (gameFinished) {
+    if (screen === 'finished') {
         return (
             <div className="fixed inset-0 w-screen h-screen flex flex-col items-center justify-center bg-white text-neutral-900 overflow-hidden">
                 <div className="text-center space-y-6 max-w-md mx-4 bg-neutral-100 p-8 rounded-2xl shadow-xl border-2 border-neutral-200">
@@ -616,10 +607,7 @@ const HiddenMaze = () => {
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => {
-                            setShowLevelSelect(true);
-                            setIsGameActive(false);
-                        }}
+                        onClick={() => setScreen('levelSelect')}
                         className="flex items-center gap-2 border-2 border-neutral-300 hover:border-black hover:bg-neutral-100 text-neutral-600 hover:text-black"
                     >
                         <Grid3X3 className="w-4 h-4" />
@@ -722,7 +710,7 @@ const HiddenMaze = () => {
             </div>
 
             {/* PREMIUM LOCK MODAL */}
-            {showLockModal && (
+            {screen === 'locked' && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
                     <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full relative animate-in zoom-in-95 duration-200 text-center space-y-6">
                         <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mx-auto">

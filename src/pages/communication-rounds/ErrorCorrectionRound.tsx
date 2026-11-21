@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { RoundLayout } from './components/RoundLayout';
 import { RoundLoadError } from './components/RoundLoadError';
 import { AudioPlayer } from './components/AudioPlayer';
@@ -16,8 +16,10 @@ export function ErrorCorrectionRound() {
     const [questions, setQuestions] = useState<Question[]>([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const { transcript, isRecording, startRecording, stopRecording, resetTranscript, error: speechError } = useSpeechRecognition();
-    const [isLoading, setIsLoading] = useState(true);
-    const [loadError, setLoadError] = useState(false);
+    // Question loading: loading → ready | error (retry → loading)
+    const [load, setLoad] = useState<'loading' | 'ready' | 'error'>('loading');
+    // Set while moving to the next question, so a double click can't skip one.
+    const advancingRef = useRef(false);
 
     const currentQuestion = questions[currentQuestionIndex];
 
@@ -26,20 +28,18 @@ export function ErrorCorrectionRound() {
     }, []);
 
     const loadQuestions = async () => {
-        setIsLoading(true);
-        setLoadError(false);
+        setLoad('loading');
         try {
             const qs = await service.getQuestionsForSection('F');
             if (!qs || qs.length === 0) {
-                setLoadError(true);
+                setLoad('error');
             } else {
                 setQuestions(qs);
+                setLoad('ready');
             }
         } catch (error) {
             console.error('Failed to load questions:', error);
-            setLoadError(true);
-        } finally {
-            setIsLoading(false);
+            setLoad('error');
         }
     };
 
@@ -52,7 +52,8 @@ export function ErrorCorrectionRound() {
     };
 
     const handleSubmit = () => {
-        if (!currentQuestion || !transcript) return;
+        if (!currentQuestion || !transcript || advancingRef.current) return;
+        advancingRef.current = true;
 
         addToHistory({
             question: currentQuestion.audioSrc || 'Error Correction Question',
@@ -72,10 +73,11 @@ export function ErrorCorrectionRound() {
             } else {
                 nextRound();
             }
+            advancingRef.current = false;
         }, 50);
     };
 
-    if (isLoading) {
+    if (load === 'loading') {
         return (
             <RoundLayout title="Error Correction" description="Identify and correct errors" showNavigation={false}>
                 <div className="text-center py-12">
@@ -86,7 +88,7 @@ export function ErrorCorrectionRound() {
         );
     }
 
-    if (loadError || !currentQuestion) {
+    if (load === 'error' || !currentQuestion) {
         return (
             <RoundLayout title="Error Correction" description="Identify and correct errors" showNavigation={false}>
                 <RoundLoadError onRetry={loadQuestions} />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { RoundLayout } from './components/RoundLayout';
 import { RoundLoadError } from './components/RoundLoadError';
 import { Button } from '@/components/ui/button';
@@ -15,8 +15,10 @@ export function ReadingAloudRound() {
     const [questions, setQuestions] = useState<Question[]>([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const { transcript, isRecording, startRecording, stopRecording, resetTranscript, error: speechError } = useSpeechRecognition();
-    const [isLoading, setIsLoading] = useState(true);
-    const [loadError, setLoadError] = useState(false);
+    // Question loading: loading → ready | error (retry → loading)
+    const [load, setLoad] = useState<'loading' | 'ready' | 'error'>('loading');
+    // Set while moving to the next question, so a double click can't skip one.
+    const advancingRef = useRef(false);
 
     const currentQuestion = questions[currentQuestionIndex];
 
@@ -25,20 +27,18 @@ export function ReadingAloudRound() {
     }, []);
 
     const loadQuestions = async () => {
-        setIsLoading(true);
-        setLoadError(false);
+        setLoad('loading');
         try {
             const qs = await service.getQuestionsForSection('C');
             if (!qs || qs.length === 0) {
-                setLoadError(true);
+                setLoad('error');
             } else {
                 setQuestions(qs);
+                setLoad('ready');
             }
         } catch (error) {
             console.error('Failed to load questions:', error);
-            setLoadError(true);
-        } finally {
-            setIsLoading(false);
+            setLoad('error');
         }
     };
 
@@ -51,7 +51,8 @@ export function ReadingAloudRound() {
     };
 
     const handleSubmit = () => {
-        if (!currentQuestion || !transcript) return;
+        if (!currentQuestion || !transcript || advancingRef.current) return;
+        advancingRef.current = true;
 
         addToHistory({
             question: currentQuestion.promptText || 'Reading Question',
@@ -71,10 +72,11 @@ export function ReadingAloudRound() {
             } else {
                 nextRound();
             }
+            advancingRef.current = false;
         }, 50);
     };
 
-    if (isLoading) {
+    if (load === 'loading') {
         return (
             <RoundLayout title="Reading Aloud" description="Read the sentences clearly" showNavigation={false}>
                 <div className="text-center py-12">
@@ -85,7 +87,7 @@ export function ReadingAloudRound() {
         );
     }
 
-    if (loadError || !currentQuestion) {
+    if (load === 'error' || !currentQuestion) {
         return (
             <RoundLayout title="Reading Aloud" description="Read the sentence clearly at a normal pace" showNavigation={false}>
                 <RoundLoadError onRetry={loadQuestions} />

@@ -11,57 +11,56 @@ interface AudioPlayerProps {
     speechRate?: number; // 0.5 (slow) to 2.0 (fast), default 1.0
 }
 
-export function AudioPlayer({ text, voiceType = 'male_1', audioUrl: initialAudioUrl, onPlayComplete, playOnce = true, speechRate = 1.0 }: AudioPlayerProps) {
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [hasPlayed, setHasPlayed] = useState(false);
-    const [audioUrl, setAudioUrl] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [useFallback, setUseFallback] = useState(false);
-    const audioRef = useRef<HTMLAudioElement | null>(null);
+/**
+ * Player lifecycle:  loading → ready → playing → played   (playOnce)
+ *                                     ↖ playing ↙          (replayable)
+ * A new question (text / audioUrl change) starts a new "generation"; anything still in flight
+ * from the previous question (a TTS fetch, an audio/speech end event) is ignored.
+ */
+type PlayerState = 'loading' | 'ready' | 'playing' | 'played';
 
-    const fetchAudio = async () => {
-        setIsLoading(true);
+/** Fetches TTS audio for `text`; resolves to a blob URL, or null to use the browser voice. */
+async function fetchTtsUrl(text: string, voiceType: string): Promise<string | null> {
+    try {
+        // Use environment variable for backend URL
+        const backendUrl = (import.meta.env.VITE_BACKEND_URL || '').replace(/\/$/, '');
+        const response = await fetch(`${backendUrl}/api/tts`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'audio/mpeg'
+            },
+            body: JSON.stringify({ text, voice_type: voiceType })
+        });
 
-        try {
-            // Use environment variable for backend URL
-            const backendUrl = (import.meta.env.VITE_BACKEND_URL || '').replace(/\/$/, '');
-            const response = await fetch(`${backendUrl}/api/tts`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'audio/mpeg'
-                },
-                body: JSON.stringify({ text, voice_type: voiceType })
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data.audio_content) {
-                    // Decode Base64
-                    const binaryString = window.atob(data.audio_content);
-                    const bytes = new Uint8Array(binaryString.length);
-                    for (let i = 0; i < binaryString.length; i++) {
-                        bytes[i] = binaryString.charCodeAt(i);
-                    }
-                    const blob = new Blob([bytes], { type: 'audio/mpeg' });
-                    const url = URL.createObjectURL(blob);
-                    setAudioUrl(url);
-                    setUseFallback(false);
-                } else {
-                    console.warn('Backend TTS response missing audio_content');
-                    setUseFallback(true);
-                }
-            } else {
-                console.warn('Backend TTS failed, using browser fallback');
-                setUseFallback(true);
-            }
-        } catch (error) {
-            console.warn('Cannot connect to TTS service, using browser fallback:', error);
-            setUseFallback(true);
-        } finally {
-            setIsLoading(false);
+        if (!response.ok) {
+            console.warn('Backend TTS failed, using browser fallback');
+            return null;
         }
-    };
+        const data = await response.json();
+        if (!data.audio_content) {
+            console.warn('Backend TTS response missing audio_content');
+            return null;
+        }
+        // Decode Base64
+        const binaryString = window.atob(data.audio_content);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+        return URL.createObjectURL(new Blob([bytes], { type: 'audio/mpeg' }));
+    } catch (error) {
+        console.warn('Cannot connect to TTS service, using browser fallback:', error);
+        return null;
+    }
+}
+
+export function AudioPlayer({ text, voiceType = 'male_1', audioUrl: initialAudioUrl, onPlayComplete, playOnce = true, speechRate = 1.0 }: AudioPlayerProps) {
+    const [state, setState] = useState<PlayerState>('loading');
+    // null = no backend audio, so play with the browser's speech synthesis.
+    const [audioUrl, setAudioUrl] = useState<string | null>(null);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const generationRef = useRef(0);
 
     const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
 
@@ -80,28 +79,47 @@ export function AudioPlayer({ text, voiceType = 'male_1', audioUrl: initialAudio
     }, []);
 
     useEffect(() => {
-        // Reset state when text changes (new question)
-        setHasPlayed(false);
-        setIsPlaying(false);
+        // New question: stop whatever was playing and start a new generation.
+        const generation = ++generationRef.current;
+        audioRef.current?.pause();
+        audioRef.current = null;
+        window.speechSynthesis?.cancel();
         setAudioUrl(null);
-        setUseFallback(false);
 
+        let createdUrl: string | null = null;
         if (initialAudioUrl) {
             setAudioUrl(initialAudioUrl);
-            setUseFallback(false);
+            setState('ready');
         } else if (text) {
-            fetchAudio();
+            setState('loading');
+            fetchTtsUrl(text, voiceType).then((url) => {
+                if (generation !== generationRef.current) {
+                    // The question changed while this was loading; don't show the old audio.
+                    if (url) URL.revokeObjectURL(url);
+                    return;
+                }
+                createdUrl = url;
+                setAudioUrl(url);
+                // The student may already be listening via the browser voice; don't interrupt that.
+                setState((s) => (s === 'loading' ? 'ready' : s));
+            });
+        } else {
+            setState('ready');
         }
 
         return () => {
-            if (audioUrl && !initialAudioUrl) {
-                // Revoke object URL only if it was created by us (blob)
-                URL.revokeObjectURL(audioUrl);
-            }
+            // Revoke object URL only if it was created by us (blob)
+            if (createdUrl) URL.revokeObjectURL(createdUrl);
         };
     }, [text, voiceType, initialAudioUrl]);
 
-    const playWithBrowserTTS = () => {
+    const finishPlayback = (generation: number) => {
+        if (generation !== generationRef.current) return; // ended after the question changed
+        setState(playOnce ? 'played' : 'ready');
+        onPlayComplete?.();
+    };
+
+    const playWithBrowserTTS = (generation: number) => {
         if (!window.speechSynthesis) {
             console.error('Browser does not support speech synthesis');
             return;
@@ -122,51 +140,50 @@ export function AudioPlayer({ text, voiceType = 'male_1', audioUrl: initialAudio
         }
 
         utterance.rate = speechRate;
-        utterance.onstart = () => setIsPlaying(true);
-        utterance.onend = () => {
-            setIsPlaying(false);
-            if (playOnce) {
-                setHasPlayed(true);
-            }
-            onPlayComplete?.();
+        utterance.onstart = () => {
+            if (generation === generationRef.current) setState('playing');
         };
+        utterance.onend = () => finishPlayback(generation);
 
         window.speechSynthesis.speak(utterance);
     };
 
     const handlePlay = () => {
-        if (playOnce && hasPlayed) return;
+        if (state === 'playing' || state === 'played') return;
+        const generation = generationRef.current;
 
-        if (useFallback || !audioUrl) {
+        if (!audioUrl) {
             // Use browser's built-in speech synthesis
-            playWithBrowserTTS();
+            playWithBrowserTTS(generation);
         } else {
             // Use backend audio
             const audio = new Audio(audioUrl);
             audio.playbackRate = speechRate;
             audioRef.current = audio;
 
-            audio.onplay = () => setIsPlaying(true);
-            audio.onended = () => {
-                setIsPlaying(false);
-                if (playOnce) {
-                    setHasPlayed(true);
-                }
-                onPlayComplete?.();
+            audio.onplay = () => {
+                if (generation === generationRef.current) setState('playing');
             };
+            audio.onended = () => finishPlayback(generation);
 
             audio.play().catch(e => {
                 console.error("Audio playback interrupted/failed:", e);
-                setIsPlaying(false);
+                if (generation !== generationRef.current) return;
+                setState('ready');
                 // Try fallback if play fails (e.g., format not supported)
-                playWithBrowserTTS();
+                playWithBrowserTTS(generation);
             });
         }
     };
 
     // Button is only disabled when playing or already played (if playOnce is true)
     // NOT disabled when loading - it will use fallback if backend fails
-    const isDisabled = isPlaying || (playOnce && hasPlayed);
+    const isLoading = state === 'loading';
+    const isPlaying = state === 'playing';
+    const hasPlayed = state === 'played';
+    // Backend audio failed (or isn't available), so the browser voice is used.
+    const usingFallback = state !== 'loading' && !audioUrl && !!text;
+    const isDisabled = isPlaying || hasPlayed;
 
     return (
         <div className="flex flex-col items-center gap-3">
@@ -177,7 +194,7 @@ export function AudioPlayer({ text, voiceType = 'male_1', audioUrl: initialAudio
                 size="lg"
                 className={`h-16 px-8 rounded-full ${isPlaying
                     ? 'bg-stone-500 hover:bg-stone-900'
-                    : (playOnce && hasPlayed)
+                    : hasPlayed
                         ? 'bg-neutral-300 cursor-not-allowed'
                         : 'bg-stone-900 hover:bg-stone-900'
                     }`}
@@ -192,7 +209,7 @@ export function AudioPlayer({ text, voiceType = 'male_1', audioUrl: initialAudio
                         <Volume2 className="w-6 h-6 mr-2 animate-pulse" />
                         Playing...
                     </>
-                ) : (playOnce && hasPlayed) ? (
+                ) : hasPlayed ? (
                     <>
                         <Play className="w-6 h-6 mr-2 opacity-50" />
                         Played
@@ -206,7 +223,7 @@ export function AudioPlayer({ text, voiceType = 'male_1', audioUrl: initialAudio
             </Button>
 
             {/* Info message if using fallback */}
-            {useFallback && !isPlaying && !hasPlayed && (
+            {usingFallback && !isPlaying && !hasPlayed && (
                 <p className="text-xs text-neutral-500">
                     Using browser voice (backend unavailable)
                 </p>

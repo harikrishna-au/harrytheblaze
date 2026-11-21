@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { RoundLayout } from './components/RoundLayout';
 import { RoundLoadError } from './components/RoundLoadError';
 import { AudioPlayer } from './components/AudioPlayer';
@@ -18,8 +18,10 @@ export function ListeningComprehensionRound() {
     const [currentSubQuestionIndex, setCurrentSubQuestionIndex] = useState(0);
     const [contextPlayed, setContextPlayed] = useState(false);
     const { transcript, isRecording, startRecording, stopRecording, resetTranscript, error: speechError } = useSpeechRecognition();
-    const [isLoading, setIsLoading] = useState(true);
-    const [loadError, setLoadError] = useState(false);
+    // Question loading: loading → ready | error (retry → loading)
+    const [load, setLoad] = useState<'loading' | 'ready' | 'error'>('loading');
+    // Set while moving to the next question, so a double click can't skip one.
+    const advancingRef = useRef(false);
     const [showQuestionText, setShowQuestionText] = useState(false);
 
     const currentQuestion = questions[currentQuestionIndex];
@@ -34,6 +36,10 @@ export function ListeningComprehensionRound() {
             correctAnswer: currentQuestion.correctAnswer
         } : null);
 
+    // Per question: context (listen to the passage, if there is one) → answer each sub-question.
+    const stage: 'context' | 'answer' =
+        currentQuestion?.contextAudioSrc && !contextPlayed ? 'context' : 'answer';
+
     const totalSubQuestions = currentQuestion?.subQuestions?.length || 1;
 
     useEffect(() => {
@@ -41,20 +47,18 @@ export function ListeningComprehensionRound() {
     }, []);
 
     const loadQuestions = async () => {
-        setIsLoading(true);
-        setLoadError(false);
+        setLoad('loading');
         try {
             const qs = await service.getQuestionsForSection('B');
             if (!qs || qs.length === 0) {
-                setLoadError(true);
+                setLoad('error');
             } else {
                 setQuestions(qs);
+                setLoad('ready');
             }
         } catch (error) {
             console.error('Failed to load questions:', error);
-            setLoadError(true);
-        } finally {
-            setIsLoading(false);
+            setLoad('error');
         }
     };
 
@@ -71,7 +75,8 @@ export function ListeningComprehensionRound() {
     };
 
     const handleSubmit = () => {
-        if (!currentSubQuestion || !transcript) return;
+        if (!currentSubQuestion || !transcript || advancingRef.current) return;
+        advancingRef.current = true;
 
         // Store the answer
         addToHistory({
@@ -102,10 +107,11 @@ export function ListeningComprehensionRound() {
             } else {
                 nextRound();
             }
+            advancingRef.current = false;
         }, 50);
     };
 
-    if (isLoading) {
+    if (load === 'loading') {
         return (
             <RoundLayout title="Listening Comprehension" description="Listen carefully and answer questions" showNavigation={false}>
                 <div className="text-center py-12">
@@ -116,7 +122,7 @@ export function ListeningComprehensionRound() {
         );
     }
 
-    if (loadError || !currentQuestion) {
+    if (load === 'error' || !currentQuestion) {
         return (
             <RoundLayout title="Listening Comprehension" description="Listen to the passage and answer questions" showNavigation={false}>
                 <RoundLoadError onRetry={loadQuestions} />
@@ -127,14 +133,14 @@ export function ListeningComprehensionRound() {
     return (
         <RoundLayout title="Listening Comprehension" description="Listen to the passage and answer questions" showNavigation={false}>
             <div className="space-y-6">
-                {!contextPlayed && currentQuestion?.contextAudioSrc && (
+                {stage === 'context' && (
                     <div className="space-y-4">
                         <div className="text-center">
                             <h3 className="text-lg font-bold text-stone-900 mb-2">📖 Listen to the Context</h3>
                             <p className="text-sm text-neutral-600">(Listen carefully to the passage)</p>
                         </div>
                         <AudioPlayer
-                            text={currentQuestion.contextAudioSrc}
+                            text={currentQuestion.contextAudioSrc ?? ''}
                             voiceType="female_1"
                             audioUrl={currentQuestion.contextAudioUrl}
                             playOnce={true}
@@ -143,7 +149,7 @@ export function ListeningComprehensionRound() {
                     </div>
                 )}
 
-                {contextPlayed && currentSubQuestion && (
+                {stage === 'answer' && currentSubQuestion && (
                     <>
                         <div className="text-center text-sm text-neutral-600">
                             Question {currentSubQuestionIndex + 1} of {currentQuestion?.subQuestions?.length || 0}

@@ -302,12 +302,29 @@ serve(async (req: Request) => {
                 ? new Date(currentEnd * 1000).toISOString()
                 : (() => { const d = new Date(); d.setDate(d.getDate() + 31); return d.toISOString(); })();
 
-            await supabaseAdmin.from('profiles').update({
+            // Subscription lifecycle: active ⇄ halted, either → cancelled (terminal).
+            // A charge is real money, so always extend the paid period, but a late or
+            // retried "charged" webhook must not re-activate a cancelled subscription.
+            const { data: current } = await supabaseAdmin
+                .from('profiles')
+                .select('subscription_status, premium_expires_at')
+                .eq('subscription_id', subscription.id)
+                .maybeSingle();
+            const renewal: Record<string, unknown> = {
                 is_premium: true,
-                subscription_status: 'active',
-                premium_expires_at: newExpiry,
                 updated_at: new Date().toISOString(),
-            }).eq('subscription_id', subscription.id);
+            };
+            // Never shorten an expiry a newer charge already set (webhooks can arrive out of order).
+            if (!current?.premium_expires_at || Date.parse(current.premium_expires_at) < Date.parse(newExpiry)) {
+                renewal.premium_expires_at = newExpiry;
+            }
+            if (current?.subscription_status !== 'cancelled') renewal.subscription_status = 'active';
+            const { error: renewError } = await supabaseAdmin
+                .from('profiles')
+                .update(renewal)
+                .eq('subscription_id', subscription.id);
+            // Throw so Razorpay retries instead of dropping a paid renewal.
+            if (renewError) throw renewError;
 
             if (clerkSecret) {
                 await fetch(`https://api.clerk.com/v1/users/${encodeURIComponent(clerkUserId)}`, {
@@ -345,10 +362,12 @@ serve(async (req: Request) => {
         else if (event === 'subscription.halted') {
             const subscription = payload.payload?.subscription?.entity;
             if (subscription?.id) {
+                // Halted only follows active: a late "halted" must not overwrite a cancellation.
                 await supabaseAdmin.from('profiles').update({
                     subscription_status: 'halted',
                     updated_at: new Date().toISOString(),
-                }).eq('subscription_id', subscription.id);
+                }).eq('subscription_id', subscription.id)
+                  .or('subscription_status.is.null,subscription_status.neq.cancelled');
             }
             console.log(`subscription.halted: ${subscription?.id}`);
         }

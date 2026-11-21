@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { RoundLayout } from './components/RoundLayout';
 import { RoundLoadError } from './components/RoundLoadError';
 import { Button } from '@/components/ui/button';
@@ -15,8 +15,10 @@ export function SpeakingTopicRound() {
     const [questions, setQuestions] = useState<Question[]>([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const { transcript, isRecording, startRecording, stopRecording, resetTranscript, error: speechError } = useSpeechRecognition();
-    const [isLoading, setIsLoading] = useState(true);
-    const [loadError, setLoadError] = useState(false);
+    // Question loading: loading → ready | error (retry → loading)
+    const [load, setLoad] = useState<'loading' | 'ready' | 'error'>('loading');
+    // Set while moving to the next question, so a double click can't skip one.
+    const advancingRef = useRef(false);
     const [isPreparing, setIsPreparing] = useState(true);
     const [prepTimeLeft, setPrepTimeLeft] = useState(25);
     const [speakTimeLeft, setSpeakTimeLeft] = useState(45);
@@ -28,13 +30,14 @@ export function SpeakingTopicRound() {
     }, []);
 
     useEffect(() => {
+        if (load !== 'ready') return; // don't spend prep time while questions are still loading
         if (isPreparing && prepTimeLeft > 0) {
             const timer = setTimeout(() => setPrepTimeLeft(prev => prev - 1), 1000);
             return () => clearTimeout(timer);
         } else if (isPreparing && prepTimeLeft === 0) {
             setIsPreparing(false);
         }
-    }, [isPreparing, prepTimeLeft]);
+    }, [load, isPreparing, prepTimeLeft]);
 
     useEffect(() => {
         if (!isPreparing && isRecording && speakTimeLeft > 0) {
@@ -46,22 +49,20 @@ export function SpeakingTopicRound() {
     }, [isPreparing, isRecording, speakTimeLeft]);
 
     const loadQuestions = async () => {
-        setIsLoading(true);
-        setLoadError(false);
+        setLoad('loading');
         try {
             const qs = await service.getQuestionsForSection('G');
             if (!qs || qs.length === 0) {
-                setLoadError(true);
+                setLoad('error');
             } else {
                 // Shuffle questions to ensure variety
                 const shuffled = [...qs].sort(() => 0.5 - Math.random());
                 setQuestions(shuffled.slice(0, 1)); // Limit to 1 random question
+                setLoad('ready');
             }
         } catch (error) {
             console.error('Failed to load questions:', error);
-            setLoadError(true);
-        } finally {
-            setIsLoading(false);
+            setLoad('error');
         }
     };
 
@@ -74,7 +75,8 @@ export function SpeakingTopicRound() {
     };
 
     const handleSubmit = () => {
-        if (!currentQuestion || !transcript) return;
+        if (!currentQuestion || !transcript || advancingRef.current) return;
+        advancingRef.current = true;
 
         addToHistory({
             question: currentQuestion.promptText || 'Speaking Topic',
@@ -97,10 +99,11 @@ export function SpeakingTopicRound() {
             } else {
                 nextRound();
             }
+            advancingRef.current = false;
         }, 50);
     };
 
-    if (isLoading) {
+    if (load === 'loading') {
         return (
             <RoundLayout title="Speaking on a Topic" description="Speak for 45 seconds" showNavigation={false}>
                 <div className="text-center py-12">
@@ -111,7 +114,7 @@ export function SpeakingTopicRound() {
         );
     }
 
-    if (loadError || !currentQuestion) {
+    if (load === 'error' || !currentQuestion) {
         return (
             <RoundLayout title="Speaking on a Topic" description="Speak for 45 seconds" showNavigation={false}>
                 <RoundLoadError onRetry={loadQuestions} />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import PageWrapper from '@/components/PageWrapper';
@@ -25,20 +25,19 @@ const BalloonMathGame: React.FC = () => {
     const [round, setRound] = useState(1);
     const [score, setScore] = useState(0);
     const [timeLeft, setTimeLeft] = useState(15); // Standard time for the round
-    const [gameOver, setGameOver] = useState(false);
-    const [started, setStarted] = useState(false);
-    const [showInstructions, setShowInstructions] = useState(false);
+    // intro → instructions → playing → over;  playing → paywalled (free rounds used up) → over
+    const [phase, setPhase] = useState<'intro' | 'instructions' | 'playing' | 'paywalled' | 'over'>('intro');
+    const phaseRef = useRef(phase);
+    phaseRef.current = phase;
     const [roundPerfect, setRoundPerfect] = useState(true);
     const [showPaymentPopup, setShowPaymentPopup] = useState(false);
-    // Free players never reach `gameOver` — the run ends at the paywall — so the
-    // result has to be recorded there too, and only once per run.
-    const [hitFreeLimit, setHitFreeLimit] = useState(false);
-
-    useRecordOnFinish("/game/balloon", gameOver || hitFreeLimit, () => ({
+    // Free players may never reach "over" (the run ends at the paywall), so the result is
+    // recorded at the paywall too; paywalled → over keeps this true, so it records once.
+    useRecordOnFinish("/game/balloon", phase === 'paywalled' || phase === 'over', () => ({
         score,
         total: round,
         label: "perfect rounds",
-        completed: gameOver,
+        completed: phase === 'over',
     }));
 
     const FREE_ROUNDS = 3;
@@ -136,31 +135,29 @@ const BalloonMathGame: React.FC = () => {
     };
 
     const handleStartClick = () => {
-        setShowInstructions(true);
+        setPhase('instructions');
     };
 
     const startGame = () => {
-        setShowInstructions(false);
-        setStarted(true);
+        setPhase('playing');
         setRound(1);
         setScore(0);
         setTimeLeft(TIME_PER_ROUND);
-        setGameOver(false);
         setRoundPerfect(true);
         generateBalloons();
     };
 
     useEffect(() => {
-        if (started && !gameOver && timeLeft > 0) {
+        if (phase !== 'playing') return; // clock is frozen at the paywall and after the end
+        if (timeLeft > 0) {
             const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
             return () => clearTimeout(timer);
-        } else if (started && !gameOver && timeLeft === 0) {
-            nextRound(false); // Time run out -> fail round
         }
-    }, [timeLeft, started, gameOver]);
+        nextRound(false); // Time run out -> fail round
+    }, [timeLeft, phase]);
 
     const handleBalloonClick = (clickedBalloon: Balloon) => {
-        if (clickedBalloon.popped) return;
+        if (clickedBalloon.popped || phase !== 'playing') return;
 
         // Find the smallest answer among currently unpopped balloons
         const unpoppedBalloons = balloons.filter(b => !b.popped);
@@ -185,14 +182,16 @@ const BalloonMathGame: React.FC = () => {
                 setScore(prev => prev + 1);
             }
             // Small delay before next round to show empty state/success
-            setTimeout(() => nextRound(true), 200);
+            setTimeout(() => {
+                if (phaseRef.current === 'playing') nextRound(true); // not if the game ended meanwhile
+            }, 200);
         }
     };
 
     const nextRound = (success: boolean) => {
         if (!isPremium && round >= FREE_ROUNDS) {
             // Non-premium: show paywall after 3 free rounds
-            setHitFreeLimit(true);
+            setPhase('paywalled');
             setShowPaymentPopup(true);
             return;
         }
@@ -203,13 +202,13 @@ const BalloonMathGame: React.FC = () => {
     };
 
     const finishGame = () => {
-        setGameOver(true);
+        setPhase('over');
         localStorage.setItem('score_balloon', score.toString());
         localStorage.setItem('completed_balloon', 'true');
     };
 
     // Start Screen
-    if (!started && !showInstructions) {
+    if (phase === 'intro') {
         return (
             <PageWrapper>
                 <div className="flex min-h-screen flex-col items-center justify-center bg-white text-neutral-900 p-4">
@@ -236,7 +235,7 @@ const BalloonMathGame: React.FC = () => {
     }
 
     // Instructions Screen
-    if (!started && showInstructions) {
+    if (phase === 'instructions') {
         return (
             <PageWrapper>
                 <div className="flex min-h-screen flex-col items-center justify-center bg-white text-neutral-900 p-4">
@@ -307,7 +306,7 @@ const BalloonMathGame: React.FC = () => {
     }
 
     // Game Over Screen
-    if (gameOver) {
+    if (phase === 'over') {
         return (
             <PageWrapper>
                 <div className="flex min-h-screen flex-col items-center justify-center bg-white text-neutral-900 p-4">

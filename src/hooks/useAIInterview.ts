@@ -8,21 +8,39 @@ const INTERVIEW_DURATION_SECONDS = 10 * 60; // 10 minutes
 // API BASE URL
 const API_BASE_URL = (import.meta.env.VITE_BACKEND_URL || "").replace(/\/$/, "");
 
+/**
+ * Session lifecycle:  setup → starting → live → ending → ended
+ *                          ↖ (start failed) ↙
+ * While live, each turn cycles:  idle → listening → idle → processing → speaking → idle …
+ *
+ * The old separate flags (interviewStarted, isResumeSubmitting, isEnding, interviewEnded,
+ * isRecording, isProcessing) are derived from these two values, so they can't disagree.
+ */
+export type InterviewPhase = "setup" | "starting" | "live" | "ending" | "ended";
+export type InterviewTurn = "idle" | "listening" | "processing" | "speaking";
+
 export const useAIInterview = () => {
     // Session State
     const [resumeText, setResumeText] = useState("");
-    const [interviewStarted, setInterviewStarted] = useState(false);
-    const [isResumeSubmitting, setIsResumeSubmitting] = useState(false);
-    const [interviewEnded, setInterviewEnded] = useState(false);
+    const [phase, _setPhase] = useState<InterviewPhase>("setup");
+    // Async callbacks (fetches, speech events, timers) read the ref so they never act on a stale phase.
+    const phaseRef = useRef<InterviewPhase>("setup");
+    const setPhase = (next: InterviewPhase) => {
+        phaseRef.current = next;
+        _setPhase(next);
+    };
 
     // Interview State
-    const [isRecording, setIsRecording] = useState(false);
     const [isMicMuted, setIsMicMuted] = useState(false);
     const isMicMutedRef = useRef(false);
-    const [isProcessing, setIsProcessing] = useState(false);
+    const isRecordingRef = useRef(false);
     const [audioSrc, setAudioSrc] = useState<string | null>(null);
     const [textToSpeak, setTextToSpeak] = useState("");
-    const [status, setStatus] = useState<"idle" | "listening" | "processing" | "speaking">("idle");
+    const [status, setStatus] = useState<InterviewTurn>("idle");
+    // Turn changes only apply during a live interview; anything arriving late is dropped.
+    const setTurn = (next: InterviewTurn) => {
+        if (next === "idle" || phaseRef.current === "live") setStatus(next);
+    };
     const [timeLeft, setTimeLeft] = useState(INTERVIEW_DURATION_SECONDS);
     const [sessionId, setSessionId] = useState<string | null>(null);
     const [feedback, setFeedback] = useState<any>(null); // Store detailed feedback
@@ -89,11 +107,13 @@ export const useAIInterview = () => {
 
     const startInterview = async (resume: string, userId?: string | null, interviewType: "hr" | "technical" | "hackwithinfy" = "hr") => {
 
+        if (phaseRef.current !== "setup") return; // already starting or started
+
         // Request Mic immediately
         const hasMic = await requestMicPermission();
         if (!hasMic) return;
 
-        setIsResumeSubmitting(true);
+        setPhase("starting");
 
         try {
             const formData = new FormData();
@@ -113,7 +133,7 @@ export const useAIInterview = () => {
 
             if (response.status === 403) {
                 toast.error("You have reached your 2-interview limit.");
-                setIsResumeSubmitting(false); // Make sure to stop loading
+                setPhase("setup");
                 return;
             }
 
@@ -126,13 +146,13 @@ export const useAIInterview = () => {
             const data = await response.json();
 
             setSessionId(data.session_id);
-            setInterviewStarted(true);
+            setPhase("live");
             setTextToSpeak(data.ai_message);
 
             // Play Audio
             if (data.audio_content) {
                 setAudioSrc(data.audio_content);
-                setStatus("speaking");
+                setTurn("speaking");
             } else {
                 console.warn("startInterview: No audio_content received from backend");
             }
@@ -140,21 +160,23 @@ export const useAIInterview = () => {
         } catch (error) {
             console.error("Error starting interview:", error);
             toast.error(`Failed to start AI session: ${error instanceof Error ? error.message : "Unknown error"}`);
-        } finally {
-            setIsResumeSubmitting(false);
+            setPhase("setup");
         }
     };
-
-    const [isEnding, setIsEnding] = useState(false);
 
     const openEndConfirmation = () => setShowEndConfirmation(true);
     const closeEndConfirmation = () => setShowEndConfirmation(false);
 
     const endInterview = useCallback(async () => {
+        // Only a live interview can end, and only once (timer and button can both fire).
+        if (phaseRef.current !== "live") return;
         if (timerRef.current) clearInterval(timerRef.current);
 
-        setIsEnding(true);
+        setPhase("ending");
+        setStatus("idle");
         setShowEndConfirmation(false); // Close modal if open
+        cancelAutoSubmit();
+        stopRecording();
 
         if (sessionId) {
             try {
@@ -181,15 +203,12 @@ export const useAIInterview = () => {
             }
         }
 
-        setInterviewEnded(true);
-        setStatus("idle");
-        setIsEnding(false);
-        stopRecording();
+        setPhase("ended");
     }, [sessionId]);
 
     // Timer Logic - Must be after endInterview definition
     useEffect(() => {
-        if (interviewStarted && !interviewEnded && timeLeft > 0) {
+        if (phase === "live" && timeLeft > 0) {
             timerRef.current = setInterval(() => {
                 setTimeLeft((prev) => {
                     if (prev <= 1) {
@@ -204,10 +223,11 @@ export const useAIInterview = () => {
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);
         };
-    }, [interviewStarted, interviewEnded, endInterview]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- restart only when the phase changes
+    }, [phase]);
 
     const toggleRecording = () => {
-        if (isRecording) {
+        if (isRecordingRef.current) {
             stopRecording();
         } else {
             startRecording();
@@ -216,10 +236,9 @@ export const useAIInterview = () => {
 
     // Text-based processing (replaces processAudio)
     const processText = async (text: string) => {
-        if (!sessionId || !text.trim()) return;
+        if (!sessionId || !text.trim() || phaseRef.current !== "live") return;
 
-        setIsProcessing(true);
-        setStatus("processing");
+        setTurn("processing");
         try {
             const response = await fetch(`${API_BASE_URL}/api/interview/chat`, {
                 method: "POST",
@@ -238,28 +257,32 @@ export const useAIInterview = () => {
 
             const data = await response.json();
 
+            // The interview was ended while this answer was in flight: drop the reply.
+            if (phaseRef.current !== "live") return;
+
             setTextToSpeak(data.ai_message);
 
             if (data.audio_content) {
                 setAudioSrc(data.audio_content);
-                setStatus("speaking");
+                setTurn("speaking");
             } else if (data.status === "completed") {
+                if (timerRef.current) clearInterval(timerRef.current);
                 setStatus("idle");
-                setInterviewEnded(true);
                 if (data.feedback) {
                     setFeedback(data.feedback);
                 }
+                setPhase("ended");
             } else {
                 console.warn("processText: No audio content and not completed. State set to idle.");
-                setStatus("idle");
+                setTurn("idle");
             }
 
         } catch (error) {
             console.error("Error processing chat:", error);
-            setStatus("idle");
-            toast.error(`Chat Failed: ${error instanceof Error ? error.message : "Unknown error"}`);
-        } finally {
-            setIsProcessing(false);
+            setTurn("idle");
+            if (phaseRef.current === "live") {
+                toast.error(`Chat Failed: ${error instanceof Error ? error.message : "Unknown error"}`);
+            }
         }
     };
 
@@ -284,6 +307,7 @@ export const useAIInterview = () => {
     };
 
     const startRecording = () => {
+        if (phaseRef.current !== "live") return;
         cancelAutoSubmit(); // Cancel any existing countdown
 
         // Snapshot current text so we append to it
@@ -302,8 +326,8 @@ export const useAIInterview = () => {
         recognition.maxAlternatives = 1;
 
         recognition.onstart = () => {
-            setIsRecording(true);
-            setStatus("listening");
+            isRecordingRef.current = true;
+            setTurn("listening");
         };
 
         recognition.onresult = (event: any) => {
@@ -317,8 +341,8 @@ export const useAIInterview = () => {
         };
 
         recognition.onerror = (event: any) => {
-            setIsRecording(false);
-            setStatus("idle");
+            isRecordingRef.current = false;
+            setStatus((prev) => (prev === "listening" ? "idle" : prev));
             if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
                 console.warn("Microphone access blocked/denied. Waiting for user interaction.");
             } else {
@@ -327,7 +351,7 @@ export const useAIInterview = () => {
         };
 
         recognition.onend = () => {
-            setIsRecording(false);
+            isRecordingRef.current = false;
             setStatus((prev) => {
                 if (prev === "listening") return "idle";
                 return prev;
@@ -354,6 +378,7 @@ export const useAIInterview = () => {
     };
 
     const startAutoSubmitCountdown = () => {
+        if (phaseRef.current !== "live") return; // recognition can end after the interview did
         // Clear old
         if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
 
@@ -375,7 +400,7 @@ export const useAIInterview = () => {
     };
 
     const stopRecording = () => {
-        if (mediaRecorderRef.current && isRecording) {
+        if (mediaRecorderRef.current && isRecordingRef.current) {
             try {
                 (mediaRecorderRef.current as any).stop();
             } catch (e) {
@@ -388,7 +413,7 @@ export const useAIInterview = () => {
         const nextMuted = !isMicMutedRef.current;
         isMicMutedRef.current = nextMuted;
         setIsMicMuted(nextMuted);
-        if (nextMuted && isRecording) {
+        if (nextMuted && isRecordingRef.current) {
             stopRecording();
             cancelAutoSubmit();
         }
@@ -411,8 +436,8 @@ export const useAIInterview = () => {
     };
 
     const handleAudioEnd = () => {
-        setStatus("idle");
-        if (!isMicMutedRef.current) {
+        setTurn("idle");
+        if (phaseRef.current === "live" && !isMicMutedRef.current) {
             startRecording();
         }
     };
@@ -420,13 +445,14 @@ export const useAIInterview = () => {
     return {
         resumeText,
         setResumeText,
-        interviewStarted,
-        isResumeSubmitting,
-        interviewEnded,
-        isRecording,
+        phase,
+        interviewStarted: phase === "live" || phase === "ending" || phase === "ended",
+        isResumeSubmitting: phase === "starting",
+        interviewEnded: phase === "ended",
+        isRecording: status === "listening",
         isMicMuted,
         toggleMicMute,
-        isProcessing,
+        isProcessing: status === "processing",
         textToSpeak,
         audioSrc,
         status,
@@ -442,7 +468,7 @@ export const useAIInterview = () => {
         autoSubmitCountdown,
         cancelAutoSubmit,
         feedback,
-        isEnding,
+        isEnding: phase === "ending",
         showEndConfirmation,
         openEndConfirmation,
         closeEndConfirmation

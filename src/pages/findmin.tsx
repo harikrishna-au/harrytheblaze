@@ -44,6 +44,8 @@ const buildBoard = (level: number) =>
     ports: config.ports,
   }));
 
+type MatrixScreen = 'modeSelect' | 'levelSelect' | 'playing' | 'locked' | 'finished';
+
 export default function FindMin() {
   const [level, setLevel] = useState(1);
   const [levelsWon, setLevelsWon] = useState(0);
@@ -51,8 +53,10 @@ export default function FindMin() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [validation, setValidation] = useState<EvaluationResult | null>(null);
   const [timeLeft, setTimeLeft] = useState(240); // 4:00 in seconds
-  const [gameComplete, setGameComplete] = useState(false);
-  const [showLockModal, setShowLockModal] = useState(false);
+  // Which screen is showing (one value instead of four flags; the timer only runs while playing).
+  //   arcade:   playing → finished   (or → locked when the free levels run out)
+  //   practice: modeSelect → levelSelect → playing → levelSelect …
+  const [screen, setScreen] = useState<MatrixScreen>('playing');
   const [showPaymentPopup, setShowPaymentPopup] = useState(false);
 
   const { isPremium } = usePremiumStatus();
@@ -60,10 +64,8 @@ export default function FindMin() {
 
   // Premium Modes State
   const [gameMode, setGameMode] = useState<'arcade' | 'practice'>('arcade');
-  const [showModeSelect, setShowModeSelect] = useState(false);
-  const [showLevelSelect, setShowLevelSelect] = useState(false);
 
-  useRecordOnFinish("/game/matrix", gameComplete, () => ({
+  useRecordOnFinish("/game/matrix", screen === 'finished', () => ({
     score: levelsWon,
     total: 6,
     label: "levels",
@@ -73,11 +75,8 @@ export default function FindMin() {
 
   const handleModeSelect = (mode: 'arcade' | 'practice') => {
     setGameMode(mode);
-    setShowModeSelect(false);
-    if (mode === 'practice') {
-      setShowLevelSelect(true);
-    }
-    // If arcade, just let it render the default game view (Level 1)
+    // Arcade goes straight to the board; practice picks a level first.
+    setScreen(mode === 'practice' ? 'levelSelect' : 'playing');
   };
 
   const handleLevelSelect = (levelIdx: number) => {
@@ -86,8 +85,7 @@ export default function FindMin() {
       return;
     }
     setLevel(levelIdx + 1);
-    setShowLevelSelect(false);
-    setGameComplete(false);
+    setScreen('playing');
     setValidation(null);
     setSelectedIndex(null);
     setTimeLeft(240);
@@ -99,7 +97,7 @@ export default function FindMin() {
 
   // Timer logic
   useEffect(() => {
-    if (gameComplete || showLockModal) return;
+    if (screen !== 'playing') return;
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
@@ -111,14 +109,14 @@ export default function FindMin() {
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [gameComplete, showLockModal]);
+  }, [screen]);
 
   // Handle Timeout
   useEffect(() => {
-    if (timeLeft === 0 && !gameComplete && !showLockModal) {
+    if (timeLeft === 0 && screen === 'playing') {
       handleLevelComplete(false);
     }
-  }, [timeLeft, gameComplete, showLockModal]);
+  }, [timeLeft, screen]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -177,7 +175,7 @@ export default function FindMin() {
     // CHECK PREMIUM STATUS (Arcade Gate Only)
     if (gameMode === 'arcade' && won && level === FREE_LEVELS && !isPremium) {
       setTimeout(() => {
-        setShowLockModal(true);
+        setScreen(s => (s === 'playing' ? 'locked' : s)); // only if still on this level
       }, 1000);
       return;
     }
@@ -187,11 +185,11 @@ export default function FindMin() {
       if (won) {
         // Show validation success for a moment then go back
         setTimeout(() => {
-          setShowLevelSelect(true);
+          setScreen(s => (s === 'playing' ? 'levelSelect' : s));
         }, 1000);
       } else {
         // Time up
-        setShowLevelSelect(true);
+        setScreen('levelSelect');
       }
       return;
     }
@@ -204,7 +202,7 @@ export default function FindMin() {
         setTimeLeft(240);
       }, won ? 1000 : 0); // Delay if won to show success message
     } else {
-      setGameComplete(true);
+      setScreen('finished');
       localStorage.setItem('score_matrix', timeLeft.toString());
       localStorage.setItem('completed_matrix', 'true');
     }
@@ -237,7 +235,7 @@ export default function FindMin() {
 
   const selectedTile = selectedIndex !== null ? tiles[selectedIndex] : null;
 
-  if (gameComplete) {
+  if (screen === 'finished') {
     return (
       <div className="min-h-screen w-full flex flex-col items-center justify-center bg-neutral-50 p-4 font-sans text-neutral-900 text-center overflow-y-auto">
         <div className="bg-white p-12 rounded-3xl shadow-2xl space-y-6 max-w-lg">
@@ -258,7 +256,7 @@ export default function FindMin() {
   }
 
   // Mode Selection Screen
-  if (showModeSelect) {
+  if (screen === 'modeSelect') {
     return (
       <div className="min-h-screen w-full flex flex-col items-center justify-center bg-neutral-50 text-neutral-900 overflow-auto pt-24 pb-10">
         <Header />
@@ -322,7 +320,7 @@ export default function FindMin() {
   }
 
   // Level Selection Screen
-  if (showLevelSelect) {
+  if (screen === 'levelSelect') {
     return (
       <div className="min-h-screen w-full flex flex-col items-center justify-center bg-neutral-50 text-neutral-900 overflow-auto pt-24 pb-10">
         <Header />
@@ -332,7 +330,7 @@ export default function FindMin() {
               <h1 className="text-3xl font-black text-neutral-900 tracking-tight">Select Level</h1>
               <p className="text-neutral-500">Pick a challenge to master.</p>
             </div>
-            <Button variant="outline" onClick={() => setShowModeSelect(true)}>Back to Modes</Button>
+            <Button variant="outline" onClick={() => setScreen('modeSelect')}>Back to Modes</Button>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -455,8 +453,7 @@ export default function FindMin() {
         {gameMode === 'practice' && (
           <Button
             onClick={() => {
-              setShowLevelSelect(true);
-              setGameComplete(false); // Ensure we don't show completion screen
+              setScreen('levelSelect');
             }}
             className="h-12 w-12 rounded-lg bg-stone-500 p-0 text-white hover:bg-stone-900"
             title="Back to Levels"
@@ -499,7 +496,7 @@ export default function FindMin() {
       )}
 
       {/* PREMIUM LOCK MODAL */}
-      {showLockModal && (
+      {screen === 'locked' && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full relative animate-in zoom-in-95 duration-200 text-center space-y-6">
             <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mx-auto">
