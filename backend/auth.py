@@ -125,13 +125,24 @@ def rate_limited(key: str, max_hits: int, window_s: int = 3600) -> bool:
         if len(_hits) > 20000:  # keep memory bounded
             for k in [k for k, v in _hits.items() if not v or now - v[-1] >= window_s]:
                 del _hits[k]
+            if len(_hits) > 20000:  # still too many live keys: drop the least recently used
+                for k, _ in sorted(_hits.items(), key=lambda kv: kv[1][-1])[: len(_hits) - 15000]:
+                    del _hits[k]
         return False
 
 
 def client_ip(request: Request) -> str:
+    # Under Mangum, API Gateway's own view of the caller is in the Lambda event. Clients
+    # can't forge it. X-Forwarded-For's left-most entries are client-controlled, so only
+    # the right-most one (appended by the proxy in front of us) is used as a fallback.
+    event = request.scope.get("aws.event") or {}
+    ctx = event.get("requestContext") or {}
+    source = (ctx.get("identity") or {}).get("sourceIp") or (ctx.get("http") or {}).get("sourceIp")
+    if source:
+        return source
     fwd = request.headers.get("x-forwarded-for", "")
     if fwd:
-        return fwd.split(",")[0].strip()
+        return fwd.split(",")[-1].strip()
     return request.client.host if request.client else "unknown"
 
 
