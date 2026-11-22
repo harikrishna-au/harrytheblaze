@@ -18,14 +18,26 @@ Globals:
     BinaryMediaTypes:
       - "audio/mpeg"
     Cors:
-      AllowMethods: "'*'"
-      AllowHeaders: "'*'"
+      AllowMethods: "'GET,POST,OPTIONS'"
+      # Browsers do not let "*" cover Authorization, so list the headers we send.
+      AllowHeaders: "'Authorization,Content-Type,Accept'"
       AllowOrigin: "'*'"
 
 Parameters:
   OpenAiApiKey:
     Type: String
     Description: OpenAI API Key
+    NoEcho: true
+  ClerkSecretKey:
+    Type: String
+    Description: Optional. Lets the API also accept Clerk publicMetadata.isPremium. Tokens are verified without it.
+    NoEcho: true
+    Default: ""
+  SupabaseServiceRoleKey:
+    Type: String
+    Description: Optional. Used instead of the public anon key for the Premium lookup.
+    NoEcho: true
+    Default: ""
 
 Resources:
   CommunicationAPI:
@@ -42,7 +54,15 @@ Resources:
           OPENAI_API_KEY: !Ref OpenAiApiKey
           INTERVIEW_TABLE: interview_sessions
           RESUME_BUCKET_NAME: !Ref ResumeBucket
-          ALLOWED_ORIGINS: "https://www.harrytheblaze.site,http://localhost:5173,http://localhost:3000"
+          ALLOWED_ORIGINS: "https://www.harrytheblaze.site,https://harrytheblaze.site,http://localhost:5173,http://localhost:3000,http://localhost:8080"
+          # Session tokens are verified against Clerk's public key set for this issuer.
+          CLERK_ISSUER: "https://clerk.harrytheblaze.site"
+          CLERK_AUTHORIZED_PARTIES: "https://www.harrytheblaze.site,https://harrytheblaze.site,http://localhost:5173,http://localhost:8080"
+          # Premium lookup. The anon key is public (the website ships it), not a secret.
+          SUPABASE_URL: "https://ixgusnrurhurhpezhzem.supabase.co"
+          SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4Z3VzbnJ1cmh1cmhwZXpoemVtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMzU0NzcsImV4cCI6MjA4MTkxMTQ3N30.lptnjFiBzXKj8LTBoKjRDCXDllUJyIRxPjq5FxxdxLY"
+          CLERK_SECRET_KEY: !Ref ClerkSecretKey
+          SUPABASE_SERVICE_ROLE_KEY: !Ref SupabaseServiceRoleKey
       Policies:
         - DynamoDBCrudPolicy:
             TableName: communication_questions

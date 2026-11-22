@@ -1,10 +1,12 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 try:
     from backend.schemas import TTSRequest
     from backend.services.aws_utils import generate_polly_audio
+    from backend.auth import limit
 except ImportError:
     from schemas import TTSRequest
     from services.aws_utils import generate_polly_audio
+    from auth import limit
 import base64
 
 router = APIRouter(tags=["misc"])
@@ -14,7 +16,7 @@ def read_root():
     return {"status": "online", "message": "Communication Backend Active with Amazon Polly"}
 
 @router.post("/api/tts")
-def get_tts_audio(body: TTSRequest):
+def get_tts_audio(body: TTSRequest, user_id: str = Depends(limit("tts", 400))):
     # Map friendly voice types to Amazon Polly Neural Voices
     voice_map = {"male_1": "Matthew", "male_2": "Joey", "female_1": "Joanna", "female_2": "Salli"}
     voice_id = voice_map.get(body.voice_type, "Matthew")

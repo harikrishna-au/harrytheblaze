@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 try:
     from backend.schemas import (
         GameHistoryRequest, AudioSubmission, WrittenSubmission, GradeRequest, GradeResponse, SentenceResponse
@@ -6,6 +6,7 @@ try:
     from backend.services.bedrock_analysis import analyze_overall_performance, grade_submission
     from backend.data import DATA_BANK
     from backend.services.aws_utils import communication_table, dynamodb
+    from backend.auth import limit
 except ImportError:
     from schemas import (
         GameHistoryRequest, AudioSubmission, WrittenSubmission, GradeRequest, GradeResponse, SentenceResponse
@@ -13,12 +14,19 @@ except ImportError:
     from services.bedrock_analysis import analyze_overall_performance, grade_submission
     from data import DATA_BANK
     from services.aws_utils import communication_table, dynamodb
+    from auth import limit
 
 from boto3.dynamodb.conditions import Key
 import random
 from decimal import Decimal
 
 router = APIRouter(tags=["game"])
+
+# Signed-in users only, with per-user hourly limits (grading calls OpenAI).
+questions_guard = limit("comm_questions", 300)
+grade_guard = limit("comm_grade", 200)
+analyze_guard = limit("comm_analyze", 30)
+round1_guard = limit("round1", 300)
 
 def convert_to_camel_case(obj):
     def snake_to_camel(snake_str):
@@ -55,16 +63,16 @@ def find_question_in_dynamo(q_id: str):
     return None
 
 @router.post("/api/analyze-game")
-def analyze_game(body: GameHistoryRequest):
+def analyze_game(body: GameHistoryRequest, user_id: str = Depends(analyze_guard)):
     try:
         history_data = [item.dict() for item in body.history]
         return analyze_overall_performance(history_data)
     except Exception as e:
         print(f"Bedrock Error: {e}")
-        raise HTTPException(status_code=500, detail=f"Bedrock Error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Analysis failed. Please try again.")
 
 @router.get("/api/questions")
-def get_questions(section: str):
+def get_questions(section: str, user_id: str = Depends(questions_guard)):
     try:
         response = communication_table.query(
             IndexName='SectionIndex',
@@ -84,7 +92,7 @@ def get_questions(section: str):
         raise HTTPException(status_code=500, detail="Database Error")
 
 @router.post("/submit/audio")
-def submit_audio(submission: AudioSubmission):
+def submit_audio(submission: AudioSubmission, user_id: str = Depends(grade_guard)):
     target_question = find_question_in_dynamo(submission.questionId)
     if not target_question:
         # Fallback local
@@ -100,10 +108,11 @@ def submit_audio(submission: AudioSubmission):
     try:
         return grade_submission(target_question["text"], submission.transcript)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"Grading error: {e}")
+        raise HTTPException(status_code=500, detail="Grading Failed")
 
 @router.post("/submit/written")
-def submit_written(submission: WrittenSubmission):
+def submit_written(submission: WrittenSubmission, user_id: str = Depends(grade_guard)):
     # Reuse logic (simplified for refactor)
     target_question = find_question_in_dynamo(submission.questionId)
     # ... fallback omitted for brevity, assuming similar to above ...
@@ -116,7 +125,7 @@ def submit_written(submission: WrittenSubmission):
         raise HTTPException(status_code=500, detail="Grading Failed")
 
 @router.get("/api/round1/sentence", response_model=SentenceResponse)
-def get_random_sentence():
+def get_random_sentence(user_id: str = Depends(round1_guard)):
     item = random.choice(DATA_BANK)
     questions_clean = [{"id": q["id"], "text": q["text"], "options": q["options"]} for q in item["questions"]]
     return {
@@ -124,7 +133,7 @@ def get_random_sentence():
     }
 
 @router.post("/api/round1/grade", response_model=GradeResponse)
-def grade_answer(request: GradeRequest):
+def grade_answer(request: GradeRequest, user_id: str = Depends(round1_guard)):
     sentence = next((s for s in DATA_BANK if s["id"] == request.sentence_id), None)
     if not sentence: raise HTTPException(status_code=404, detail="Sentence not found")
     question = next((q for q in sentence["questions"] if q["id"] == request.question_id), None)

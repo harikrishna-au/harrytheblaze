@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Play, Volume2, Loader2 } from 'lucide-react';
+import { backendFetch } from '@/lib/backendAuth';
 
 interface AudioPlayerProps {
     text: string;
@@ -24,7 +25,7 @@ async function fetchTtsUrl(text: string, voiceType: string): Promise<string | nu
     try {
         // Use environment variable for backend URL
         const backendUrl = (import.meta.env.VITE_BACKEND_URL || '').replace(/\/$/, '');
-        const response = await fetch(`${backendUrl}/api/tts`, {
+        const response = await backendFetch(`${backendUrl}/api/tts`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

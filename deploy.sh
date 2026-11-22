@@ -27,6 +27,11 @@ if [ -z "$OPENAI_API_KEY" ]; then
     exit 1
 fi
 
+# Optional extras for auth. Neither is required: tokens are verified with Clerk's public
+# keys and Premium is read with the public Supabase key (see template.yaml).
+export CLERK_SECRET_KEY=$(grep CLERK_SECRET_KEY backend/.env 2>/dev/null | cut -d '#' -f1 | awk -F= '{print $2}' | tr -d ' "[:space:]')
+export SUPABASE_SERVICE_ROLE_KEY=$(grep SUPABASE_SERVICE_ROLE_KEY backend/.env 2>/dev/null | cut -d '#' -f1 | awk -F= '{print $2}' | tr -d ' "[:space:]')
+
 # Check if Docker is running (Required for Linux binary compatibility)
 if ! docker info &> /dev/null; then
     echo "⚠️  WARNING: Docker is not running or not installed."
@@ -46,6 +51,10 @@ else
     USE_CONTAINER="--use-container"
 fi
 
+PARAM_OVERRIDES="OpenAiApiKey=$OPENAI_API_KEY"
+[ -n "$CLERK_SECRET_KEY" ] && PARAM_OVERRIDES="$PARAM_OVERRIDES ClerkSecretKey=$CLERK_SECRET_KEY"
+[ -n "$SUPABASE_SERVICE_ROLE_KEY" ] && PARAM_OVERRIDES="$PARAM_OVERRIDES SupabaseServiceRoleKey=$SUPABASE_SERVICE_ROLE_KEY"
+
 echo ""
 echo "📦 Building project (Clean Build)..."
 rm -rf .aws-sam
@@ -61,7 +70,7 @@ sam deploy \
     --resolve-s3 \
     --no-confirm-changeset \
     --no-fail-on-empty-changeset \
-    --parameter-overrides OpenAiApiKey=$OPENAI_API_KEY
+    --parameter-overrides $PARAM_OVERRIDES
 
 echo ""
 echo "🌱 Seeding Database..."

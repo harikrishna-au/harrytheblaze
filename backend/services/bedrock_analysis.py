@@ -120,6 +120,6 @@ Evaluate the answer and return ONLY a JSON object:
         # Return fallback for safety
         return {
             "score": 0,
-            "feedback": f"Error during grading: {str(e)}",
+            "feedback": "We could not grade this answer. Please try again.",
             "correct": False
         }

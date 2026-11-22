@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { toast } from "sonner";
+import { backendFetch, backendErrorMessage } from "@/lib/backendAuth";
 
 const INTERVIEW_DURATION_SECONDS = 10 * 60; // 10 minutes
 
@@ -55,7 +56,7 @@ export const useAIInterview = () => {
     const uploadResumeToS3 = async (file: File): Promise<void> => {
         try {
             // 1. Get Presigned URL
-            const urlResponse = await fetch(`${API_BASE_URL}/api/resume/upload-url`, {
+            const urlResponse = await backendFetch(`${API_BASE_URL}/api/resume/upload-url`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ filename: file.name })
@@ -105,7 +106,8 @@ export const useAIInterview = () => {
         }
     };
 
-    const startInterview = async (resume: string, userId?: string | null, interviewType: "hr" | "technical" | "hackwithinfy" = "hr") => {
+    // The backend takes the user from the Clerk token; userId is kept for callers but not sent.
+    const startInterview = async (resume: string, _userId?: string | null, interviewType: "hr" | "technical" | "hackwithinfy" = "hr") => {
 
         if (phaseRef.current !== "setup") return; // already starting or started
 
@@ -121,26 +123,16 @@ export const useAIInterview = () => {
             formData.append("resume_text", resume);
             formData.append("interview_type", interviewType);
 
-            if (userId) {
-                formData.append("user_id", userId);
-            }
-
-            const response = await fetch(`${API_BASE_URL}/api/interview/start`, {
+            const response = await backendFetch(`${API_BASE_URL}/api/interview/start`, {
                 method: "POST",
                 // Content-Type header not set for FormData, browser sets it with boundary
                 body: formData
             });
 
-            if (response.status === 403) {
-                toast.error("You have reached your 2-interview limit.");
+            if (!response.ok) {
+                toast.error(await backendErrorMessage(response, "Could not start the interview. Please try again."));
                 setPhase("setup");
                 return;
-            }
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ detail: "Unknown Start Error" }));
-                console.error("Start Interview Error Details:", errorData);
-                throw new Error(errorData.detail || "Failed to start session");
             }
 
             const data = await response.json();
@@ -180,7 +172,7 @@ export const useAIInterview = () => {
 
         if (sessionId) {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/interview/end`, {
+                const response = await backendFetch(`${API_BASE_URL}/api/interview/end`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ session_id: sessionId })
@@ -240,7 +232,7 @@ export const useAIInterview = () => {
 
         setTurn("processing");
         try {
-            const response = await fetch(`${API_BASE_URL}/api/interview/chat`, {
+            const response = await backendFetch(`${API_BASE_URL}/api/interview/chat`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -250,9 +242,7 @@ export const useAIInterview = () => {
             });
 
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ detail: "Unknown Backend Error" }));
-                console.error("Chat Error Details:", errorData);
-                throw new Error(errorData.detail || "Backend chat processing failed");
+                throw new Error(await backendErrorMessage(response, "Could not send your answer. Please try again."));
             }
 
             const data = await response.json();
@@ -281,7 +271,7 @@ export const useAIInterview = () => {
             console.error("Error processing chat:", error);
             setTurn("idle");
             if (phaseRef.current === "live") {
-                toast.error(`Chat Failed: ${error instanceof Error ? error.message : "Unknown error"}`);
+                toast.error(error instanceof Error ? error.message : "Could not send your answer. Please try again.");
             }
         }
     };

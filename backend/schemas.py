@@ -48,11 +48,11 @@ class InterviewStartRequest(BaseModel):
     user_id: str = Field(None, description="Clerk User ID")
 
 class InterviewChatRequest(BaseModel):
-    session_id: str
-    user_text: str
+    session_id: str = Field(..., max_length=64)
+    user_text: str = Field(..., max_length=5000)
 
 class InterviewEndRequest(BaseModel):
-    session_id: str
+    session_id: str = Field(..., max_length=64)
 
 class InterviewStartResponse(BaseModel):
     session_id: str
@@ -66,4 +66,4 @@ class InterviewChatResponse(BaseModel):
     feedback: Optional[dict] = None
 
 class ResumeUploadRequest(BaseModel):
-    filename: str
+    filename: str = Field(..., max_length=200)

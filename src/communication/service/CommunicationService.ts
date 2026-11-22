@@ -1,7 +1,14 @@
 import { Question, SectionType, SECTIONS } from "../data/types";
+import { backendFetch } from "@/lib/backendAuth";
 // import { supabase } from "@/integrations/supabase/client"; // Removed for DynamoDB migration
 
 // ... (keep interface definitions if needed, or remove if unused)
+
+function gradingFailedMessage(status: number): string {
+    if (status === 401) return "We could not grade this answer: your session expired. Please sign in again.";
+    if (status === 429) return "We could not grade this answer: you have reached the hourly limit. Try again later.";
+    return "We could not grade this answer. Please try again.";
+}
 
 export class CommunicationBackendService {
 
@@ -15,7 +22,7 @@ export class CommunicationBackendService {
 
         for (let attempt = 1; attempt <= maxAttempts; attempt++) {
             try {
-                const response = await fetch(`${this.backendUrl}/api/questions?section=${section}`);
+                const response = await backendFetch(`${this.backendUrl}/api/questions?section=${section}`);
                 if (!response.ok) {
                     throw new Error(`Failed to fetch questions: ${response.status} ${response.statusText}`);
                 }
@@ -42,14 +49,14 @@ export class CommunicationBackendService {
     // Submit an audio response (grading)
     async submitAudioResponse(questionId: string, transcript: string): Promise<{ score: number; feedback: string }> {
         try {
-            const response = await fetch(`${this.backendUrl}/submit/audio`, {
+            const response = await backendFetch(`${this.backendUrl}/submit/audio`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ questionId, transcript })
             });
             if (!response.ok) {
-                // Mock response if endpoint not implemented yet
-                return { score: 75, feedback: "Good articulation, but try to speak more clearly." };
+                // Never invent a score: say grading failed.
+                return { score: 0, feedback: gradingFailedMessage(response.status) };
             }
             return await response.json();
         } catch (error) {
@@ -61,7 +68,7 @@ export class CommunicationBackendService {
     // New: Analyze full game history
     async analyzeGame(history: { question: string, answer: string, score: number, section: string }[]): Promise<any> {
         try {
-            const response = await fetch(`${this.backendUrl}/api/analyze-game`, {
+            const response = await backendFetch(`${this.backendUrl}/api/analyze-game`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ history })
@@ -80,13 +87,13 @@ export class CommunicationBackendService {
     // Submit written response
     async submitWrittenResponse(questionId: string, text: string): Promise<{ score: number; feedback: string }> {
         try {
-            const response = await fetch(`${this.backendUrl}/submit/written`, {
+            const response = await backendFetch(`${this.backendUrl}/submit/written`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ questionId, text })
             });
             if (!response.ok) {
-                return { score: 80, feedback: "Well written, good grammar." };
+                return { score: 0, feedback: gradingFailedMessage(response.status) };
             }
             return await response.json();
         } catch (error) {
@@ -102,7 +109,7 @@ export class CommunicationBackendService {
 
         try {
             // Request Amazon Polly TTS audio
-            const response = await fetch(`${this.backendUrl}/api/tts`, {
+            const response = await backendFetch(`${this.backendUrl}/api/tts`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

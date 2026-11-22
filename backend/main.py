@@ -63,15 +63,10 @@ if FastAPI:
 
     @app.get("/")
     def read_root():
-        return {"status": "online", "message": "Communication Backend (Debug Mode)", "imports": import_status}
+        return {"status": "online"}
 
-    @app.get("/api/debug/status")
-    def debug_status():
-        return {
-            "status": "online",
-            "imports": import_status,
-            "sys_path": sys.path
-        }
+    # Import and router status go to the logs only, never to a public endpoint.
+    print(f"Backend imports: {import_status}")
 
     # Handler
     handler = Mangum(app)
@@ -86,7 +81,7 @@ else:
                 "Access-Control-Allow-Headers": "*",
                 "Access-Control-Allow-Methods": "*"
             },
-            "body": f"FATAL STARTUP ERROR: {import_status}" 
+            "body": "Service unavailable"
         }
 
 # --- ATTEMPT ROTUER LOAD ---
@@ -113,7 +108,4 @@ if FastAPI:
     safe_include_router("interview")
     safe_include_router("game")
 
-    # Add router status to debug endpoint
-    @app.get("/api/debug/routers")
-    def router_debug():
-        return router_status
+    print(f"Backend routers: {router_status}")

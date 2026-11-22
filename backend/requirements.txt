@@ -10,3 +10,4 @@ boto3
 python-dotenv
 pypdf
 python-multipart
+PyJWT[crypto]>=2.8
