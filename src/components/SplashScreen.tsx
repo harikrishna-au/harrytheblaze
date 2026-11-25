@@ -29,6 +29,9 @@ const SplashScreen = ({ onFinish }: { onFinish: () => void }) => {
         <div
             role="img"
             aria-label="Harry The Blaze"
+            // The landing page starts its entrance when the splash begins to fade.
+            data-splash=""
+            data-leaving={phase === 'out' ? '' : undefined}
             onClick={skip}
             className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden transition-opacity duration-500 ease-in-out"
             style={{
