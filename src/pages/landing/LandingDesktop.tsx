@@ -63,7 +63,7 @@ export const LandingDesktop = ({
           style={{ filter: "drop-shadow(0 2px 10px rgba(0,0,0,0.22))" }}
         />
         <span className="font-display text-xl font-normal uppercase tracking-[0.005em] text-[var(--color-ink)]">
-          HARRY THE BLAZE
+          Harry The Blaze
         </span>
       </Rise>
 
@@ -90,7 +90,7 @@ export const LandingDesktop = ({
           <br />
           Then talk to someone
           <br />
-          who just got placed.
+          <em>who just got placed.</em>
         </Rise>
 
         <Rise
@@ -105,14 +105,14 @@ export const LandingDesktop = ({
         <Rise delay={300} className="mb-8">
           <Link
             to="/connect"
-            className="group inline-flex items-center gap-2.5 px-6 py-3.5 bg-[var(--color-accent)] text-[var(--color-ink)] font-['Inter'] font-semibold text-[15px] shadow-[var(--shadow-offset)] transition-[transform,box-shadow] duration-[120ms] hover:translate-x-px hover:translate-y-px hover:shadow-[3px_3px_0_var(--color-ink)] active:translate-x-1 active:translate-y-1 active:shadow-none"
+            className="group inline-flex items-center gap-2.5 px-6 py-3.5 bg-[var(--color-accent)] text-[var(--color-ink)] font-['Inter'] font-semibold text-[15px] rounded-full transition-[transform,box-shadow] duration-[120ms] active:scale-[0.97]"
           >
             Book a Connect 1:1
             <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
           </Link>
           <Link
             to="/"
-            className="ml-4 inline-flex items-center gap-2 px-5 py-3.5 bg-[var(--color-paper-3)] text-[var(--color-ink)] font-['Inter'] font-semibold text-[15px] shadow-[var(--shadow-offset)] transition-[transform,box-shadow] duration-[120ms] hover:translate-x-px hover:translate-y-px hover:shadow-[3px_3px_0_var(--color-ink)] active:translate-x-1 active:translate-y-1 active:shadow-none"
+            className="ml-4 inline-flex items-center gap-2 px-5 py-3.5 bg-[var(--color-paper-3)] text-[var(--color-ink)] font-['Inter'] font-semibold text-[15px] rounded-full transition-[transform,box-shadow] duration-[120ms] active:scale-[0.97]"
           >
             See how it works
           </Link>
@@ -155,7 +155,7 @@ export const LandingDesktop = ({
               <AuthSkeleton />
             ) : (
               <>
-                <div className={`flex gap-1 p-1 bg-[var(--color-paper-2)] mb-7 ${isClerkVerificationStep ? "hidden" : ""}`}>
+                <div className={`flex gap-1 p-1 rounded-full bg-[var(--color-paper-2)] mb-7 ${isClerkVerificationStep ? "hidden" : ""}`}>
                   {(["sign-up", "sign-in"] as AuthView[]).map((v) => {
                     const active = view === v;
                     const Icon = v === "sign-up" ? UserPlus : LogIn;
@@ -163,7 +163,7 @@ export const LandingDesktop = ({
                       <button
                         key={v}
                         onClick={() => setView(v)}
-                        className="flex-1 py-2.5 font-['Inter'] transition-all duration-200 active:scale-[0.97] flex flex-col items-center leading-tight gap-0.5"
+                        className="flex-1 rounded-full py-2.5 font-['Inter'] transition-all duration-200 active:scale-[0.97] flex flex-col items-center leading-tight gap-0.5"
                         style={
                           active
                             ? { background: "var(--color-ink)", color: "var(--color-paper)" }
@@ -227,7 +227,7 @@ export const LandingDesktop = ({
                 )}
 
                 {isClerkVerificationStep && (
-                  <div className="mb-5 flex items-start gap-3 p-3.5 bg-[var(--color-paper-2)]">
+                  <div className="mb-5 flex items-start gap-3 rounded-2xl p-3.5 bg-[var(--color-paper-2)]">
                     <Mail className="w-4 h-4 text-[var(--color-ink)] flex-shrink-0 mt-0.5" />
                     <div>
                       <p className="font-['Inter'] text-[12.5px] font-semibold text-[var(--color-ink)] leading-snug">
@@ -297,7 +297,7 @@ export const LandingDesktop = ({
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => navigate("/dashboard")}
-                className="w-full flex items-center justify-center gap-2 py-3 font-['Inter'] font-semibold text-[14px] bg-[var(--color-accent)] text-[var(--color-ink)] shadow-[var(--shadow-offset)] transition-[transform,box-shadow] duration-[120ms] hover:translate-x-px hover:translate-y-px hover:shadow-[3px_3px_0_var(--color-ink)] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                className="w-full flex items-center justify-center gap-2 py-3 font-['Inter'] font-semibold text-[14px] bg-[var(--color-accent)] text-[var(--color-ink)] rounded-full transition-[transform,box-shadow] duration-[120ms] active:scale-[0.97]"
               >
                 Go to Dashboard
                 <ArrowRight className="w-4 h-4" />

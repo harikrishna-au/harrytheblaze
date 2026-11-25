@@ -16,16 +16,16 @@ const MyExpertCard = ({
   expert: Expert & { google_refresh_token?: string | null };
   onEdit: () => void;
 }) => (
-  <div className="bg-[var(--color-paper-3)] rounded-none p-5 shadow-[var(--shadow-sheet)] flex items-start gap-4">
+  <div className="bg-[var(--color-paper-3)] rounded-2xl p-5 shadow-[var(--shadow-sheet)] flex items-start gap-4">
     <div className="flex-shrink-0">
       {expert.photo_url ? (
         <img
           src={expert.photo_url}
           alt={expert.name}
-          className="w-12 h-12 rounded-none object-cover"
+          className="w-12 h-12 rounded-2xl object-cover"
         />
       ) : (
-        <div className="w-12 h-12 rounded-none bg-[var(--color-accent)] flex items-center justify-center text-lg font-display uppercase text-[var(--color-muted)]">
+        <div className="w-12 h-12 rounded-2xl bg-[var(--color-accent)] flex items-center justify-center text-lg font-display uppercase text-[var(--color-muted)]">
           {expert.name.charAt(0)}
         </div>
       )}
@@ -41,7 +41,7 @@ const MyExpertCard = ({
         </div>
         <button
           onClick={onEdit}
-          className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-[var(--color-paper-2)] border border-[var(--color-rule)] text-[var(--color-ink)] rounded-none text-xs font-medium font-['Inter'] hover:bg-[var(--color-paper-2)]  transition-all"
+          className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-[var(--color-paper-2)] border border-[var(--color-rule)] text-[var(--color-ink)] rounded-2xl text-xs font-medium font-['Inter'] hover:bg-[var(--color-paper-2)] transition-all"
         >
           <Pencil className="w-3 h-3" />
           Edit
@@ -106,12 +106,12 @@ const BOOKING_STATUS: Record<string, { label: string; icon: React.ReactNode; cls
   confirmed: {
     label: 'Confirmed',
     icon: <CheckCircle2 className="w-3 h-3" />,
-    cls: 'bg-[var(--color-accent)] text-[var(--color-ink)] shadow-[3px_3px_0_var(--color-ink)] hover:translate-x-px hover:translate-y-px hover:shadow-[2px_2px_0_var(--color-ink)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none border border-[var(--color-ink)]',
+    cls: 'bg-[var(--color-accent)] text-[var(--color-ink)] active:scale-[0.97] border border-[var(--color-ink)] rounded-full',
   },
   completed: {
     label: 'Completed',
     icon: <CheckCircle2 className="w-3 h-3" />,
-    cls: 'bg-[var(--color-accent)] text-[var(--color-ink)] shadow-[3px_3px_0_var(--color-ink)] hover:translate-x-px hover:translate-y-px hover:shadow-[2px_2px_0_var(--color-ink)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none border-[var(--color-ink)]',
+    cls: 'bg-[var(--color-accent)] text-[var(--color-ink)] active:scale-[0.97] border-[var(--color-ink)] rounded-full',
   },
   cancelled: {
     label: 'Cancelled',
@@ -210,7 +210,7 @@ const BookingsPanel = () => {
 
   if (bookings.length === 0) {
     return (
-      <div className="bg-[var(--color-paper-3)] rounded-none p-12 shadow-[var(--shadow-sheet)] flex flex-col items-center text-center">
+      <div className="bg-[var(--color-paper-3)] rounded-2xl p-12 shadow-[var(--shadow-sheet)] flex flex-col items-center text-center">
         <CalendarDays className="w-8 h-8 text-[var(--color-muted)] mb-3" />
         <p className="text-[var(--color-muted)] text-sm font-['Inter']">No bookings yet.</p>
       </div>
@@ -225,7 +225,7 @@ const BookingsPanel = () => {
   return (
     <div className="space-y-4">
       {/* ── Income stats banner ── */}
-      <div className="bg-[var(--color-paper-3)] rounded-none border border-[var(--color-rule)] shadow-sm overflow-hidden">
+      <div className="bg-[var(--color-paper-3)] rounded-2xl border border-[var(--color-rule)] shadow-sm overflow-hidden">
         <div className="px-5 py-3 border-b border-[var(--color-rule)]">
           <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[var(--color-muted)] font-['Inter']">
             Earnings Overview
@@ -255,7 +255,7 @@ const BookingsPanel = () => {
       </div>
 
       {sorted.length === 0 ? (
-        <div className="bg-[var(--color-paper-3)] rounded-none p-10 shadow-[var(--shadow-sheet)] flex flex-col items-center text-center">
+        <div className="bg-[var(--color-paper-3)] rounded-2xl p-10 shadow-[var(--shadow-sheet)] flex flex-col items-center text-center">
           <CalendarDays className="w-7 h-7 text-[var(--color-muted)] mb-3" />
           <p className="text-[var(--color-muted)] text-sm font-['Inter']">No upcoming sessions.</p>
         </div>
@@ -265,7 +265,7 @@ const BookingsPanel = () => {
         const st = BOOKING_STATUS[booking.status] ?? BOOKING_STATUS.declined;
         const isPending = booking.status === 'paid';
         return (
-          <div key={booking.id} className="bg-[var(--color-paper-3)] rounded-none p-5 shadow-[var(--shadow-sheet)] space-y-3">
+          <div key={booking.id} className="bg-[var(--color-paper-3)] rounded-2xl p-5 shadow-[var(--shadow-sheet)] space-y-3">
             <div className="flex items-start justify-between gap-2">
               <div>
                 <p className="text-sm font-display uppercase text-[var(--color-ink)]">{booking.user_name}</p>
@@ -297,13 +297,13 @@ const BookingsPanel = () => {
             )}
 
             {booking.message && (
-              <p className="text-xs text-[var(--color-muted)] font-['Inter'] bg-[var(--color-paper-2)] rounded-none px-3 py-2 line-clamp-3">
+              <p className="text-xs text-[var(--color-muted)] font-['Inter'] bg-[var(--color-paper-2)] rounded-2xl px-3 py-2 line-clamp-3">
                 {booking.message}
               </p>
             )}
 
             {isPending && (
-              <div className="flex items-start gap-2.5 p-3 bg-[var(--color-paper-2)] border border-[var(--color-rule)] rounded-none">
+              <div className="flex items-start gap-2.5 p-3 bg-[var(--color-paper-2)] border border-[var(--color-rule)] rounded-2xl">
                 <ShieldCheck className="w-3.5 h-3.5 text-[var(--color-muted)] flex-shrink-0 mt-0.5" />
                 <p className="text-[11px] text-[var(--color-muted)] font-['Inter'] leading-relaxed">
                   The Connect team is reviewing this paid booking and will coordinate the schedule and meeting link with both sides.
@@ -317,13 +317,13 @@ const BookingsPanel = () => {
                 href={booking.meet_link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1.5 w-full py-2 bg-[var(--color-accent)] text-[var(--color-ink)] shadow-[3px_3px_0_var(--color-ink)] hover:translate-x-px hover:translate-y-px hover:shadow-[2px_2px_0_var(--color-ink)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none rounded-none text-xs font-medium font-['Inter'] transition-colors"
+                className="flex items-center justify-center gap-1.5 w-full py-2 bg-[var(--color-accent)] text-[var(--color-ink)] active:scale-[0.97] rounded-full text-xs font-medium font-['Inter'] transition-colors"
               >
                 <Video className="w-3 h-3" />
                 Join Google Meet
               </a>
             ) : booking.status !== 'declined' ? (
-              <div className="flex items-center justify-center gap-1.5 w-full py-2 bg-[var(--color-paper-2)] border border-[var(--color-rule)] text-[var(--color-muted)] rounded-none text-xs font-medium font-['Inter']">
+              <div className="flex items-center justify-center gap-1.5 w-full py-2 bg-[var(--color-paper-2)] border border-[var(--color-rule)] text-[var(--color-muted)] rounded-2xl text-xs font-medium font-['Inter']">
                 <Clock className="w-3 h-3" />
                 Meeting link managed by Connect team
               </div>
@@ -403,7 +403,7 @@ const MessagesPanel = ({ userId }: { userId: string }) => {
   );
 
   if (messages.length === 0) return (
-    <div className="bg-[var(--color-paper-3)] rounded-none p-12 shadow-[var(--shadow-sheet)] flex flex-col items-center text-center">
+    <div className="bg-[var(--color-paper-3)] rounded-2xl p-12 shadow-[var(--shadow-sheet)] flex flex-col items-center text-center">
       <MessageCircle className="w-8 h-8 text-[var(--color-muted)] mb-3" />
       <p className="text-[var(--color-muted)] text-sm font-['Inter']">No messages yet.</p>
     </div>
@@ -419,7 +419,7 @@ const MessagesPanel = ({ userId }: { userId: string }) => {
       {messages.map((msg) => (
         <div
           key={msg.id}
-          className={`bg-[var(--color-paper-3)] rounded-none shadow-sm border transition-all ${msg.is_read ? 'border-[var(--color-rule)]' : 'border-[var(--color-rule)]'}`}
+          className={`bg-[var(--color-paper-3)] rounded-2xl shadow-sm border transition-all ${msg.is_read ? 'border-[var(--color-rule)]' : 'border-[var(--color-rule)]'}`}
         >
           <button
             className="w-full text-left px-5 py-4 flex items-start justify-between gap-3"
@@ -457,7 +457,7 @@ const MessagesPanel = ({ userId }: { userId: string }) => {
               </p>
               <a
                 href={`mailto:${msg.sender_email}?subject=Re: ${msg.subject ?? 'Your message'}`}
-                className="inline-flex items-center gap-1.5 px-3 py-2 bg-[var(--color-accent)] text-[var(--color-ink)] shadow-[3px_3px_0_var(--color-ink)] hover:translate-x-px hover:translate-y-px hover:shadow-[2px_2px_0_var(--color-ink)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none rounded-none text-xs font-medium font-['Inter']  transition-all"
+                className="inline-flex items-center gap-1.5 px-3 py-2 bg-[var(--color-accent)] text-[var(--color-ink)] active:scale-[0.97] rounded-full text-xs font-medium font-['Inter'] transition-all"
               >
                 <Mail className="w-3 h-3" />
                 Reply to {msg.sender_email}
@@ -526,7 +526,7 @@ const ManagementPanel = ({ userId }: { userId: string }) => {
           {tab === 'profiles' && (view === 'add' || view === 'edit') && (
             <button
               onClick={handleCancel}
-              className="flex items-center gap-1.5 px-3 py-2 bg-[var(--color-paper-2)] text-[var(--color-ink)] rounded-none text-sm font-medium font-['Inter'] hover:bg-[var(--color-paper-2)]  transition-all"
+              className="flex items-center gap-1.5 px-3 py-2 bg-[var(--color-paper-2)] text-[var(--color-ink)] rounded-2xl text-sm font-medium font-['Inter'] hover:bg-[var(--color-paper-2)] transition-all"
             >
               <ArrowLeft className="w-4 h-4" />
               Back
@@ -540,7 +540,7 @@ const ManagementPanel = ({ userId }: { userId: string }) => {
           {tab === 'profiles' && view === 'list' && (
             <button
               onClick={() => setView('add')}
-              className="flex items-center gap-2 px-4 py-2.5 bg-[var(--color-accent)] text-[var(--color-ink)] shadow-[3px_3px_0_var(--color-ink)] hover:translate-x-px hover:translate-y-px hover:shadow-[2px_2px_0_var(--color-ink)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none rounded-none text-sm font-medium font-['Inter']  transition-all whitespace-nowrap"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[var(--color-accent)] text-[var(--color-ink)] active:scale-[0.97] rounded-full text-sm font-medium font-['Inter'] transition-all whitespace-nowrap"
             >
               <Plus className="w-4 h-4" />
               Add Profile
@@ -549,12 +549,12 @@ const ManagementPanel = ({ userId }: { userId: string }) => {
         </div>
       </div>
 
-      <div className="flex gap-1 p-1 bg-[var(--color-paper-2)] rounded-none mb-6">
+      <div className="flex gap-1 p-1 bg-[var(--color-paper-2)] rounded-2xl mb-6">
         {([['profiles', 'My Profiles'], ['bookings', 'Bookings'], ['messages', 'Messages']] as const).map(([key, label]) => (
           <button
             key={key}
             onClick={() => { setTab(key); if (key === 'profiles') setView('list'); }}
-            className={`flex-1 py-2 text-sm font-medium font-['Inter'] rounded-none transition-all ${tab === key
+            className={`flex-1 py-2 text-sm font-medium font-['Inter'] rounded-2xl transition-all ${tab === key
               ? 'bg-[var(--color-paper-3)] text-[var(--color-ink)] shadow-sm'
               : 'text-[var(--color-muted)] hover:text-[var(--color-ink)]'
               }`}
@@ -574,11 +574,11 @@ const ManagementPanel = ({ userId }: { userId: string }) => {
               <div className="w-6 h-6 border-2 border-[var(--color-rule)] border-t-[var(--color-ink)] rounded-full animate-spin" />
             </div>
           ) : experts.length === 0 ? (
-            <div className="bg-[var(--color-paper-3)] rounded-none p-12 shadow-[var(--shadow-sheet)] flex flex-col items-center text-center">
+            <div className="bg-[var(--color-paper-3)] rounded-2xl p-12 shadow-[var(--shadow-sheet)] flex flex-col items-center text-center">
               <p className="text-[var(--color-muted)] text-sm font-['Inter'] mb-5">No expert profiles yet.</p>
               <button
                 onClick={() => setView('add')}
-                className="flex items-center gap-2 px-5 py-2.5 bg-[var(--color-accent)] text-[var(--color-ink)] shadow-[3px_3px_0_var(--color-ink)] hover:translate-x-px hover:translate-y-px hover:shadow-[2px_2px_0_var(--color-ink)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none rounded-none text-sm font-medium font-['Inter']  transition-all"
+                className="flex items-center gap-2 px-5 py-2.5 bg-[var(--color-accent)] text-[var(--color-ink)] active:scale-[0.97] rounded-full text-sm font-medium font-['Inter'] transition-all"
               >
                 <Plus className="w-4 h-4" />
                 Add Your First Profile
@@ -599,7 +599,7 @@ const ManagementPanel = ({ userId }: { userId: string }) => {
       )}
 
       {tab === 'profiles' && (view === 'add' || view === 'edit') && (
-        <div className="bg-[var(--color-paper-3)] rounded-none p-5 sm:p-8 shadow-[var(--shadow-sheet)]">
+        <div className="bg-[var(--color-paper-3)] rounded-2xl p-5 sm:p-8 shadow-[var(--shadow-sheet)]">
           {/* Form header with X close button */}
           <div className="flex items-center justify-between mb-6">
             <p className="text-xs font-semibold text-[var(--color-muted)] uppercase tracking-widest font-['Inter']">
@@ -607,7 +607,7 @@ const ManagementPanel = ({ userId }: { userId: string }) => {
             </p>
             <button
               onClick={handleCancel}
-              className="p-1.5 rounded-none text-[var(--color-muted)] hover:text-[var(--color-ink)] hover:bg-[var(--color-paper-2)]  transition-all"
+              className="p-1.5 rounded-2xl text-[var(--color-muted)] hover:text-[var(--color-ink)] hover:bg-[var(--color-paper-2)] transition-all"
               title="Close"
             >
               <X className="w-4 h-4" />

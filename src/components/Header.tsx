@@ -125,13 +125,13 @@ const Header = ({ onStartTour }: HeaderProps) => {
 
   const premiumControl =
     premiumLoading ? null : isPremium ? (
-      <Badge className="h-9 gap-1.5 rounded-none px-3 text-[13px] font-bold">
+      <Badge className="h-9 gap-1.5 rounded-full px-4 text-[13px] font-bold">
         <Sparkles className="h-3.5 w-3.5" aria-hidden />
         <span className="hidden sm:inline">Premium</span>
         <span className="sr-only sm:hidden">Premium member</span>
       </Badge>
     ) : (
-      <Button variant="outline" size="sm" className="h-9 gap-1.5 border-foreground font-semibold" onClick={() => setShowPayment(true)}>
+      <Button variant="outline" size="sm" className="h-9 gap-1.5 font-semibold" onClick={() => setShowPayment(true)}>
         <Sparkles aria-hidden />
         Premium
       </Button>
@@ -143,11 +143,11 @@ const Header = ({ onStartTour }: HeaderProps) => {
   const header = (
       <header
         className={cn(
-          "fixed inset-x-0 top-0 z-50 border-b [transform:translateZ(0)] [-webkit-backface-visibility:hidden] [backface-visibility:hidden] transition-[background-color,border-color,box-shadow] duration-300",
-          scrolled ? "border-border bg-[var(--color-paper-3)] shadow-[var(--shadow-card)]" : "border-transparent bg-background",
+          "fixed inset-x-3 top-3 z-50 mx-auto max-w-[1280px] rounded-full border border-[var(--color-rule)] [transform:translateZ(0)] [-webkit-backface-visibility:hidden] [backface-visibility:hidden] transition-[background-color,box-shadow] duration-300 sm:inset-x-6",
+          scrolled ? "bg-white shadow-[0_12px_32px_-20px_rgba(21,20,15,0.4)]" : "bg-white/85",
         )}
       >
-        <div className="container mx-auto flex h-14 items-center gap-2 px-3 sm:h-16 sm:px-6">
+        <div className="flex h-14 items-center gap-2 pl-4 pr-2.5 sm:pl-5">
           {/* Logo */}
           <Link
             to={pathname === "/" ? "/" : "/dashboard"}
@@ -155,7 +155,7 @@ const Header = ({ onStartTour }: HeaderProps) => {
             className="mr-1 flex shrink-0 items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             <img src="/favicon.svg" alt="" className="h-8 w-8 sm:hidden" />
-            <img src="/logo.svg" alt="Harry The Blaze" className="hidden h-10 w-auto sm:block" />
+            <img src="/logo.svg" alt="Harry The Blaze" className="hidden h-9 w-auto sm:block" />
           </Link>
 
           {/* Desktop navigation (signed-in app links) */}

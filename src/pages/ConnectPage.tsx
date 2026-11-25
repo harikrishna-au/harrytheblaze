@@ -158,7 +158,7 @@ const ConnectPage = () => {
                         </p>
                         <h1 data-intro className="font-display uppercase tracking-tight text-foreground text-[clamp(2.7rem,7.2vw,4.8rem)] leading-[0.95] mt-4">
                             Talk to someone who{' '}
-                            <span className="inline-block -rotate-1 bg-[var(--color-accent)] px-3 pb-1 pt-2">just got placed.</span>
+                            <em>just got placed.</em>
                         </h1>
                         <p data-intro className="font-['Inter'] text-base sm:text-lg text-[var(--color-ink)] leading-relaxed mt-5 max-w-xl">
                             Practice gets you ready for the round. A senior who sat in that exact interview tells you what it
@@ -179,14 +179,14 @@ const ConnectPage = () => {
                         <div className="flex flex-wrap items-center gap-3 mt-8">
                             <a
                                 href="#seniors"
-                                className="inline-flex items-center gap-2 px-6 py-3.5 bg-[var(--color-accent)] text-[var(--color-ink)] rounded-none text-[15px] font-semibold font-['Inter'] shadow-[var(--shadow-offset)] hover:translate-x-px hover:translate-y-px hover:shadow-[3px_3px_0_var(--color-ink)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-[transform,box-shadow] duration-150 motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-foreground"
+                                className="inline-flex items-center gap-2 px-6 py-3.5 bg-[var(--color-accent)] text-[var(--color-ink)] rounded-full text-[15px] font-semibold font-['Inter'] rounded-full active:scale-[0.97] transition-[transform,box-shadow] duration-150 motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-foreground"
                             >
                                 Choose a senior
                                 <ArrowDown className="w-4 h-4" />
                             </a>
                             <button
                                 onClick={() => setShowMyBookings(true)}
-                                className="inline-flex items-center gap-2 px-5 py-3.5 bg-[var(--color-paper-3)] text-[var(--color-ink)] rounded-none text-[15px] font-semibold font-['Inter'] shadow-[var(--shadow-offset)] hover:translate-x-px hover:translate-y-px hover:shadow-[3px_3px_0_var(--color-ink)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-[transform,box-shadow] duration-150 motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-foreground"
+                                className="inline-flex items-center gap-2 px-5 py-3.5 bg-[var(--color-paper-3)] text-[var(--color-ink)] rounded-full text-[15px] font-semibold font-['Inter'] rounded-full active:scale-[0.97] transition-[transform,box-shadow] duration-150 motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-foreground"
                             >
                                 <CalendarDays className="w-4 h-4" />
                                 My bookings
@@ -300,9 +300,9 @@ const ConnectPage = () => {
                                             aria-pressed={active}
                                             className={`flex-shrink-0 inline-flex items-center gap-2 pl-4 pr-3 py-2 text-sm font-semibold font-['Inter'] transition-[transform,box-shadow] duration-[120ms] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--color-ink)] ${
                                                 active
-                                                    ? 'bg-[var(--color-accent)] text-[var(--color-ink)] shadow-[3px_3px_0_var(--color-ink)]'
+                                                    ? 'bg-[var(--color-accent)] text-[var(--color-ink)] '
                                                     : 'bg-[var(--color-paper-3)] text-[var(--color-ink)] shadow-[var(--shadow-card)] hover:-translate-y-0.5'
-                                            }`}
+                                            } rounded-[20px]`}
                                         >
                                             {label}
                                             <span
@@ -339,7 +339,7 @@ const ConnectPage = () => {
                                         </p>
                                         <button
                                             onClick={() => navigate('/dashboard')}
-                                            className="mt-6 inline-flex items-center gap-2 px-5 py-3 bg-[var(--color-accent)] text-[var(--color-ink)] text-sm font-semibold font-['Inter'] shadow-[var(--shadow-offset)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-[transform,box-shadow]"
+                                            className="mt-6 inline-flex items-center gap-2 px-5 py-3 bg-[var(--color-accent)] text-[var(--color-ink)] text-sm font-semibold font-['Inter'] rounded-full active:scale-[0.97] transition-[transform,box-shadow]"
                                         >
                                             Go to practice
                                             <ArrowRight className="w-4 h-4" />
@@ -374,7 +374,7 @@ const ConnectPage = () => {
 
                 {/* ── Seniors who want to share ── */}
                 <section className="pb-20">
-                    <div data-reveal className="bg-[var(--color-ink)] text-[var(--color-paper)] px-6 py-8 sm:px-10 sm:py-12 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                    <div data-reveal className="rounded-[28px] bg-[var(--color-ink)] text-[var(--color-paper)] px-6 py-8 sm:px-10 sm:py-12 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                         <div className="max-w-xl">
                             <h2 className="font-display text-4xl sm:text-5xl uppercase leading-[0.98]">
                                 Recently placed? Be the senior someone else needed.
@@ -385,7 +385,7 @@ const ConnectPage = () => {
                         </div>
                         <button
                             onClick={() => navigate('/placed-guru')}
-                            className="flex-shrink-0 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-[var(--color-accent)] text-[var(--color-ink)] text-[15px] font-semibold font-['Inter'] shadow-[4px_4px_0_var(--color-paper)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-[transform,box-shadow] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-ink)] focus-visible:ring-white"
+                            className="flex-shrink-0 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-[var(--color-accent)] text-[var(--color-ink)] text-[15px] font-semibold font-['Inter'] active:scale-[0.97] transition-[transform,box-shadow] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-ink)] focus-visible:ring-white rounded-full"
                         >
                             <UserPlus className="w-4 h-4" />
                             Share your experience

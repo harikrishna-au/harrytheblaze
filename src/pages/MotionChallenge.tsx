@@ -125,14 +125,14 @@ export default function MotionChallenge() {
 
   if (phase === 'intro') {
     return (
-      <div style={{ background: '#fcfcf9', minHeight: '100vh' }}>
+      <div style={{ background: 'var(--color-paper)', minHeight: '100vh' }}>
         <Header />
         <div className="max-w-sm mx-auto px-4 pt-28 pb-12 text-center">
           <div className="w-16 h-16 rounded-2xl mx-auto mb-6 flex items-center justify-center text-3xl"
             style={{ background: 'rgba(8,145,178,0.1)', border: '1.5px solid rgba(8,145,178,0.2)' }}>
             🎯
           </div>
-          <h1 className="text-3xl font-serif text-stone-800 mb-3">Motion Challenge</h1>
+          <h1 className="text-5xl font-serif text-stone-900 mb-3">Motion Challenge</h1>
           <p className="text-stone-500 text-sm font-['Inter'] leading-relaxed mb-8 max-w-[260px] mx-auto">
             Tap the coloured circles before they vanish. Speed and accuracy both matter.
             Missing targets costs points!
@@ -159,11 +159,11 @@ export default function MotionChallenge() {
 
   if (phase === 'end') {
     return (
-      <div style={{ background: '#fcfcf9', minHeight: '100vh' }}>
+      <div style={{ background: 'var(--color-paper)', minHeight: '100vh' }}>
         <Header />
         <div className="max-w-sm mx-auto px-4 pt-28 pb-12 text-center">
           <Trophy className="w-14 h-14 mx-auto text-amber-500 mb-4" />
-          <h2 className="text-3xl font-serif text-stone-800 mb-6">Time's up!</h2>
+          <h2 className="text-5xl font-serif text-stone-900 mb-6">Time's up!</h2>
           <div className="grid grid-cols-3 gap-3 mb-6">
             {[
               [score, 'Score'],
@@ -191,7 +191,7 @@ export default function MotionChallenge() {
 
   // Playing phase
   return (
-    <div style={{ background: '#fcfcf9', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ background: 'var(--color-paper)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header />
       <div className="max-w-lg mx-auto w-full px-4 pt-20 pb-4 flex flex-col flex-1">
 

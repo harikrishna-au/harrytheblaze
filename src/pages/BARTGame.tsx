@@ -101,11 +101,11 @@ export default function BARTGame() {
 
   if (phase === 'intro') {
     return (
-      <div style={{ background: '#fcfcf9', minHeight: '100vh' }}>
+      <div style={{ background: 'var(--color-paper)', minHeight: '100vh' }}>
         <Header />
         <div className="max-w-sm mx-auto px-4 pt-28 pb-12 text-center">
           <div className="text-5xl mb-4">🎈</div>
-          <h1 className="text-3xl font-serif text-stone-800 mb-3">BART</h1>
+          <h1 className="text-5xl font-serif text-stone-900 mb-3">BART</h1>
           <p className="text-stone-500 text-sm font-['Inter'] font-light mb-1">Balloon Analogue Risk Task</p>
           <p className="text-stone-500 text-sm font-['Inter'] leading-relaxed mb-6 max-w-[270px] mx-auto mt-3">
             Pump the balloon to earn points. <strong className="text-stone-700">Collect</strong> to bank them safely —
@@ -138,11 +138,11 @@ export default function BARTGame() {
     const poppedCount = history.filter(h => h.state === 'popped').length;
     const riskProfile = avgPumps < 20 ? 'Conservative 🛡️' : avgPumps < 45 ? 'Balanced ⚖️' : 'Risk-Taker 🔥';
     return (
-      <div style={{ background: '#fcfcf9', minHeight: '100vh' }}>
+      <div style={{ background: 'var(--color-paper)', minHeight: '100vh' }}>
         <Header />
         <div className="max-w-sm mx-auto px-4 pt-28 pb-12 text-center">
           <Trophy className="w-14 h-14 mx-auto text-amber-500 mb-4" />
-          <h2 className="text-3xl font-serif text-stone-800 mb-6">All 15 Balloons Done!</h2>
+          <h2 className="text-5xl font-serif text-stone-900 mb-6">All 15 Balloons Done!</h2>
           <div className="grid grid-cols-2 gap-3 mb-4">
             {[
               [totalScore, 'Total Score'],
@@ -194,7 +194,7 @@ export default function BARTGame() {
   }
 
   return (
-    <div style={{ background: '#fcfcf9', minHeight: '100vh' }}>
+    <div style={{ background: 'var(--color-paper)', minHeight: '100vh' }}>
       <Header />
       <div className="max-w-sm mx-auto px-4 pt-20 pb-16">
 

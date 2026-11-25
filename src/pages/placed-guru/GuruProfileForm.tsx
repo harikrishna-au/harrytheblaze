@@ -196,7 +196,7 @@ const GuruProfileForm = ({ userId, expertId, initialData, onSuccess, onCancel }:
         </div>
         <button
           onClick={resetForm}
-          className="px-6 py-2.5 bg-[var(--color-accent)] text-[var(--color-ink)] shadow-[3px_3px_0_var(--color-ink)] hover:translate-x-px hover:translate-y-px hover:shadow-[2px_2px_0_var(--color-ink)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none rounded-none text-sm font-medium font-['Inter']  transition-all"
+          className="px-6 py-2.5 bg-[var(--color-accent)] text-[var(--color-ink)] active:scale-[0.97] rounded-full text-sm font-medium font-['Inter'] transition-all"
         >
           Add Another Expert
         </button>
@@ -268,9 +268,9 @@ const GuruProfileForm = ({ userId, expertId, initialData, onSuccess, onCancel }:
                 <button
                   key={c} type="button"
                   onClick={() => { setCompany(c); if (c !== 'Other') setCustomCompany(''); }}
-                  className={`py-2.5 px-3 rounded-none text-sm font-medium border transition-all font-['Inter'] ${
+                  className={`py-2.5 px-3 rounded-full text-sm font-medium border transition-all font-['Inter'] ${
                     company === c
-                      ? 'bg-[var(--color-accent)] text-[var(--color-ink)] shadow-[3px_3px_0_var(--color-ink)] hover:translate-x-px hover:translate-y-px hover:shadow-[2px_2px_0_var(--color-ink)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none border-[var(--color-ink)]'
+                      ? 'bg-[var(--color-accent)] text-[var(--color-ink)]       active:scale-[0.97] border-[var(--color-ink)]'
                       : 'bg-[var(--color-paper-2)] text-[var(--color-ink)] border-[var(--color-rule)] hover:border-[var(--color-ink)] hover:bg-[var(--color-paper-2)]'
                   }`}
                 >
@@ -347,7 +347,7 @@ const GuruProfileForm = ({ userId, expertId, initialData, onSuccess, onCancel }:
             placeholder="Type a skill and press Enter (e.g. DSA, HR Interview, Accenture)"
             className={`${inputCls} flex-1`}
           />
-          <button type="button" onClick={addSkill} className="px-3 py-2.5 bg-[var(--color-paper-2)] text-[var(--color-ink)] rounded-none hover:bg-[var(--color-paper-2)] transition-colors flex-shrink-0">
+          <button type="button" onClick={addSkill} className="px-3 py-2.5 bg-[var(--color-paper-2)] text-[var(--color-ink)] rounded-2xl hover:bg-[var(--color-paper-2)] transition-colors flex-shrink-0">
             <Plus className="w-4 h-4" />
           </button>
         </div>
@@ -388,7 +388,7 @@ const GuruProfileForm = ({ userId, expertId, initialData, onSuccess, onCancel }:
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 py-3.5 bg-[var(--color-paper-2)] text-[var(--color-ink)] rounded-none text-sm font-medium font-['Inter'] hover:bg-[var(--color-paper-2)]  transition-all duration-200"
+            className="flex-1 py-3.5 bg-[var(--color-paper-2)] text-[var(--color-ink)] rounded-2xl text-sm font-medium font-['Inter'] hover:bg-[var(--color-paper-2)] transition-all duration-200"
           >
             Cancel
           </button>
@@ -396,7 +396,7 @@ const GuruProfileForm = ({ userId, expertId, initialData, onSuccess, onCancel }:
         <button
           type="submit"
           disabled={loading || fetchingAvailability}
-          className={`${onCancel ? 'flex-1' : 'w-full'} py-3.5 bg-[var(--color-accent)] text-[var(--color-ink)] shadow-[3px_3px_0_var(--color-ink)] hover:translate-x-px hover:translate-y-px hover:shadow-[2px_2px_0_var(--color-ink)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none rounded-none text-sm font-medium font-['Inter']  transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2`}
+          className={`${onCancel ? 'flex-1' : 'w-full'} py-3.5 bg-[var(--color-accent)] text-[var(--color-ink)] active:scale-[0.97] rounded-full text-sm font-medium font-['Inter'] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2`}
         >
           {loading ? (
             <><Loader2 className="w-4 h-4 animate-spin" /> {isEdit ? 'Saving...' : 'Creating Profile...'}</>

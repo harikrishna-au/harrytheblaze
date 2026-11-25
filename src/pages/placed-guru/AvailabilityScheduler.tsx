@@ -144,7 +144,7 @@ const AvailabilityScheduler = ({ value, onChange }: AvailabilitySchedulerProps) 
                   <button
                     type="button"
                     onClick={() => addWindow(dayNum)}
-                    className="flex h-9 w-9 flex-shrink-0 items-center justify-center bg-[var(--color-accent)] text-[var(--color-ink)] shadow-[2px_2px_0_var(--color-ink)] transition-[transform,box-shadow] hover:translate-x-px hover:translate-y-px hover:shadow-[1px_1px_0_var(--color-ink)]"
+                    className="flex h-9 w-9 flex-shrink-0 items-center justify-center bg-[var(--color-accent)] text-[var(--color-ink)] transition-[transform,box-shadow] rounded-full"
                     title={`Add time window for ${label}`}
                     aria-label={`Add time window for ${label}`}
                   >

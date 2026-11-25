@@ -204,7 +204,7 @@ function GameCard({
           (badge.onClick ? (
             <button
               onClick={badge.onClick}
-              className="relative z-10 inline-flex items-center gap-1 bg-[var(--color-accent)] px-2 py-1 text-xs font-semibold text-[var(--color-ink)] shadow-[2px_2px_0_var(--color-ink)] transition-[transform,box-shadow] hover:translate-x-px hover:translate-y-px hover:shadow-[1px_1px_0_var(--color-ink)]"
+              className="relative z-10 inline-flex items-center gap-1 bg-[var(--color-accent)] px-2 py-1 text-xs font-semibold text-[var(--color-ink)] transition-[transform,box-shadow] rounded-full"
             >
               <Crown className="h-3 w-3" aria-hidden />
               {badge.label}
@@ -287,7 +287,7 @@ export const CognitiveGamesPage = ({ isPremium, onSubscribe }: Props) => {
           className="mt-2 font-display font-normal uppercase leading-[0.95] tracking-[0.005em]"
           style={{ fontSize: "clamp(2.75rem, 7vw, 5rem)" }}
         >
-          Cognitive games
+          Cognitive <em>games</em>
         </h1>
         <p data-intro className="mt-3 max-w-[56ch] text-lg leading-snug">
           Game-based simulations modelled on the cognitive tests used in MNC assessments.

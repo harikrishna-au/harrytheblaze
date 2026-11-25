@@ -297,7 +297,7 @@ const IntroScrollText = () => {
 
           <h1
             style={{
-              fontFamily: "'Merriweather', serif",
+              fontFamily: "'Inter', sans-serif",
               fontSize: "clamp(2.1rem, 4.8vw, 4.6rem)",
               fontWeight: 700,
               letterSpacing: "-0.01em",
@@ -313,7 +313,7 @@ const IntroScrollText = () => {
               backgroundClip: "text",
             }}
           >
-            HARRY THE BLAZE
+            Harry The Blaze
           </h1>
 
           {/* Right line */}

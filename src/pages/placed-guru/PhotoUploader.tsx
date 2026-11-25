@@ -77,7 +77,7 @@ const PhotoUploader = ({
       {value ? (
         <div className="relative w-24 h-24 group">
           {isPdf ? (
-            <div className="w-24 h-24 rounded-none bg-[var(--color-paper-2)] border border-[var(--color-rule)] flex flex-col items-center justify-center gap-1">
+            <div className="w-24 h-24 rounded-2xl bg-[var(--color-paper-2)] border border-[var(--color-rule)] flex flex-col items-center justify-center gap-1">
               <FileText className="w-6 h-6 text-[var(--color-muted)]" />
               <span className="text-[11px] text-[var(--color-muted)] font-['Inter']">PDF</span>
             </div>
@@ -85,12 +85,12 @@ const PhotoUploader = ({
             <img
               src={value}
               alt="Preview"
-              className="w-24 h-24 rounded-none object-cover border border-[var(--color-rule)]"
+              className="w-24 h-24 rounded-2xl object-cover border border-[var(--color-rule)]"
             />
           )}
           <div
             onClick={() => inputRef.current?.click()}
-            className="absolute inset-0 rounded-none bg-black/0 group-hover:bg-black/20 transition-colors cursor-pointer flex items-center justify-center"
+            className="absolute inset-0 rounded-2xl bg-black/0 group-hover:bg-black/20 transition-colors cursor-pointer flex items-center justify-center"
           >
             <Upload className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
@@ -105,7 +105,7 @@ const PhotoUploader = ({
       ) : (
         <div
           onClick={() => !uploading && inputRef.current?.click()}
-          className={`rounded-none border-2 border-dashed border-[var(--color-rule)] bg-[var(--color-paper-2)] flex flex-col items-center justify-center gap-1.5 hover:border-[var(--color-ink)] hover:bg-[var(--color-paper-2)] transition-all cursor-pointer ${
+          className={`rounded-2xl border-2 border-dashed border-[var(--color-rule)] bg-[var(--color-paper-2)] flex flex-col items-center justify-center gap-1.5 hover:border-[var(--color-ink)] hover:bg-[var(--color-paper-2)] transition-all cursor-pointer ${
             isProof ? 'w-full h-20' : 'w-24 h-24'
           }`}
         >

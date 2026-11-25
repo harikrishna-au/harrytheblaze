@@ -86,7 +86,7 @@ function AdminLogin({ onLogin }: { onLogin: () => void }) {
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center px-6" style={{ background: '#fcfcf9' }}>
+    <div className="min-h-screen relative flex items-center justify-center px-6" style={{ background: 'var(--color-paper)' }}>
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute inset-0 opacity-[0.25]"
           style={{ backgroundImage: 'radial-gradient(circle, #c4bdb4 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
@@ -96,7 +96,7 @@ function AdminLogin({ onLogin }: { onLogin: () => void }) {
 
       <div className="relative z-10 w-full max-w-sm">
         <div className="text-center mb-6">
-          <span className="font-['Merriweather'] font-black text-stone-800 text-lg tracking-tight">Harry The Blaze</span>
+          <span className="font-head font-black text-stone-800 text-lg tracking-tight">Harry The Blaze</span>
           <p className="font-['Inter'] text-[11px] text-stone-400 uppercase tracking-widest mt-0.5">Admin Panel</p>
         </div>
 
@@ -105,11 +105,11 @@ function AdminLogin({ onLogin }: { onLogin: () => void }) {
           <div className="p-8">
             <div className="flex justify-center mb-6">
               <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm"
-                style={{ background: 'linear-gradient(135deg, #1c1c1e 0%, #3d3d40 100%)' }}>
+                style={{ background: 'var(--color-ink)' }}>
                 <Shield className="w-6 h-6 text-white" />
               </div>
             </div>
-            <h1 className="font-['Merriweather'] font-black text-stone-900 text-xl text-center mb-1 tracking-tight">Admin Access</h1>
+            <h1 className="font-head font-black text-stone-900 text-xl text-center mb-1 tracking-tight">Admin Access</h1>
             <p className="font-['Inter'] text-[13px] text-stone-400 text-center mb-7 font-light">Enter the admin password to continue</p>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -136,7 +136,7 @@ function AdminLogin({ onLogin }: { onLogin: () => void }) {
               </div>
               <button type="submit" disabled={!password || checking}
                 className="w-full py-3 rounded-xl font-semibold text-[14px] font-['Inter'] text-white disabled:opacity-40 transition-all duration-200 hover:opacity-90 active:scale-95"
-                style={{ background: 'linear-gradient(135deg, #1c1c1e 0%, #3d3d40 100%)', boxShadow: '0 2px 8px rgba(0,0,0,0.18)' }}>
+                style={{ background: 'var(--color-ink)', boxShadow: '0 2px 8px rgba(0,0,0,0.18)' }}>
                 {checking ? 'Checking…' : 'Access Admin Panel'}
               </button>
             </form>
@@ -213,7 +213,7 @@ function ExpertCard({ expert, onApprove, onReject }: {
         {expert.photo_url ? (
           <img src={expert.photo_url} alt={expert.name} className="w-16 h-16 rounded-xl object-cover border border-stone-100" />
         ) : (
-          <div className="w-16 h-16 rounded-xl flex items-center justify-center text-white font-['Merriweather'] font-bold text-lg"
+          <div className="w-16 h-16 rounded-xl flex items-center justify-center text-white font-head font-bold text-lg"
             style={{ background: 'linear-gradient(135deg,#292524,#57534e)' }}>
             {initials}
           </div>
@@ -323,7 +323,7 @@ function ExpertsSection() {
           <div className="w-16 h-16 rounded-2xl bg-white border border-stone-200 flex items-center justify-center mb-5 shadow-sm">
             <Users className="w-7 h-7 text-stone-400" />
           </div>
-          <h3 className="font-['Merriweather'] font-bold text-stone-700 text-xl mb-2">
+          <h3 className="font-head font-bold text-stone-700 text-xl mb-2">
             {expertTab === 'pending' ? 'No pending experts' : 'No approved experts'}
           </h3>
           <p className="font-['Inter'] text-stone-400 text-[13px] font-light">
@@ -403,7 +403,7 @@ function BlogSection() {
           <div className="w-16 h-16 rounded-2xl bg-white border border-stone-200 flex items-center justify-center mb-5 shadow-sm">
             {BLOG_EMPTY_META[tab].icon}
           </div>
-          <h3 className="font-['Merriweather'] font-bold text-stone-700 text-xl mb-2">{BLOG_EMPTY_META[tab].heading}</h3>
+          <h3 className="font-head font-bold text-stone-700 text-xl mb-2">{BLOG_EMPTY_META[tab].heading}</h3>
           {BLOG_EMPTY_META[tab].sub && <p className="font-['Inter'] text-stone-400 text-[13px] font-light max-w-xs">{BLOG_EMPTY_META[tab].sub}</p>}
         </div>
       ) : (
@@ -569,7 +569,7 @@ function JobsSection() {
       {/* Header row */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <p className="font-['Merriweather'] font-bold text-stone-800">Job Listings</p>
+          <p className="font-head font-bold text-stone-800">Job Listings</p>
           <p className="text-xs font-['Inter'] text-stone-400 mt-0.5">{jobs.filter(j => j.active).length} active · {jobs.length} total</p>
         </div>
         <button onClick={() => setShowForm(v => !v)}
@@ -738,7 +738,7 @@ function JobsSection() {
           <div className="w-16 h-16 rounded-2xl bg-white border border-stone-200 flex items-center justify-center mb-4 shadow-sm">
             <Briefcase className="w-7 h-7 text-stone-400" />
           </div>
-          <p className="font-['Merriweather'] font-bold text-stone-700 text-xl mb-1">No jobs posted yet</p>
+          <p className="font-head font-bold text-stone-700 text-xl mb-1">No jobs posted yet</p>
           <p className="font-['Inter'] text-stone-400 text-sm">Add your first job listing above.</p>
         </div>
       ) : (
@@ -811,7 +811,7 @@ function AdminDashboard() {
   if (!authed) return <AdminLogin onLogin={() => setAuthed(true)} />;
 
   return (
-    <div className="min-h-screen relative" style={{ background: '#fcfcf9' }}>
+    <div className="min-h-screen relative" style={{ background: 'var(--color-paper)' }}>
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute inset-0 opacity-[0.22]"
           style={{ backgroundImage: 'radial-gradient(circle, #c4bdb4 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
@@ -823,11 +823,11 @@ function AdminDashboard() {
         <div className="container mx-auto px-4 sm:px-6 py-3 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 max-w-[1500px]">
           <div className="flex items-center gap-3">
             <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg, #1c1c1e 0%, #3d3d40 100%)' }}>
+              style={{ background: 'var(--color-ink)' }}>
               <Shield className="w-3.5 h-3.5 text-white" />
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-['Merriweather'] font-bold text-stone-800 text-[0.95rem]">Admin</span>
+              <span className="font-head font-bold text-stone-800 text-[0.95rem]">Admin</span>
               <span className="px-2 py-0.5 rounded-full text-[11px] font-bold font-['Inter'] uppercase tracking-widest border"
                 style={{ background: '#fdf8f0', color: '#8a6a3a', borderColor: '#e8d5b0' }}>
                 Harry The Blaze

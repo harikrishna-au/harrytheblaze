@@ -40,7 +40,7 @@ export function PromoBanner({ onClaim }: PromoBannerProps) {
 
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-2.5 px-4 py-2.5 text-center sm:flex-row sm:justify-between sm:text-left">
         <p className="text-[14px] leading-snug sm:text-[15px]">
-          <span className="font-['Merriweather'] font-black">
+          <span className="font-head font-black">
             My crush just accepted my follow request, so everything is{" "}
             <span className="whitespace-nowrap">
               <s className="font-normal text-stone-400">₹{REGULAR_PRICE}</s> ₹{PROMO_PRICE}

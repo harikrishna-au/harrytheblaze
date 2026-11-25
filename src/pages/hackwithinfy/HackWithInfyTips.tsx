@@ -218,7 +218,7 @@ const HackWithInfyTips = () => {
             <Zap className="w-3 h-3" />
             Strategy & Tips
           </div>
-          <h1 className="text-3xl font-serif text-stone-800 tracking-tight leading-[1.15] mb-2">
+          <h1 className="text-4xl sm:text-5xl font-head text-stone-900 leading-[1.08] mb-3">
             How to play it smart.
           </h1>
           <p className="text-stone-500 text-[0.88rem] font-['Inter'] font-light">

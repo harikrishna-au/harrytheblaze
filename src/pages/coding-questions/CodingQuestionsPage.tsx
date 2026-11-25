@@ -23,8 +23,8 @@ const DIFF_FILTERS: FilterDiff[] = ["All", "Easy", "Medium", "Hard"];
 
 const BTN =
   "inline-flex items-center justify-center gap-2 whitespace-nowrap px-5 py-3 text-[15px] font-semibold text-[var(--color-ink)] " +
-  "shadow-[var(--shadow-offset)] transition-[transform,box-shadow] duration-[120ms] hover:translate-x-px hover:translate-y-px " +
-  "hover:shadow-[3px_3px_0_var(--color-ink)] active:translate-x-1 active:translate-y-1 active:shadow-none " +
+  "rounded-full transition-[transform,box-shadow] duration-[120ms] " +
+  "active:scale-[0.97] rounded-full " +
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-focus)]";
 
 export default function CodingQuestionsPage() {
@@ -134,7 +134,7 @@ export default function CodingQuestionsPage() {
                   {PROMO_ACTIVE && <span className="text-sm line-through tabular-nums">₹{REGULAR_PRICE}</span>}
                 </p>
               </div>
-              <button onClick={unlock} className={`${BTN} bg-[var(--color-ink)] !text-[var(--color-paper)] !shadow-[3px_3px_0_var(--color-paper)]`}>
+              <button onClick={unlock} className={`${BTN} bg-[var(--color-ink)] !text-[var(--color-paper)]`}>
                 {isSignedIn ? "Unlock" : "Sign up to unlock"}
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </button>
@@ -186,9 +186,9 @@ export default function CodingQuestionsPage() {
                 onClick={() => setDiffFilter(d)}
                 className={`px-3.5 py-2.5 text-sm font-semibold transition-[transform,box-shadow] duration-[120ms] ${
                   diffFilter === d
-                    ? "bg-[var(--color-accent)] shadow-[3px_3px_0_var(--color-ink)]"
+                    ? "bg-[var(--color-accent)] "
                     : "bg-[var(--color-paper-3)] shadow-[var(--shadow-card)] hover:-translate-y-0.5"
-                }`}
+                } rounded-full`}
               >
                 {d}
               </button>

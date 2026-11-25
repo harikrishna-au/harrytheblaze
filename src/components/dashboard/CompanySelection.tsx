@@ -139,7 +139,7 @@ export const CompanySelection = ({ onSelectCompany, isPremium, onSubscribe }: Co
     <div ref={page} className="mx-auto w-full max-w-[1360px] px-1 py-6 sm:px-6 sm:py-10">
       <header className="mb-10 sm:mb-12">
         <h1 data-intro className="font-display text-6xl font-normal uppercase leading-[0.95] text-foreground sm:text-7xl">
-          Your prep dashboard
+          Your prep <em>dashboard</em>
         </h1>
         <p data-intro className="mt-3 max-w-xl text-base text-muted-foreground">
           Start with a round. Book a senior when you want the real picture.
@@ -204,7 +204,7 @@ export const CompanySelection = ({ onSelectCompany, isPremium, onSubscribe }: Co
                 <span className="text-base line-through opacity-70">₹{SE_LIST_PRICE}</span>
               </p>
             )}
-            <span className="inline-flex items-center gap-2 bg-[var(--color-ink)] px-5 py-3 text-[15px] font-semibold text-[var(--color-paper)] shadow-[4px_4px_0_var(--color-paper)] transition-[transform,box-shadow] duration-[120ms] group-hover:translate-x-px group-hover:translate-y-px group-hover:shadow-[3px_3px_0_var(--color-paper)]">
+            <span className="inline-flex items-center gap-2 bg-[var(--color-ink)] px-5 py-3 text-[15px] font-semibold text-[var(--color-paper)] transition-[transform,box-shadow] duration-[120ms] rounded-full">
               {!seLoading && hasSe ? "Open the Playbook and mock" : "See what's inside"}
               <ArrowUpRight className="h-4 w-4" aria-hidden />
             </span>
@@ -217,7 +217,7 @@ export const CompanySelection = ({ onSelectCompany, isPremium, onSubscribe }: Co
         <Link
           id="onboarding-infosys-card"
           to="/coding-questions"
-          className="group grid items-center gap-5 bg-[var(--color-paper-3)] p-6 shadow-[var(--shadow-offset)] transition-[transform,box-shadow] duration-[120ms] hover:translate-x-px hover:translate-y-px hover:shadow-[3px_3px_0_var(--color-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-focus)] sm:p-8 md:grid-cols-[minmax(0,1fr)_auto]"
+          className="group grid items-center gap-5 bg-[var(--color-paper-3)] p-6 shadow-[var(--shadow-sheet)] transition-[transform,box-shadow] duration-[120ms] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-focus)] sm:p-8 md:grid-cols-[minmax(0,1fr)_auto]"
         >
           <div className="min-w-0">
             <span className="inline-block bg-[var(--color-accent)] px-2.5 py-1 text-xs font-semibold">

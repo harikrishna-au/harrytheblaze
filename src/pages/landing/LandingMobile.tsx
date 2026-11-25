@@ -65,7 +65,7 @@ export const LandingMobile = ({
           </p>
           <button
             onClick={() => navigate("/dashboard")}
-            className="w-full flex items-center justify-center gap-2 py-4 font-['Inter'] font-semibold text-[15px] bg-[var(--color-accent)] text-[var(--color-ink)] shadow-[var(--shadow-offset)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-[transform,box-shadow] mb-5"
+            className="w-full flex items-center justify-center gap-2 py-4 font-['Inter'] font-semibold text-[15px] bg-[var(--color-accent)] text-[var(--color-ink)] rounded-full active:scale-[0.97] transition-[transform,box-shadow] mb-5"
           >
             Go to Dashboard
             <ArrowRight className="w-4 h-4" />
@@ -90,7 +90,7 @@ export const LandingMobile = ({
             style={{ filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.22))" }}
           />
           <span className="font-display text-lg font-normal uppercase text-[var(--color-ink)] truncate">
-            HARRY THE BLAZE
+            Harry The Blaze
           </span>
         </div>
         <a
@@ -104,7 +104,7 @@ export const LandingMobile = ({
 
       <section id="auth-section" className="px-5 pt-4 pb-16 scroll-mt-4">
         <h1 className="font-display font-normal uppercase text-[2.75rem] text-[var(--color-ink)] leading-[0.95]">
-          {view === "sign-in" ? "Welcome back" : "Practice the real rounds."}
+          {view === "sign-in" ? "Welcome back" : <>Practice the <em>real rounds.</em></>}
         </h1>
         <p className="font-['Inter'] text-[14px] text-[var(--color-ink)] mt-1.5 mb-5 leading-snug">
           {view === "sign-in"
@@ -121,7 +121,7 @@ export const LandingMobile = ({
             <>
               {!isClerkVerificationStep && (
                 <div
-                  className="flex p-1 mb-4 bg-[var(--color-paper-2)]"
+                  className="flex p-1 mb-4 rounded-full bg-[var(--color-paper-2)]"
                   role="tablist"
                   aria-label="Account"
                 >
@@ -134,7 +134,7 @@ export const LandingMobile = ({
                         role="tab"
                         aria-selected={active}
                         onClick={() => setView(v)}
-                        className="flex-1 min-h-[40px] font-['Inter'] text-[13.5px] font-semibold transition-all duration-200 active:scale-[0.98]"
+                        className="flex-1 rounded-full min-h-[40px] font-['Inter'] text-[13.5px] font-semibold transition-all duration-200 active:scale-[0.98]"
                         style={
                           active
                             ? { background: "var(--color-ink)", color: "var(--color-paper)" }
@@ -149,7 +149,7 @@ export const LandingMobile = ({
               )}
 
               {isClerkVerificationStep && (
-                <div className="mb-4 flex items-start gap-3 p-3 bg-[var(--color-paper-2)]">
+                <div className="mb-4 flex items-start gap-3 rounded-2xl p-3 bg-[var(--color-paper-2)]">
                   <Mail className="w-4 h-4 text-[var(--color-ink)] flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="font-['Inter'] text-[13px] font-semibold text-[var(--color-ink)] leading-snug">

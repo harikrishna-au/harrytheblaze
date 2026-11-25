@@ -31,7 +31,7 @@ export default function BlogMyPosts() {
   const { blogs, loading } = useMyBlogs(user?.id ?? '');
 
   return (
-    <div className="min-h-screen relative" style={{ background: '#fcfcf9' }}>
+    <div className="min-h-screen relative" style={{ background: 'var(--color-paper)' }}>
       {/* Background — matches Blog.tsx */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div
@@ -55,14 +55,14 @@ export default function BlogMyPosts() {
           <div className="w-14 h-14 rounded-2xl bg-white border border-stone-200 shadow-sm flex items-center justify-center mx-auto mb-5">
             <FileText className="w-6 h-6 text-stone-500" />
           </div>
-          <h2 className="font-['Merriweather'] font-bold text-stone-800 text-2xl mb-2 tracking-tight">Sign in to view your posts</h2>
+          <h2 className="font-head font-bold text-stone-800 text-2xl mb-2 tracking-tight">Sign in to view your posts</h2>
           <p className="font-['Inter'] text-stone-500 text-[14px] mb-7 font-light leading-relaxed">
             Track the status of your submitted blog posts.
           </p>
           <SignInButton mode="modal">
             <button
               className="px-6 py-3 rounded-xl text-[14px] font-semibold font-['Inter'] text-white transition-all hover:opacity-90 active:scale-95"
-              style={{ background: 'linear-gradient(135deg, #1c1c1e 0%, #3d3d40 100%)' }}
+              style={{ background: 'var(--color-ink)' }}
             >
               Sign In to Continue
             </button>
@@ -78,8 +78,8 @@ export default function BlogMyPosts() {
               <FileText className="w-2.5 h-2.5" />
               My Posts
             </div>
-            <h1 className="font-['Merriweather'] font-black text-stone-900 text-2xl md:text-3xl tracking-tight mb-1 leading-tight">
-              My Blogs
+            <h1 className="font-head font-black text-stone-900 text-4xl md:text-5xl tracking-tight mb-1 leading-tight">
+              My <em>blogs</em>
             </h1>
             <p className="font-['Inter'] text-[14px] text-stone-500 font-light">
               Track the status of your submitted posts.
@@ -89,7 +89,7 @@ export default function BlogMyPosts() {
             onClick={() => navigate('/blog/write')}
             className="flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-[13.5px] font-['Inter'] text-white transition-all duration-200 hover:opacity-90 active:scale-95 flex-shrink-0"
             style={{
-              background: 'linear-gradient(135deg, #1c1c1e 0%, #3d3d40 100%)',
+              background: 'var(--color-ink)',
               boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
             }}
           >
@@ -107,7 +107,7 @@ export default function BlogMyPosts() {
             <div className="w-16 h-16 rounded-2xl bg-white border border-stone-200 flex items-center justify-center mb-5 shadow-sm">
               <PenLine className="w-7 h-7 text-stone-400" />
             </div>
-            <h3 className="font-['Merriweather'] font-bold text-stone-700 text-xl mb-2 tracking-tight">
+            <h3 className="font-head font-bold text-stone-700 text-xl mb-2 tracking-tight">
               No posts yet
             </h3>
             <p className="font-['Inter'] text-[14px] text-stone-400 max-w-xs leading-relaxed font-light mb-7">
@@ -116,7 +116,7 @@ export default function BlogMyPosts() {
             <button
               onClick={() => navigate('/blog/write')}
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-[13px] font-['Inter'] text-white transition-all hover:opacity-90 active:scale-95"
-              style={{ background: 'linear-gradient(135deg, #1c1c1e 0%, #3d3d40 100%)' }}
+              style={{ background: 'var(--color-ink)' }}
             >
               <PenLine className="w-4 h-4" />
               Write your first blog
@@ -137,12 +137,12 @@ export default function BlogMyPosts() {
                       {blog.status === 'published' ? (
                         <Link
                           to={`/blog/${blog.slug}`}
-                          className="font-['Merriweather'] font-bold text-stone-800 text-[0.93rem] leading-snug hover:text-stone-600 transition-colors"
+                          className="font-head font-bold text-stone-800 text-[0.93rem] leading-snug hover:text-stone-600 transition-colors"
                         >
                           {blog.title}
                         </Link>
                       ) : (
-                        <h3 className="font-['Merriweather'] font-bold text-stone-800 text-[0.93rem] leading-snug">
+                        <h3 className="font-head font-bold text-stone-800 text-[0.93rem] leading-snug">
                           {blog.title}
                         </h3>
                       )}

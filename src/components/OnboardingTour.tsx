@@ -202,7 +202,7 @@ export const OnboardingTour = ({ isOpen, onClose, mode = 'journey' }: Onboarding
 
             <div
                 key={currentStep}
-                className="fixed bg-[var(--color-paper-3)] p-6 text-[var(--color-ink)] shadow-[8px_8px_0_var(--color-ink)] animate-in fade-in slide-in-from-bottom-3 duration-300 motion-reduce:animate-none"
+                className="fixed bg-[var(--color-paper-3)] p-6 text-[var(--color-ink)] animate-in fade-in slide-in-from-bottom-3 duration-300 motion-reduce:animate-none rounded-[20px]"
                 style={cardStyle}
             >
                 <div className="flex items-start justify-between gap-4">
@@ -244,7 +244,7 @@ export const OnboardingTour = ({ isOpen, onClose, mode = 'journey' }: Onboarding
                         <button
                             ref={nextRef}
                             onClick={handleNext}
-                            className="bg-[var(--color-accent)] px-5 py-2.5 text-[15px] font-semibold text-[var(--color-ink)] shadow-[var(--shadow-offset)] transition-[transform,box-shadow] duration-[120ms] hover:translate-x-px hover:translate-y-px hover:shadow-[3px_3px_0_var(--color-ink)] active:translate-x-1 active:translate-y-1 active:shadow-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-focus)]"
+                            className="bg-[var(--color-accent)] px-5 py-2.5 text-[15px] font-semibold text-[var(--color-ink)] rounded-full transition-[transform,box-shadow] duration-[120ms] active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-focus)]"
                         >
                             {last ? 'Get started' : 'Next'}
                         </button>

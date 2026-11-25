@@ -59,7 +59,7 @@ const SplashScreen = ({ onFinish }: { onFinish: () => void }) => {
             <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); skip(); }}
-                className="absolute bottom-6 right-5 border border-[#1c1917] bg-[#F2EFE8] px-3.5 py-2 text-sm font-semibold text-[#1c1917] shadow-[3px_3px_0_#1c1917] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1c1917]"
+                className="absolute bottom-6 right-5 rounded-full border border-black/10 bg-white px-5 py-2.5 text-sm font-semibold text-[#15140f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#15140f]"
             >
                 Skip
             </button>

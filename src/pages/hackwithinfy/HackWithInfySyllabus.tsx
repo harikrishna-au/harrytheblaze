@@ -210,7 +210,7 @@ const HackWithInfySyllabus = () => {
           >
             Role-wise Syllabus
           </div>
-          <h1 className="text-3xl font-serif text-stone-800 tracking-tight leading-[1.15] mb-2">
+          <h1 className="text-4xl sm:text-5xl font-head text-stone-900 leading-[1.08] mb-3">
             What to Study — by Role
           </h1>
           <p className="text-stone-500 text-[0.88rem] font-['Inter'] font-light">

@@ -187,11 +187,11 @@ export default function GeoSudo() {
 
   if (gameOver) {
     return (
-      <div style={{ background: '#fcfcf9', minHeight: '100vh' }}>
+      <div style={{ background: 'var(--color-paper)', minHeight: '100vh' }}>
         <Header />
         <div className="max-w-sm mx-auto px-4 pt-28 pb-12 text-center">
           <Trophy className="w-14 h-14 mx-auto text-amber-500 mb-4" />
-          <h2 className="text-3xl font-serif text-stone-800 mb-2">Game Over</h2>
+          <h2 className="text-5xl font-serif text-stone-900 mb-2">Game Over</h2>
           <p className="text-stone-500 font-['Inter'] text-sm mb-1">
             Puzzles solved: <strong className="text-stone-700">{puzzlesSolved}</strong> / {PUZZLES.length}
           </p>
@@ -222,7 +222,7 @@ export default function GeoSudo() {
   const puzzle = PUZZLES[puzzleIdx];
 
   return (
-    <div style={{ background: '#fcfcf9', minHeight: '100vh' }}>
+    <div style={{ background: 'var(--color-paper)', minHeight: '100vh' }}>
       <Header />
       <div className="max-w-sm mx-auto px-4 pt-20 pb-16">
         {/* Nav bar */}
@@ -245,7 +245,7 @@ export default function GeoSudo() {
         {/* Title */}
         <div className="mb-5">
           <div className="flex items-center gap-2 mb-0.5">
-            <h1 className="text-2xl font-serif text-stone-800">Geo-Sudo</h1>
+            <h1 className="text-3xl font-serif text-stone-800">Geo-Sudo</h1>
             <span className="text-[11px] font-bold px-2 py-0.5 rounded-full font-['Inter']"
               style={{
                 background: puzzle.difficulty === 'Hard' ? 'rgba(239,68,68,0.1)' : puzzle.difficulty === 'Medium' ? 'rgba(245,158,11,0.1)' : 'rgba(5,150,105,0.1)',

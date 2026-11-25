@@ -14,7 +14,7 @@ export default function Guidelines() {
                     {/* Header */}
                     <div className="text-center space-y-4">
                         <h1 className="text-4xl font-extrabold tracking-tight text-neutral-900 sm:text-5xl">
-                            Matrix Flow Assessment
+                            Matrix Flow <em>Assessment</em>
                         </h1>
                         <p className="text-xl text-neutral-500">
                             Gamified Technical Assessment Preview

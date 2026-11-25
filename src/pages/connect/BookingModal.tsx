@@ -152,7 +152,7 @@ const BookingModal = ({ expert, onClose }: BookingModalProps) => {
               </button>
             )}
             <div>
-              <h2 className="text-sm font-['Merriweather'] text-stone-900 leading-tight">
+              <h2 className="text-sm font-head text-stone-900 leading-tight">
                 {STEP_LABELS[step]}
               </h2>
               {step !== 'success' && (
@@ -194,7 +194,7 @@ const BookingModal = ({ expert, onClose }: BookingModalProps) => {
                 className="w-7 h-7 rounded-lg object-cover flex-shrink-0"
               />
             ) : (
-              <div className="w-7 h-7 rounded-lg bg-stone-200 flex items-center justify-center text-stone-500 text-xs font-['Merriweather'] flex-shrink-0">
+              <div className="w-7 h-7 rounded-lg bg-stone-200 flex items-center justify-center text-stone-500 text-xs font-head flex-shrink-0">
                 {expert.name.charAt(0)}
               </div>
             )}

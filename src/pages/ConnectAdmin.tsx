@@ -355,7 +355,7 @@ export default function ConnectAdmin({ embedded = false }: { embedded?: boolean 
             <LockKeyhole className="w-5 h-5" />
           </div>
           <p className="text-[11px] uppercase tracking-[0.2em] text-stone-400 font-semibold">Connect Operations</p>
-          <h1 className="font-['Merriweather'] text-2xl text-stone-900 mt-2">Super-admin access</h1>
+          <h1 className="font-head text-2xl text-stone-900 mt-2">Super-admin access</h1>
           <p className="text-sm text-stone-500 mt-2 mb-6">Control bookings, meeting links, and communication from one place.</p>
           <label className="text-xs font-semibold text-stone-600">Admin password</label>
           <input
@@ -391,7 +391,7 @@ export default function ConnectAdmin({ embedded = false }: { embedded?: boolean 
             </button>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="font-['Merriweather'] text-lg">Connect Command Center</h1>
+                <h1 className="font-head text-lg">Connect Command Center</h1>
                 <span className="text-[11px] uppercase tracking-widest px-2 py-0.5 bg-stone-900 text-white rounded-full">V1</span>
               </div>
               <p className="text-[11px] text-stone-400">Manual operations · one source of truth</p>
@@ -412,7 +412,7 @@ export default function ConnectAdmin({ embedded = false }: { embedded?: boolean 
         {embedded && (
           <div className="mb-6">
             <div className="flex items-center gap-2">
-              <h1 className="font-['Merriweather'] text-2xl text-stone-900">Connect Operations</h1>
+              <h1 className="font-head text-2xl text-stone-900">Connect Operations</h1>
               <span className="text-[11px] uppercase tracking-widest px-2 py-0.5 bg-stone-900 text-white rounded-full">V1</span>
             </div>
             <p className="text-sm text-stone-400 mt-1">Review bookings, arrange calls, and send meeting details from one queue.</p>
@@ -582,7 +582,7 @@ function BookingWorkspace({
       <div className="p-4 border-b border-stone-100 flex items-start justify-between">
         <div>
           <p className="text-[11px] uppercase tracking-wider text-stone-400">Booking workspace</p>
-          <h2 className="font-['Merriweather'] text-lg mt-1">{booking.user_name}</h2>
+          <h2 className="font-head text-lg mt-1">{booking.user_name}</h2>
           <p className="text-xs text-stone-400 mt-0.5">Created {format(parseISO(booking.created_at), "MMM d, h:mm a")}</p>
         </div>
         <button onClick={onClose} className="w-8 h-8 rounded-lg hover:bg-stone-100 flex items-center justify-center" aria-label="Close booking">

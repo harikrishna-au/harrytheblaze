@@ -564,11 +564,11 @@ export default function GridChallenge() {
   if (gameOver) {
     const correctCount = results.filter(Boolean).length;
     return (
-      <div style={{ background: '#fcfcf9', minHeight: '100vh' }}>
+      <div style={{ background: 'var(--color-paper)', minHeight: '100vh' }}>
         <Header />
         <div className="max-w-sm mx-auto px-4 pt-28 pb-12 text-center">
           <Trophy className="w-14 h-14 mx-auto text-amber-500 mb-4" />
-          <h2 className="text-3xl font-serif text-stone-800 mb-2">Complete!</h2>
+          <h2 className="text-5xl font-serif text-stone-900 mb-2">Complete!</h2>
           <p className="text-stone-500 font-['Inter'] text-sm mb-1">
             {correctCount} / {TOTAL_QUESTIONS} correct
           </p>
@@ -612,7 +612,7 @@ export default function GridChallenge() {
   const q = questions[qIdx];
 
   return (
-    <div style={{ background: '#fcfcf9', minHeight: '100vh' }}>
+    <div style={{ background: 'var(--color-paper)', minHeight: '100vh' }}>
       <Header />
       <div className="max-w-sm mx-auto px-4 pt-20 pb-16">
 
@@ -661,7 +661,7 @@ export default function GridChallenge() {
           />
         </div>
 
-        <h1 className="text-2xl font-serif text-stone-800 mb-1">Grid Challenge</h1>
+        <h1 className="text-3xl font-serif text-stone-800 mb-1">Grid Challenge</h1>
         <p className="text-stone-500 text-sm font-['Inter'] mb-5">{q.label}</p>
 
         {/* 3×3 Grid */}

@@ -108,7 +108,7 @@ const PaymentPopup = ({ isOpen, onClose }: PaymentPopupProps) => {
                 </div>
 
                 {/* Price: the one flame block */}
-                <div className="bg-[var(--color-accent)] p-5 shadow-[var(--shadow-offset)]">
+                <div className="bg-[var(--color-accent)] p-5 shadow-[var(--shadow-offset)] rounded-[20px]">
                     <div className="flex items-baseline gap-4">
                         <p className="font-display font-normal leading-none text-[clamp(3.5rem,14vw,5rem)]">₹{finalAmount}</p>
                         {savings > 0 && <p className="text-xl line-through opacity-70">₹{LIST_PRICE}</p>}
@@ -143,7 +143,7 @@ const PaymentPopup = ({ isOpen, onClose }: PaymentPopupProps) => {
                             value={coupon}
                             onChange={(e) => { setCoupon(e.target.value); setCouponError(""); }}
                             onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleApplyCoupon(); } }}
-                            className="h-11 rounded-none uppercase bg-[var(--color-paper)] border-[var(--color-ink)] text-[var(--color-ink)]"
+                            className="h-11 rounded-2xl uppercase bg-[var(--color-paper)] border-[var(--color-ink)] text-[var(--color-ink)]"
                         />
                         <button
                             type="button"
@@ -164,7 +164,7 @@ const PaymentPopup = ({ isOpen, onClose }: PaymentPopupProps) => {
                     type="button"
                     onClick={handlePayment}
                     disabled={isLoading}
-                    className="w-full inline-flex items-center justify-center bg-[var(--color-ink)] px-6 py-4 text-base font-semibold !text-[var(--color-paper)] shadow-[4px_4px_0_var(--color-accent)] transition-[transform,box-shadow] duration-[120ms] ease-out hover:translate-x-px hover:translate-y-px hover:shadow-[3px_3px_0_var(--color-accent)] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-60 disabled:pointer-events-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-focus)]"
+                    className="w-full inline-flex items-center justify-center bg-[var(--color-ink)] px-6 py-4 text-base font-semibold !text-[var(--color-paper)] transition-[transform,box-shadow] duration-[120ms] ease-out active:scale-[0.97] disabled:opacity-60 disabled:pointer-events-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-focus)] rounded-full"
                 >
                     {isLoading ? "Processing..." : `Pay ₹${finalAmount}: get full access`}
                 </button>

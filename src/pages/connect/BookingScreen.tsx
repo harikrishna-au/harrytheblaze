@@ -200,7 +200,7 @@ const BookingScreen = ({ expert, onClose }: BookingScreenProps) => {
           ) : (
             <div className="w-8 h-8" />
           )}
-          <span className="text-sm font-['Merriweather'] text-stone-900">{STEP_TITLE[step]}</span>
+          <span className="text-sm font-head text-stone-900">{STEP_TITLE[step]}</span>
         </div>
 
         {step !== 'success' && (
@@ -281,7 +281,7 @@ const BookingScreen = ({ expert, onClose }: BookingScreenProps) => {
               className="w-7 h-7 rounded-lg object-cover flex-shrink-0"
             />
           ) : (
-            <div className="w-7 h-7 rounded-lg bg-stone-200 flex items-center justify-center text-stone-500 text-xs font-['Merriweather'] flex-shrink-0">
+            <div className="w-7 h-7 rounded-lg bg-stone-200 flex items-center justify-center text-stone-500 text-xs font-head flex-shrink-0">
               {expert.name.charAt(0)}
             </div>
           )}
@@ -309,7 +309,7 @@ const BookingScreen = ({ expert, onClose }: BookingScreenProps) => {
               <div className="flex items-start gap-5">
                 <ExpertAvatar expert={expert} size="lg" />
                 <div className="min-w-0 pt-1">
-                  <h2 className="text-3xl sm:text-4xl font-['Merriweather'] text-stone-900 leading-tight tracking-tight">
+                  <h2 className="text-3xl sm:text-4xl font-head text-stone-900 leading-tight tracking-tight">
                     {expert.name}
                   </h2>
                   {expert.title && (
@@ -326,19 +326,19 @@ const BookingScreen = ({ expert, onClose }: BookingScreenProps) => {
                   {expert.company && (
                     <div className="bg-white px-4 py-3.5">
                       <dt className="text-[10.5px] uppercase tracking-[0.12em] font-semibold text-primary font-['Inter']">Placed at</dt>
-                      <dd className="font-['Merriweather'] text-lg text-stone-900 mt-1 leading-tight">{expert.company}</dd>
+                      <dd className="font-head text-lg text-stone-900 mt-1 leading-tight">{expert.company}</dd>
                     </div>
                   )}
                   {expert.package_lpa && (
                     <div className="bg-white px-4 py-3.5">
                       <dt className="text-[10.5px] uppercase tracking-[0.12em] font-semibold text-stone-400 font-['Inter']">Package</dt>
-                      <dd className="font-['Merriweather'] text-lg text-stone-900 mt-1 leading-tight tabular-nums">₹{expert.package_lpa} LPA</dd>
+                      <dd className="font-head text-lg text-stone-900 mt-1 leading-tight tabular-nums">₹{expert.package_lpa} LPA</dd>
                     </div>
                   )}
                   {placedAgo && (
                     <div className="bg-white px-4 py-3.5 col-span-2 sm:col-span-1">
                       <dt className="text-[10.5px] uppercase tracking-[0.12em] font-semibold text-stone-400 font-['Inter']">Interviewed</dt>
-                      <dd className="font-['Merriweather'] text-lg text-stone-900 mt-1 leading-tight">{placedAgo}</dd>
+                      <dd className="font-head text-lg text-stone-900 mt-1 leading-tight">{placedAgo}</dd>
                     </div>
                   )}
                 </dl>
@@ -385,7 +385,7 @@ const BookingScreen = ({ expert, onClose }: BookingScreenProps) => {
             <aside className="hidden lg:block lg:sticky lg:top-6">
               <div className="rounded-3xl border border-stone-200 bg-white p-6 shadow-[0_24px_48px_-32px_rgba(28,25,23,0.35)]">
                 <div className="flex items-baseline justify-between">
-                  <p className="font-['Merriweather'] text-4xl text-stone-900 tabular-nums">₹{expert.price_inr}</p>
+                  <p className="font-head text-4xl text-stone-900 tabular-nums">₹{expert.price_inr}</p>
                   <p className="text-sm text-stone-500 font-['Inter']">20-minute call</p>
                 </div>
                 <p className="text-xs text-stone-400 font-['Inter'] mt-1.5">
@@ -417,7 +417,7 @@ const BookingScreen = ({ expert, onClose }: BookingScreenProps) => {
             {/* Mobile sticky bar */}
             <div className="lg:hidden fixed bottom-0 inset-x-0 z-10 bg-white/95 backdrop-blur border-t border-stone-200 px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-center gap-4">
               <div className="flex-shrink-0">
-                <p className="font-['Merriweather'] text-2xl text-stone-900 leading-none tabular-nums">₹{expert.price_inr}</p>
+                <p className="font-head text-2xl text-stone-900 leading-none tabular-nums">₹{expert.price_inr}</p>
                 <p className="text-[11px] text-stone-500 font-['Inter'] mt-1">20 min · +10% fee</p>
               </div>
               <div className="flex-1">{bookCta('py-3.5')}</div>
@@ -428,7 +428,7 @@ const BookingScreen = ({ expert, onClose }: BookingScreenProps) => {
         {/* ════ DATE STEP ════ */}
         {step === 'date' && (
           <div className="max-w-lg mx-auto px-5 py-8">
-            <h3 className="font-['Merriweather'] text-2xl text-stone-900 text-center">When works for you?</h3>
+            <h3 className="font-head text-2xl text-stone-900 text-center">When works for you?</h3>
             <p className="text-sm text-stone-500 font-['Inter'] text-center mt-2 mb-6">
               Days {expert.name.split(' ')[0]} is free are selectable. The rest are greyed out.
             </p>
@@ -453,7 +453,7 @@ const BookingScreen = ({ expert, onClose }: BookingScreenProps) => {
         {/* ════ TIME STEP ════ */}
         {step === 'time' && (
           <div className="max-w-lg mx-auto px-5 py-8">
-            <h3 className="font-['Merriweather'] text-2xl text-stone-900">
+            <h3 className="font-head text-2xl text-stone-900">
               {selectedDate ? format(selectedDate, 'EEEE, MMMM d') : 'Choose a slot'}
             </h3>
             <p className="text-sm text-stone-500 font-['Inter'] mt-2 mb-6">Pick the start time for your 20-minute call.</p>
@@ -470,7 +470,7 @@ const BookingScreen = ({ expert, onClose }: BookingScreenProps) => {
         {step === 'form' && (
           <div className="max-w-lg mx-auto px-5 py-8 space-y-6">
             <div>
-              <h3 className="font-['Merriweather'] text-2xl text-stone-900">Tell {expert.name.split(' ')[0]} what you need</h3>
+              <h3 className="font-head text-2xl text-stone-900">Tell {expert.name.split(' ')[0]} what you need</h3>
               <p className="text-sm text-stone-500 font-['Inter'] mt-2">
                 The more specific you are, the more useful the 20 minutes will be.
               </p>

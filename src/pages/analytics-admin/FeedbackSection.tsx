@@ -69,7 +69,7 @@ export default function FeedbackSection() {
     <div className="space-y-4 border-t border-stone-200 pt-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="font-['Merriweather'] text-xl font-bold text-stone-900">Feedback and feature requests</h2>
+          <h2 className="font-head text-xl font-bold text-stone-900">Feedback and feature requests</h2>
           <p className="font-['Inter'] text-xs text-stone-500">
             {rows ? `${total.toLocaleString("en-IN")} submissions · newest first${total > rows.length ? ` · showing the latest ${rows.length}` : ""}` : "Loading…"}
           </p>

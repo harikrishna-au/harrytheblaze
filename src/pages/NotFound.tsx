@@ -11,7 +11,7 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen relative overflow-hidden" style={{ background: "#fcfcf9" }}>
+    <div className="min-h-screen relative overflow-hidden" style={{ background: "var(--color-paper)" }}>
       <Header />
 
       {/* Background */}
@@ -40,7 +40,7 @@ const NotFound = () => {
         </div>
 
         <h1
-          className="font-['Merriweather'] font-black text-stone-900 leading-none tracking-tight mb-4"
+          className="font-head font-black text-stone-900 leading-none tracking-tight mb-4"
           style={{ fontSize: "clamp(4rem, 12vw, 8rem)" }}
         >
           Lost?
@@ -54,7 +54,7 @@ const NotFound = () => {
           to="/"
           className="flex items-center gap-2 px-6 py-3 rounded-xl font-['Inter'] font-semibold text-[14px] text-white transition-all duration-200 hover:opacity-90 active:scale-95"
           style={{
-            background: "linear-gradient(135deg, #1c1c1e 0%, #3d3d40 100%)",
+            background: "var(--color-ink)",
             boxShadow: "0 2px 8px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.08)",
           }}
         >

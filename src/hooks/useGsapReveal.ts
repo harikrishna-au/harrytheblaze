@@ -5,11 +5,11 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Scroll/entrance motion for the paper-sheet look. Mark elements inside `scope`:
+ * Scroll/entrance motion for the card look. Mark elements inside `scope`:
  *   data-intro            plays once on mount, staggered in DOM order (hero, header)
  *   data-reveal           rises in when it scrolls into view
  *   data-reveal-group     its direct children rise in one after another
- *   data-drop="-3"        a sheet that lands: slides in and settles at that rotation (deg)
+ *   data-drop             a card that scales up as it rises in
  *   data-parallax="40"    drifts by that many px while scrolling
  * Does nothing under prefers-reduced-motion, so content is never left hidden.
  */
@@ -18,8 +18,6 @@ export function useGsapReveal(scope: RefObject<HTMLElement>, deps: unknown[] = [
     const root = scope.current;
     if (!root) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      // No motion, but sheets keep their resting tilt.
-      root.querySelectorAll<HTMLElement>("[data-drop]").forEach((el) => gsap.set(el, { rotate: Number(el.dataset.drop) || 0 }));
       return;
     }
 
@@ -45,12 +43,7 @@ export function useGsapReveal(scope: RefObject<HTMLElement>, deps: unknown[] = [
       });
 
       gsap.utils.toArray<HTMLElement>("[data-drop]").forEach((el) => {
-        const rot = Number(el.dataset.drop) || 0;
-        gsap.fromTo(
-          el,
-          { y: -60, opacity: 0, rotate: rot - 6 },
-          { y: 0, opacity: 1, rotate: rot, duration: 1, ease: "back.out(1.4)", scrollTrigger: { trigger: el, ...at } },
-        );
+        gsap.from(el, { y: 54, scale: 0.96, opacity: 0, duration: 1.1, ease: "expo.out", clearProps: "transform,opacity", scrollTrigger: { trigger: el, ...at } });
       });
 
       gsap.utils.toArray<HTMLElement>("[data-parallax]").forEach((el) => {

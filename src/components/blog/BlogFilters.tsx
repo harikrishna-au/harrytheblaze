@@ -29,9 +29,9 @@ export function BlogFilters({ active, onChange }: BlogFiltersProps) {
             onClick={() => onChange(key)}
             className={`flex flex-shrink-0 items-center gap-1.5 whitespace-nowrap px-3.5 py-2 text-[13px] font-semibold transition-[transform,box-shadow,background-color] duration-[120ms] ${
               isActive
-                ? 'bg-[var(--color-accent)] text-[var(--color-ink)] shadow-[3px_3px_0_var(--color-ink)]'
+                ? 'bg-[var(--color-accent)] text-[var(--color-ink)] '
                 : 'bg-[var(--color-paper-3)] text-[var(--color-ink)] shadow-[var(--shadow-card)] hover:-translate-y-0.5'
-            }`}
+            } rounded-full`}
           >
             <span className="text-[13px]">{emoji}</span>
             {label}

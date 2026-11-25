@@ -574,8 +574,8 @@ function PatternsContent() {
                         </span>
                         Communication Round
                     </div>
-                    <h1 className="text-3xl md:text-4xl font-serif text-stone-800 tracking-tight leading-[1.15] mb-2">
-                        Select a Company
+                    <h1 className="text-4xl md:text-6xl font-head text-stone-900 leading-[1.05] mb-4">
+                        Select a <em>company</em>
                     </h1>
                     <p className="text-stone-400 text-[0.88rem] font-['Inter'] font-light">
                         Each round is modelled on that company's real Communication Assessment.

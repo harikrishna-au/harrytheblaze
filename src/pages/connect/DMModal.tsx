@@ -82,7 +82,7 @@ const DMModal = ({ expert, onClose }: DMModalProps) => {
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-stone-100 bg-white flex-shrink-0">
           <div>
-            <h2 className="text-sm font-['Merriweather'] text-stone-900">Message {expert.name}</h2>
+            <h2 className="text-sm font-head text-stone-900">Message {expert.name}</h2>
             <p className="text-xs text-stone-400 font-['Inter'] mt-0.5">{expert.title}</p>
           </div>
           <button
@@ -101,7 +101,7 @@ const DMModal = ({ expert, onClose }: DMModalProps) => {
                 <CheckCircle2 className="w-8 h-8 text-stone-700" />
               </div>
               <div>
-                <h3 className="text-lg font-['Merriweather'] text-stone-900 mb-1">Message Sent!</h3>
+                <h3 className="text-lg font-head text-stone-900 mb-1">Message Sent!</h3>
                 <p className="text-stone-500 text-sm font-['Inter']">
                   {expert.name} will get back to you at <span className="font-medium text-stone-700">{email}</span>.
                 </p>
@@ -119,7 +119,7 @@ const DMModal = ({ expert, onClose }: DMModalProps) => {
                 {expert.photo_url ? (
                   <img src={expert.photo_url} alt={expert.name} className="w-10 h-10 rounded-xl object-cover flex-shrink-0" />
                 ) : (
-                  <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center text-stone-500 text-sm font-['Merriweather'] flex-shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center text-stone-500 text-sm font-head flex-shrink-0">
                     {expert.name.charAt(0)}
                   </div>
                 )}

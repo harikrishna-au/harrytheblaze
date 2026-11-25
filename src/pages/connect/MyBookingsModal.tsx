@@ -131,7 +131,7 @@ const MyBookingsModal = ({ onClose }: MyBookingsModalProps) => {
         <div className="bg-[#fcfcf9] w-full sm:max-w-[440px] rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col max-h-[90dvh] overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-stone-100 bg-white flex-shrink-0">
-            <h2 className="text-sm font-['Merriweather'] text-stone-900">My Bookings</h2>
+            <h2 className="text-sm font-head text-stone-900">My Bookings</h2>
             <button
               onClick={onClose}
               className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-stone-100 transition-colors text-stone-400"
@@ -187,7 +187,7 @@ const MyBookingsModal = ({ onClose }: MyBookingsModalProps) => {
                   <div className="w-14 h-14 rounded-2xl bg-stone-100 flex items-center justify-center mb-1">
                     <Calendar className="w-7 h-7 text-stone-300" />
                   </div>
-                  <p className="text-stone-800 text-sm font-['Merriweather'] font-bold">
+                  <p className="text-stone-800 text-sm font-head font-bold">
                     {history === 'past' ? 'No past sessions' : 'No upcoming bookings'}
                   </p>
                   <p className="text-stone-400 text-xs font-['Inter'] max-w-[200px] leading-relaxed">
@@ -229,11 +229,11 @@ const MyBookingsModal = ({ onClose }: MyBookingsModalProps) => {
                                 className="w-8 h-8 rounded-lg object-cover flex-shrink-0"
                               />
                             ) : (
-                              <div className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center text-stone-500 text-xs font-['Merriweather'] flex-shrink-0">
+                              <div className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center text-stone-500 text-xs font-head flex-shrink-0">
                                 {booking.experts?.name?.charAt(0) ?? '?'}
                               </div>
                             )}
-                            <span className="text-sm font-['Merriweather'] text-stone-900">
+                            <span className="text-sm font-head text-stone-900">
                               {booking.experts?.name ?? 'Unknown Expert'}
                             </span>
                           </div>

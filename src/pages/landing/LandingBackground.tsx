@@ -1,6 +1,8 @@
-/** Paste-up board: plain paper with one flame sheet peeking in behind the auth card. */
+/** Soft flame and pine light behind the sign-in card, as on the landing page. */
 export const LandingBackground = () => (
-  <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-    <div className="absolute -right-24 top-16 hidden h-[70vh] w-[46%] rotate-3 bg-[var(--color-accent)] shadow-[var(--shadow-sheet)] lg:block" />
-  </div>
+  <div
+    className="pointer-events-none absolute inset-0"
+    aria-hidden
+    style={{ background: "radial-gradient(46% 60% at 88% 14%, rgba(244,88,31,0.17), transparent 70%), radial-gradient(38% 44% at 4% 94%, rgba(31,77,67,0.07), transparent 70%)" }}
+  />
 );

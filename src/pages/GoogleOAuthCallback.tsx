@@ -69,7 +69,7 @@ const GoogleOAuthCallback = () => {
               <CheckCircle2 className="w-8 h-8 text-emerald-600" />
             </div>
             <div>
-              <h2 className="text-lg font-['Merriweather'] text-stone-900 mb-1">Google Connected!</h2>
+              <h2 className="text-lg font-head text-stone-900 mb-1">Google Connected!</h2>
               <p className="text-stone-500 text-sm font-['Inter']">You can now generate Google Meet links. Redirecting...</p>
             </div>
           </>
@@ -80,7 +80,7 @@ const GoogleOAuthCallback = () => {
               <XCircle className="w-8 h-8 text-red-500" />
             </div>
             <div>
-              <h2 className="text-lg font-['Merriweather'] text-stone-900 mb-1">Connection Failed</h2>
+              <h2 className="text-lg font-head text-stone-900 mb-1">Connection Failed</h2>
               <p className="text-stone-500 text-sm font-['Inter']">{errorMsg}</p>
             </div>
             <button

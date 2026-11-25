@@ -334,7 +334,7 @@ function StepContent({ step, data, onChange }: { step: number; data: ResumeData;
       <div className="space-y-5">
         <div className="flex items-center gap-2">
           <Award className="w-4 h-4 text-stone-400" />
-          <span className="text-sm font-semibold font-['Merriweather'] text-stone-700">Certifications</span>
+          <span className="text-sm font-semibold font-head text-stone-700">Certifications</span>
         </div>
         {data.certifications.length === 0 && (
           <p className="text-stone-400 text-sm font-['Inter'] text-center py-2">No certifications added yet.</p>
@@ -363,7 +363,7 @@ function StepContent({ step, data, onChange }: { step: number; data: ResumeData;
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <Trophy className="w-4 h-4 text-stone-400" />
-          <span className="text-sm font-semibold font-['Merriweather'] text-stone-700">Achievements</span>
+          <span className="text-sm font-semibold font-head text-stone-700">Achievements</span>
         </div>
         {data.achievements.map((ach, i) => (
           <div key={i} className="flex gap-2 items-start">
@@ -446,7 +446,7 @@ export default function ForgePage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: "#fcfcf9" }}>
+    <div className="min-h-screen" style={{ background: "var(--color-paper)" }}>
       <Header />
 
       <div className="pt-20 pb-16 px-4 max-w-2xl mx-auto">
@@ -465,7 +465,7 @@ export default function ForgePage() {
           {!data && (
             <motion.div key="upload" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.3 }} className="space-y-6">
               <div className="text-center mb-6">
-                <h1 className="font-['Merriweather'] font-bold text-3xl text-stone-900 mb-2">Build your resume.</h1>
+                <h1 className="font-head font-bold text-4xl sm:text-5xl text-stone-900 mb-3">Build your <em>resume.</em></h1>
                 <p className="font-['Inter'] text-stone-500 text-[14px] max-w-sm mx-auto leading-relaxed">
                   Upload and AI fills everything. Then walk through each section and refine.
                 </p>
@@ -531,7 +531,7 @@ export default function ForgePage() {
                 <div className="flex items-center justify-between px-6 py-4 border-b border-stone-100">
                   <div className="flex items-center gap-2.5">
                     {(() => { const Icon = STEPS[step].icon; return <Icon className="w-4 h-4 text-stone-500" />; })()}
-                    <span className="font-['Merriweather'] font-bold text-stone-800 text-sm">{STEPS[step].label}</span>
+                    <span className="font-head font-bold text-stone-800 text-sm">{STEPS[step].label}</span>
                   </div>
                   <button onClick={handleReset} className="flex items-center gap-1 text-[11px] font-['Inter'] text-stone-300 hover:text-stone-500 transition-colors">
                     <RefreshCw className="w-3 h-3" /> Upload again
@@ -626,7 +626,7 @@ export default function ForgePage() {
               <div className="flex items-center justify-between px-6 py-4 border-b border-stone-100 shrink-0">
                 <div className="flex items-center gap-2.5">
                   <FileCode className="w-4 h-4 text-stone-500" />
-                  <span className="font-['Merriweather'] font-bold text-stone-800 text-sm">Your LaTeX Resume</span>
+                  <span className="font-head font-bold text-stone-800 text-sm">Your LaTeX Resume</span>
                   <span className="text-[11px] font-['Inter'] text-stone-400 bg-stone-100 px-2 py-0.5 rounded-md">Overleaf ready</span>
                 </div>
                 <div className="flex items-center gap-2">

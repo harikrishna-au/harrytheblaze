@@ -24,7 +24,7 @@ const BookingSuccess = ({ expertName, date, startTime, endTime, userEmail, meetL
 
       {/* Title */}
       <div>
-        <h3 className="text-2xl font-['Merriweather'] text-stone-900 mb-2">Request received.</h3>
+        <h3 className="text-2xl font-head text-stone-900 mb-2">Request received.</h3>
         <p className="text-stone-500 text-sm leading-relaxed font-['Inter']">
           Your payment is verified. Our Connect team will coordinate with{' '}
           <span className="font-semibold text-stone-700">{expertName}</span>, confirm the session,

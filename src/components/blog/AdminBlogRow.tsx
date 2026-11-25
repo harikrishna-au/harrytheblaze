@@ -83,7 +83,7 @@ function ConfirmDialog({ title, message, confirmLabel, confirmStyle = 'danger', 
                   : <Check className="w-5 h-5" style={{ color: '#4a7060' }} />}
               </div>
               <div>
-                <h3 id={titleId} className="font-['Merriweather'] font-bold text-stone-900 text-[0.95rem] leading-snug mb-1">
+                <h3 id={titleId} className="font-head font-bold text-stone-900 text-[0.95rem] leading-snug mb-1">
                   {title}
                 </h3>
                 <p id={msgId} className="font-['Inter'] text-[13px] text-stone-500 font-light leading-relaxed">
@@ -137,9 +137,9 @@ const STATUS_PILL: Record<string, string> = {
 function renderMarkdown(md: string): string {
   return md
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/^#{3}\s(.+)/gm, '<h3 style="font-family:Merriweather,serif;font-weight:700;font-size:1.2rem;color:#1c1c1b;margin-top:2.25rem;margin-bottom:0.5rem;line-height:1.4">$1</h3>')
-    .replace(/^#{2}\s(.+)/gm, '<h2 style="font-family:Merriweather,serif;font-weight:700;font-size:1.45rem;color:#1c1c1b;margin-top:2.75rem;margin-bottom:0.75rem;line-height:1.3">$1</h2>')
-    .replace(/^#{1}\s(.+)/gm, '<h1 style="font-family:Merriweather,serif;font-weight:900;font-size:1.75rem;color:#1c1c1b;margin-bottom:1.25rem;line-height:1.2">$1</h1>')
+    .replace(/^#{3}\s(.+)/gm, '<h3 style="font-family:Inter,sans-serif;font-weight:700;font-size:1.2rem;color:#1c1c1b;margin-top:2.25rem;margin-bottom:0.5rem;line-height:1.4">$1</h3>')
+    .replace(/^#{2}\s(.+)/gm, '<h2 style="font-family:Inter,sans-serif;font-weight:700;font-size:1.45rem;color:#1c1c1b;margin-top:2.75rem;margin-bottom:0.75rem;line-height:1.3">$1</h2>')
+    .replace(/^#{1}\s(.+)/gm, '<h1 style="font-family:Inter,sans-serif;font-weight:900;font-size:1.75rem;color:#1c1c1b;margin-bottom:1.25rem;line-height:1.2">$1</h1>')
     .replace(/\*\*(.+?)\*\*/g, '<strong style="font-weight:700;color:#1c1c1b">$1</strong>')
     .replace(/\*(.+?)\*/g, '<em style="font-style:italic;color:#57534e">$1</em>')
     .replace(/`([^`]+)`/g, '<code style="padding:2px 7px;border-radius:5px;background:#f2efe9;color:#44403c;font-size:13px;font-family:monospace;border:1px solid #e7e5e0">$1</code>')
@@ -168,7 +168,7 @@ function BlogPreviewDrawer({ blog, onClose }: { blog: Blog; onClose: () => void 
       {/* Drawer panel */}
       <div
         className="fixed top-0 right-0 bottom-0 z-50 w-full max-w-2xl shadow-2xl overflow-y-auto"
-        style={{ background: '#fcfcf9' }}
+        style={{ background: 'var(--color-paper)' }}
       >
         {/* Dot grid */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -227,7 +227,7 @@ function BlogPreviewDrawer({ blog, onClose }: { blog: Blog; onClose: () => void 
 
           {/* Title */}
           <h1
-            className="font-['Merriweather'] font-black text-stone-900 leading-[1.12] tracking-tight mb-6"
+            className="font-head font-black text-stone-900 leading-[1.12] tracking-tight mb-6"
             style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)' }}
           >
             {blog.title}
@@ -296,7 +296,7 @@ function BlogPreviewDrawer({ blog, onClose }: { blog: Blog; onClose: () => void 
               {displayAuthor(blog.author_name).charAt(0).toUpperCase()}
             </div>
             <div>
-              <p className="font-['Merriweather'] font-bold text-stone-800 text-[0.95rem]">{displayAuthor(blog.author_name)}</p>
+              <p className="font-head font-bold text-stone-800 text-[0.95rem]">{displayAuthor(blog.author_name)}</p>
               <p className="font-['Inter'] text-[12px] text-stone-500 mt-0.5 font-light">
                 {blog.author_email ?? 'Contributed to Harry The Blaze community'}
               </p>
@@ -370,7 +370,7 @@ export function AdminBlogRow({ blog, onApprove, onReject, onDelete }: AdminBlogR
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap mb-1.5">
-              <h3 className="font-['Merriweather'] font-bold text-stone-800 text-[0.93rem] leading-snug">
+              <h3 className="font-head font-bold text-stone-800 text-[0.93rem] leading-snug">
                 {blog.title}
               </h3>
               <span className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[11px] font-bold font-['Inter'] uppercase tracking-widest ${STATUS_PILL[blog.status]}`}>
@@ -464,7 +464,7 @@ export function AdminBlogRow({ blog, onApprove, onReject, onDelete }: AdminBlogR
                 onClick={handleReject}
                 disabled={!reason.trim()}
                 className="px-4 py-2 text-white text-[12px] font-semibold font-['Inter'] rounded-xl disabled:opacity-40 transition-all active:scale-95"
-                style={{ background: 'linear-gradient(135deg, #1c1c1e 0%, #3d3d40 100%)' }}
+                style={{ background: 'var(--color-ink)' }}
               >
                 Confirm
               </button>

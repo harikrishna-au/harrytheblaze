@@ -24,7 +24,7 @@ const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
 const RowSkeleton = () => (
   <div className="flex h-[76px] items-center gap-4 border-t border-border py-3">
-    <Skeleton className="h-14 w-14 rounded-none" />
+    <Skeleton className="h-14 w-14 rounded-2xl" />
     <div className="flex-1 space-y-2">
       <Skeleton className="h-3.5 w-2/5" />
       <Skeleton className="h-3.5 w-3/5" />
@@ -73,11 +73,11 @@ export const ConnectFeature = () => {
       id="onboarding-connect-card"
       role="region"
       aria-labelledby="connect-feature-title"
-      className="overflow-hidden rounded-none border-0 bg-[var(--color-paper-3)] shadow-[var(--shadow-sheet)]"
+      className="overflow-hidden rounded-[26px] border-0 bg-[var(--color-paper-3)] shadow-[var(--shadow-sheet)]"
     >
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
         {/* Left: the offer */}
-        <div className="flex min-w-0 flex-col bg-flame p-5 text-foreground sm:p-8 lg:p-10">
+        <div className="flex min-w-0 flex-col bg-[linear-gradient(180deg,#ffd9c8,#fff3ed_60%,#fff)] p-5 text-foreground sm:p-8 lg:p-10">
           <p className="text-base font-semibold">Connect 1:1, 20 minutes</p>
 
           <h2
@@ -93,7 +93,7 @@ export const ConnectFeature = () => {
           </p>
 
           <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
-            <Button asChild size="lg" className="group h-12 gap-2 rounded-none border-0 bg-foreground px-6 text-[15px] font-semibold text-background shadow-[4px_4px_0_var(--color-paper-3)] transition-[transform,box-shadow] duration-[120ms] hover:translate-x-px hover:translate-y-px hover:bg-foreground hover:shadow-[3px_3px_0_var(--color-paper-3)] active:translate-x-1 active:translate-y-1 active:shadow-none motion-reduce:transition-none">
+            <Button asChild size="lg" className="group h-12 gap-2 rounded-full border-0 bg-foreground px-6 text-[15px] font-semibold text-background transition-[transform,box-shadow] duration-[120ms] hover:bg-foreground active:scale-[0.97] motion-reduce:transition-none">
               <Link to="/connect">
                 Book a call
                 <ArrowRight className="transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden />
@@ -132,9 +132,9 @@ export const ConnectFeature = () => {
                   to={`/connect/${e.id}`}
                   className="-mx-2 flex items-center gap-4 border-t border-border px-2 py-3 transition-colors duration-150 hover:bg-muted active:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-focus)]"
                 >
-                  <Avatar className="h-14 w-14 rounded-none border-2 border-foreground">
+                  <Avatar className="h-14 w-14 rounded-2xl border-2 border-foreground">
                     {e.photo_url && <AvatarImage src={e.photo_url} alt="" className="object-cover" />}
-                    <AvatarFallback className="rounded-none bg-flame font-display text-2xl text-foreground">
+                    <AvatarFallback className="rounded-2xl bg-flame font-display text-2xl text-foreground">
                       {e.name.charAt(0)}
                     </AvatarFallback>
                   </Avatar>

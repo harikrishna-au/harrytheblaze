@@ -20,12 +20,11 @@ type Opportunity = {
 
 type Related = { id: string; title: string; company: string | null; location: string | null; package_lpa: number | null; code: string | null };
 
-const INK = "#1a1613";
-const PAPER = "#f7f4ec";
-const SHEET = "#fffdf8";
-const ACCENT = "#f4592a";
+const INK = "#15140f";
+const PAPER = "#fdfcfa";
+const SHEET = "#ffffff";
+const ACCENT = "#f4581f";
 const MUTED = "#6b625a";
-const DISPLAY = "Anton, Impact, sans-serif";
 
 const clean = (v: string) => v.trim().toLowerCase().replace(/[^a-z0-9-]/g, "");
 
@@ -108,7 +107,7 @@ export default function PlacementPage() {
       <SEO title={`${title} | Harry The Blaze`} description={job?.description?.slice(0, 150) || "Placement opportunity shared by Harry The Blaze"} />
 
       <header style={{ background: INK }} className="px-5 py-4">
-        <Link to="/" className="text-white uppercase tracking-wider text-xl" style={{ fontFamily: DISPLAY }}>
+        <Link to="/" className="font-display text-white font-display tracking-wider text-xl">
           <span style={{ color: ACCENT }}>●</span>&nbsp; Harry The Blaze
         </Link>
       </header>
@@ -119,11 +118,11 @@ export default function PlacementPage() {
 
         {state === "error" && (
           <div>
-            <h1 className="uppercase text-4xl leading-tight" style={{ fontFamily: DISPLAY }}>Couldn't load</h1>
+            <h1 className="font-display  font-display text-4xl leading-tight">Couldn't load</h1>
             <p className="mt-3 text-[15px]" style={{ color: MUTED }}>
               Something went wrong while loading this opportunity. The link is probably fine.
             </p>
-            <button onClick={() => window.location.reload()} className="mt-6 px-5 py-3 font-bold uppercase" style={{ background: ACCENT, border: "2px solid #1a1613" }}>
+            <button onClick={() => window.location.reload()} className="mt-6 px-5 py-3 font-bold rounded-full" style={{ background: ACCENT }}>
               Retry
             </button>
           </div>
@@ -131,7 +130,7 @@ export default function PlacementPage() {
 
         {(state === "idle" || state === "missing") && (
           <div>
-            <h1 className="uppercase text-4xl leading-tight" style={{ fontFamily: DISPLAY }}>
+            <h1 className="font-display  font-display text-4xl leading-tight">
               {state === "missing" ? "Code not found" : "Enter placement code"}
             </h1>
             <p className="mt-3 text-[15px]" style={{ color: MUTED }}>
@@ -146,9 +145,9 @@ export default function PlacementPage() {
                 placeholder="e.g. tcs-nov26"
                 aria-label="Placement code"
                 className="flex-1 px-4 py-3 text-[15px] bg-white outline-none"
-                style={{ border: `2px solid ${INK}` }}
+                style={{ border: "1px solid var(--color-rule)", borderRadius: 18 }}
               />
-              <button type="submit" className="px-5 font-extrabold uppercase text-sm" style={{ background: ACCENT, border: `2px solid ${INK}` }}>
+              <button type="submit" className="px-5 font-bold text-sm" style={{ background: ACCENT, borderRadius: 999 }}>
                 Open
               </button>
             </form>
@@ -162,15 +161,15 @@ export default function PlacementPage() {
       <footer style={{ background: INK }} className="px-5 py-6">
         <div className="mx-auto max-w-xl flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
           <p className="text-white text-[15px] leading-snug">
-            <span className="uppercase text-xl block" style={{ fontFamily: DISPLAY }}>
+            <span className="font-display  font-display text-xl block">
               Interview coming up?
             </span>
             <span style={{ color: "#bdb4a8" }}>Practice the cognitive and communication rounds, then talk to someone who just got placed.</span>
           </p>
           <Link
             to="/"
-            className="shrink-0 inline-flex items-center justify-center gap-2 px-5 py-3 font-extrabold uppercase text-sm"
-            style={{ background: ACCENT, color: INK }}
+            className="shrink-0 inline-flex items-center justify-center gap-2 px-5 py-3 font-bold text-sm"
+            style={{ background: ACCENT, color: INK, borderRadius: 999 }}
           >
             Try Harry The Blaze <ArrowRight size={16} aria-hidden />
           </Link>
@@ -181,8 +180,8 @@ export default function PlacementPage() {
 }
 
 
-const card = { background: SHEET, border: `2px solid ${INK}`, borderBottomWidth: 5, borderRightWidth: 5 } as const;
-const applyBtn = { background: ACCENT, border: `2px solid ${INK}`, borderBottomWidth: 5, borderRightWidth: 5 } as const;
+const card = { background: SHEET, borderRadius: 26, boxShadow: "var(--shadow-sheet)" } as const;
+const applyBtn = { background: ACCENT, borderRadius: 999 } as const;
 
 function postedAgo(iso?: string | null) {
   if (!iso) return null;
@@ -209,7 +208,7 @@ function Block({ title, text, bullets }: { title: string; text?: string | null; 
   if (!hasBullets && !text) return null;
   return (
     <section style={card} className="p-5 sm:p-6">
-      <h2 className="uppercase text-2xl" style={{ fontFamily: DISPLAY }}>{title}</h2>
+      <h2 className="font-display  font-display text-2xl">{title}</h2>
       {hasBullets ? (
         <ul className="mt-3 space-y-2.5">{bullets!.map((t, i) => <Bullet key={i}>{t}</Bullet>)}</ul>
       ) : (
@@ -251,7 +250,7 @@ function JobView({ job, related, share, copied }: { job: Opportunity; related: R
   const ApplyButton = ({ className = "" }: { className?: string }) =>
     job.apply_url ? (
       <a href={job.apply_url} target="_blank" rel="noopener noreferrer"
-        className={`flex items-center justify-center gap-2 py-4 font-extrabold uppercase tracking-wide text-[15px] ${className}`} style={applyBtn}>
+        className={`flex items-center justify-center gap-2 py-4 font-bold text-[15px] ${className}`} style={applyBtn}>
         Apply now <ExternalLink size={16} aria-hidden />
       </a>
     ) : null;
@@ -261,22 +260,22 @@ function JobView({ job, related, share, copied }: { job: Opportunity; related: R
       {/* Hero */}
       <section style={card} className="p-6 sm:p-8">
         <div className="flex items-start gap-4">
-          <div className="shrink-0 w-16 h-16 flex items-center justify-center text-3xl uppercase"
-            style={{ background: INK, color: ACCENT, fontFamily: DISPLAY }} aria-hidden>
+          <div className="shrink-0 w-16 h-16 flex items-center justify-center text-3xl rounded-2xl"
+            style={{ background: INK, color: ACCENT }} aria-hidden>
             {(job.company || job.title).charAt(0)}
           </div>
           <div className="min-w-0">
             <p className="text-[11px] font-bold uppercase tracking-[.16em]" style={{ color: ACCENT }}>
               Now hiring{ago ? ` · ${ago.replace("Posted ", "")}` : ""}
             </p>
-            <h1 className="mt-1 uppercase text-4xl sm:text-5xl leading-[1.05]" style={{ fontFamily: DISPLAY }}>{job.title}</h1>
+            <h1 className="font-display mt-1 font-display text-4xl sm:text-5xl leading-[1.05]">{job.title}</h1>
             {job.company && <p className="mt-2 text-lg font-bold">{job.company}</p>}
           </div>
         </div>
 
         <dl className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
           {facts.map(({ icon: Icon, label, value }) => (
-            <div key={label} className="p-3 bg-white" style={{ border: `1.5px solid ${INK}` }}>
+            <div key={label} className="p-3 bg-white" style={{ border: "1px solid var(--color-rule)", borderRadius: 16 }}>
               <dt className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[.14em]" style={{ color: MUTED }}>
                 <Icon size={12} aria-hidden /> {label}
               </dt>
@@ -291,7 +290,7 @@ function JobView({ job, related, share, copied }: { job: Opportunity; related: R
           {/* Overview table */}
           {overview.length > 0 && (
             <section style={card} className="p-5 sm:p-6">
-              <h2 className="uppercase text-2xl" style={{ fontFamily: DISPLAY }}>Job overview</h2>
+              <h2 className="font-display  font-display text-2xl">Job overview</h2>
               <dl className="mt-3 divide-y" style={{ borderColor: "#e5dfd2" }}>
                 {overview.map(([k, v]) => (
                   <div key={k} className="py-2 grid grid-cols-[130px_1fr] gap-3 text-sm">
@@ -312,10 +311,10 @@ function JobView({ job, related, share, copied }: { job: Opportunity; related: R
           {/* Skills */}
           {!!job.skills_required?.length && (
             <section style={card} className="p-5 sm:p-6">
-              <h2 className="uppercase text-2xl" style={{ fontFamily: DISPLAY }}>Skills they look for</h2>
+              <h2 className="font-display  font-display text-2xl">Skills they look for</h2>
               <div className="mt-3 flex flex-wrap gap-2">
                 {job.skills_required.map((sk) => (
-                  <span key={sk} className="px-3 py-1.5 text-sm font-semibold bg-white" style={{ border: `1.5px solid ${INK}` }}>{sk}</span>
+                  <span key={sk} className="px-3 py-1.5 text-sm font-semibold bg-white" style={{ border: "1px solid var(--color-rule)", borderRadius: 16 }}>{sk}</span>
                 ))}
               </div>
             </section>
@@ -325,7 +324,7 @@ function JobView({ job, related, share, copied }: { job: Opportunity; related: R
 
           {d.how_to_apply && (
             <section style={card} className="p-5 sm:p-6">
-              <h2 className="uppercase text-2xl" style={{ fontFamily: DISPLAY }}>How to apply</h2>
+              <h2 className="font-display  font-display text-2xl">How to apply</h2>
               <ul className="mt-3 space-y-2.5">
                 {lines(d.how_to_apply).map((t, i) => <Bullet key={i}>{t}</Bullet>)}
               </ul>
@@ -335,7 +334,7 @@ function JobView({ job, related, share, copied }: { job: Opportunity; related: R
 
           {faqs.length > 0 && (
             <section style={card} className="p-5 sm:p-6">
-              <h2 className="uppercase text-2xl" style={{ fontFamily: DISPLAY }}>FAQs</h2>
+              <h2 className="font-display  font-display text-2xl">FAQs</h2>
               <div className="mt-3 divide-y" style={{ borderColor: "#e5dfd2" }}>
                 {faqs.map(([q, a], i) => (
                   <details key={i} className="py-3 group">
@@ -351,7 +350,7 @@ function JobView({ job, related, share, copied }: { job: Opportunity; related: R
 
           {/* Prep tools */}
           <section>
-            <h2 className="uppercase text-2xl mb-3 flex items-center gap-2" style={{ fontFamily: DISPLAY }}>
+            <h2 className="font-display  font-display text-2xl mb-3 flex items-center gap-2">
               <Sparkles size={20} style={{ color: ACCENT }} aria-hidden /> Get ready with Harry The Blaze
             </h2>
             <div className="grid sm:grid-cols-3 gap-3">
@@ -360,9 +359,9 @@ function JobView({ job, related, share, copied }: { job: Opportunity; related: R
                 { to: "/forge", icon: FileText, h: "Resume Forge", d: "AI-built, ATS-friendly resume in minutes" },
                 { to: "/radar", icon: Radar, h: "Job Radar", d: "More openings matched to your skills" },
               ].map(({ to, icon: Icon, h, d }) => (
-                <Link key={to} to={to} className="p-4 bg-white hover:-translate-y-0.5 transition-transform" style={{ border: `2px solid ${INK}` }}>
+                <Link key={to} to={to} className="p-4 bg-white hover:-translate-y-0.5 transition-transform" style={{ border: "1px solid var(--color-rule)", borderRadius: 18 }}>
                   <Icon size={22} style={{ color: ACCENT }} aria-hidden />
-                  <p className="mt-2 font-extrabold uppercase text-sm">{h}</p>
+                  <p className="mt-2 font-bold text-sm">{h}</p>
                   <p className="mt-1 text-xs leading-snug" style={{ color: MUTED }}>{d}</p>
                 </Link>
               ))}
@@ -373,25 +372,25 @@ function JobView({ job, related, share, copied }: { job: Opportunity; related: R
         {/* Sidebar */}
         <aside className="space-y-4 lg:sticky lg:top-6">
           <div style={card} className="p-5">
-            <p className="font-extrabold uppercase text-sm">Interested?</p>
+            <p className="font-bold text-sm">Interested?</p>
             <p className="text-xs mt-1" style={{ color: MUTED }}>Applications open on the company's official page.</p>
             <ApplyButton className="mt-4 w-full" />
             <p className="mt-5 text-[11px] font-bold uppercase tracking-[.14em]" style={{ color: MUTED }}>Share with friends</p>
             <div className="mt-2 grid grid-cols-4 gap-2">
               <a href={`https://wa.me/?text=${text}${encodeURIComponent(url)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp"
-                className="py-2.5 flex justify-center bg-white" style={{ border: `1.5px solid ${INK}` }}><MessageCircle size={18} /></a>
+                className="py-2.5 flex justify-center bg-white" style={{ border: "1px solid var(--color-rule)", borderRadius: 16 }}><MessageCircle size={18} /></a>
               <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn"
-                className="py-2.5 flex justify-center bg-white" style={{ border: `1.5px solid ${INK}` }}><Linkedin size={18} /></a>
-              <button onClick={share} aria-label="Copy link" className="py-2.5 flex justify-center bg-white" style={{ border: `1.5px solid ${INK}` }}>
+                className="py-2.5 flex justify-center bg-white" style={{ border: "1px solid var(--color-rule)", borderRadius: 16 }}><Linkedin size={18} /></a>
+              <button onClick={share} aria-label="Copy link" className="py-2.5 flex justify-center bg-white" style={{ border: "1px solid var(--color-rule)", borderRadius: 16 }}>
                 {copied ? <Check size={18} /> : <Link2 size={18} />}
               </button>
-              <button onClick={share} aria-label="Share" className="py-2.5 flex justify-center bg-white" style={{ border: `1.5px solid ${INK}` }}><Share2 size={18} /></button>
+              <button onClick={share} aria-label="Share" className="py-2.5 flex justify-center bg-white" style={{ border: "1px solid var(--color-rule)", borderRadius: 16 }}><Share2 size={18} /></button>
             </div>
           </div>
 
           {related.length > 0 && (
             <div style={card} className="p-5">
-              <p className="font-extrabold uppercase text-sm">More openings</p>
+              <p className="font-bold text-sm">More openings</p>
               <ul className="mt-3 divide-y" style={{ borderColor: "#e5dfd2" }}>
                 {related.map((r) => (
                   <li key={r.id}>
@@ -411,7 +410,7 @@ function JobView({ job, related, share, copied }: { job: Opportunity; related: R
 
       {/* Mobile sticky apply bar */}
       {job.apply_url && (
-        <div className="lg:hidden fixed bottom-0 inset-x-0 z-20 p-3" style={{ background: SHEET, borderTop: `2px solid ${INK}` }}>
+        <div className="lg:hidden fixed bottom-0 inset-x-0 z-20 p-3" style={{ background: SHEET, borderTop: "1px solid var(--color-rule)" }}>
           <ApplyButton className="w-full py-3.5" />
         </div>
       )}

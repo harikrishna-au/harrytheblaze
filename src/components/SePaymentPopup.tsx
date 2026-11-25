@@ -45,7 +45,7 @@ export default function SePaymentPopup({ isOpen, onClose, onUnlocked }: Props) {
           <p className="text-[15px] text-[var(--color-muted)]">One payment. No subscription, no renewal.</p>
         </div>
 
-        <div className="bg-[var(--color-accent)] p-5 shadow-[var(--shadow-offset)]">
+        <div className="bg-[var(--color-accent)] p-5 shadow-[var(--shadow-offset)] rounded-[20px]">
           <div className="flex items-baseline gap-4">
             <p className="font-display text-[clamp(3.5rem,14vw,5rem)] font-normal leading-none">₹{SE_PRICE}</p>
             <p className="text-xl line-through opacity-70">₹{SE_LIST_PRICE}</p>
@@ -71,7 +71,7 @@ export default function SePaymentPopup({ isOpen, onClose, onUnlocked }: Props) {
           type="button"
           onClick={pay}
           disabled={isLoading}
-          className="inline-flex w-full items-center justify-center bg-[var(--color-ink)] px-6 py-4 text-base font-semibold !text-[var(--color-paper)] shadow-[4px_4px_0_var(--color-accent)] transition-[transform,box-shadow] duration-[120ms] ease-out hover:translate-x-px hover:translate-y-px hover:shadow-[3px_3px_0_var(--color-accent)] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:pointer-events-none disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-focus)]"
+          className="inline-flex w-full items-center justify-center bg-[var(--color-ink)] px-6 py-4 text-base font-semibold !text-[var(--color-paper)] transition-[transform,box-shadow] duration-[120ms] ease-out active:scale-[0.97] disabled:pointer-events-none disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-focus)] rounded-full"
         >
           {isLoading ? "Processing..." : `Pay ₹${SE_PRICE} and get the PDF`}
         </button>

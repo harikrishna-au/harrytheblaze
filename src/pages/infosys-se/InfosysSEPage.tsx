@@ -27,11 +27,11 @@ const FOCUS =
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-focus)]";
 const BTN =
   "inline-flex items-center justify-center gap-2 whitespace-nowrap px-6 py-3.5 text-[15px] font-semibold " +
-  "shadow-[var(--shadow-offset)] transition-[transform,box-shadow] duration-[120ms] hover:translate-x-px hover:translate-y-px " +
-  `hover:shadow-[3px_3px_0_var(--color-ink)] active:translate-x-1 active:translate-y-1 active:shadow-none motion-reduce:transition-none ${FOCUS}`;
+  "rounded-full transition-[transform,box-shadow] duration-[120ms] " +
+  `active:scale-[0.97] motion-reduce:transition-none ${FOCUS}`;
 const BTN_FLAME = `${BTN} bg-[var(--color-accent)] text-[var(--color-ink)]`;
 const BTN_PAPER = `${BTN} bg-[var(--color-paper-3)] text-[var(--color-ink)]`;
-const BTN_INK = `${BTN} bg-[var(--color-ink)] !text-[var(--color-paper)] !shadow-[4px_4px_0_var(--color-paper)]`;
+const BTN_INK = `${BTN} bg-[var(--color-ink)] !text-[var(--color-paper)]`;
 const ACC_BOX = "bg-[var(--color-paper-3)] px-4 shadow-[var(--shadow-card)] sm:px-5";
 const ACC_ITEM = "border-[var(--color-rule)]";
 const ACC_TRIGGER = "py-4 text-left text-[15px] font-semibold leading-snug hover:no-underline";
@@ -54,7 +54,7 @@ const TOTAL_MIN = TEST_SECTIONS.reduce((a, t) => a + t.min, 0);
 const SectionHead = ({ id, num, title, lead }: { id: string; num: string; title: string; lead?: string }) => (
   <div id={id} className="scroll-mt-16" data-reveal>
     <div className="flex items-baseline gap-4">
-      <p className={`${DISPLAY} text-5xl leading-none text-[var(--color-accent)] sm:text-6xl`} style={{ WebkitTextStroke: "1.5px var(--color-ink)" }}>
+      <p className={`${DISPLAY} text-5xl leading-none text-[var(--color-accent)] sm:text-6xl`}>
         {num}
       </p>
       <h2 className={`${DISPLAY} text-[clamp(1.9rem,3.6vw,3rem)] leading-[1]`}>{title}</h2>
@@ -144,14 +144,14 @@ export default function InfosysSEPage() {
         <div className={`${WRAP} flex items-center justify-between gap-4 py-3`}>
           <Link to={isSignedIn ? "/dashboard" : "/"} className={`inline-flex items-center gap-2.5 ${FOCUS}`}>
             <img src="/favicon.svg" alt="" className="h-8 w-8" />
-            <span className={`${DISPLAY} text-xl`}>Harry The Blaze</span>
+            <span className={`${DISPLAY} whitespace-nowrap text-lg sm:text-xl`}>Harry The Blaze</span>
           </Link>
           {owned ? (
             <Link to="/dashboard" className="text-[15px] underline decoration-[var(--color-rule)] underline-offset-4 hover:decoration-[var(--color-ink)]">
               Dashboard
             </Link>
           ) : (
-            <button onClick={unlock} className={`${BTN_FLAME} !px-4 !py-2 !shadow-[3px_3px_0_var(--color-ink)]`}>
+            <button onClick={unlock} className={`${BTN_FLAME} !px-4 !py-2`}>
               Get the guide <BuyPrice className="[&>span:first-child]:!text-base" />
             </button>
           )}
@@ -165,8 +165,8 @@ export default function InfosysSEPage() {
             <p data-intro className="inline-block bg-[var(--color-accent)] px-2.5 py-1 text-xs font-semibold">
               Infosys · System Engineer
             </p>
-            <h1 data-intro className={`${DISPLAY} mt-4 text-[clamp(3.25rem,9vw,7.5rem)] leading-[0.92]`}>
-              Infosys SE. Know every round.
+            <h1 data-intro className={`${DISPLAY} mt-4 text-[clamp(2.9rem,7vw,6rem)] leading-[0.92]`}>
+              Infosys SE. <em>Know every round.</em>
             </h1>
             <p data-intro className="mt-6 max-w-[40ch] text-[clamp(1.125rem,0.35vw+1rem,1.375rem)] leading-snug">
               Who can apply, what happens at each stage, what the test and the interview ask. Then the {SE_GUIDE.pages}-page guide that drills all of it.
@@ -483,12 +483,12 @@ export default function InfosysSEPage() {
           <div data-reveal className="mt-8">
             <h3 className={`${DISPLAY} mb-3 text-2xl leading-none sm:text-3xl`}>Questions candidates reported</h3>
             <Tabs defaultValue={INTERVIEW_QA[0].group}>
-              <TabsList className="h-auto w-full flex-wrap justify-start gap-2 rounded-none bg-transparent p-0">
+              <TabsList className="h-auto w-full flex-wrap justify-start gap-2 rounded-2xl bg-transparent p-0">
                 {INTERVIEW_QA.map((g) => (
                   <TabsTrigger
                     key={g.group}
                     value={g.group}
-                    className={`rounded-none bg-[var(--color-paper-3)] px-3 py-2 text-sm font-semibold shadow-[var(--shadow-card)] data-[state=active]:bg-[var(--color-ink)] data-[state=active]:text-[var(--color-paper)] data-[state=active]:shadow-none ${FOCUS}`}
+                    className={`rounded-full bg-[var(--color-paper-3)] px-3 py-2 text-sm font-semibold shadow-[var(--shadow-card)] data-[state=active]:bg-[var(--color-ink)] data-[state=active]:text-[var(--color-paper)] data-[state=active]:shadow-none ${FOCUS}`}
                   >
                     {g.group}
                   </TabsTrigger>
@@ -589,7 +589,7 @@ export default function InfosysSEPage() {
                   ))}
                 </ul>
 
-                <Accordion type="single" collapsible className="mt-8 bg-[var(--color-paper-3)] px-4 text-[var(--color-ink)] shadow-[4px_4px_0_var(--color-accent)]">
+                <Accordion type="single" collapsible className="mt-8 bg-[var(--color-paper-3)] px-4 text-[var(--color-ink)] rounded-[20px]">
                   <AccordionItem value="map" className="border-0">
                     <AccordionTrigger className="py-3.5 text-left text-[15px] font-semibold hover:no-underline">
                       What to read for SE: {SE_GUIDE_MAP.length} chapters
@@ -682,7 +682,7 @@ export default function InfosysSEPage() {
       {!owned && !loading && (
         <div className="fixed inset-x-0 bottom-0 z-[350] flex items-center justify-between gap-3 border-t-2 border-[var(--color-ink)] bg-[var(--color-paper)] px-4 py-3 sm:hidden">
           <BuyPrice />
-          <button onClick={unlock} className={`${BTN_FLAME} !px-4 !py-2.5 !shadow-[3px_3px_0_var(--color-ink)]`}>
+          <button onClick={unlock} className={`${BTN_FLAME} !px-4 !py-2.5`}>
             <Lock className="h-4 w-4" aria-hidden /> Get the guide
           </button>
         </div>

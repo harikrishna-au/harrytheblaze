@@ -14,7 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["Anton", "Impact", "Haettenschweiler", "sans-serif"],
+        display: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        serif: ["Instrument Serif", "Iowan Old Style", "Georgia", "serif"],
+        mono: ["DM Mono", "ui-monospace", "SF Mono", "Menlo", "monospace"],
         sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
       },
       colors: {

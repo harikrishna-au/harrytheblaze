@@ -51,7 +51,7 @@ export default function PaymentsSection() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="font-['Merriweather'] text-xl font-bold text-stone-900">Payments</h2>
+          <h2 className="font-head text-xl font-bold text-stone-900">Payments</h2>
           <p className="font-['Inter'] text-xs text-stone-500">Infosys SE Playbook sales and coupon usage.</p>
         </div>
         <button onClick={load} disabled={loading} aria-label="Refresh"
@@ -65,7 +65,7 @@ export default function PaymentsSection() {
       {data && data.se && (
         <section aria-label="Infosys SE Playbook sales" className="space-y-3">
           <div>
-            <h2 className="font-['Merriweather'] text-xl font-bold text-stone-900">Infosys SE Playbook</h2>
+            <h2 className="font-head text-xl font-bold text-stone-900">Infosys SE Playbook</h2>
             <p className="font-['Inter'] text-xs text-stone-500">
               Paid orders for the ₹99 pack, all time
               {data.se.lastPaidAt && ` · last sale ${day(data.se.lastPaidAt)}`}
@@ -74,22 +74,22 @@ export default function PaymentsSection() {
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <div className={`${card} !border-amber-300 !bg-amber-50`}>
               <p className={h3}>SE sales</p>
-              <p className="mt-1 font-['Merriweather'] text-3xl font-bold text-stone-900">{data.se.count.toLocaleString("en-IN")}</p>
+              <p className="mt-1 font-head text-3xl font-bold text-stone-900">{data.se.count.toLocaleString("en-IN")}</p>
               <p className="font-['Inter'] text-xs text-stone-500">₹{data.se.revenue.toLocaleString("en-IN")} collected</p>
             </div>
             <div className={card}>
               <p className={h3}>Today</p>
-              <p className="mt-1 font-['Merriweather'] text-3xl font-bold text-stone-900">{data.se.today.toLocaleString("en-IN")}</p>
+              <p className="mt-1 font-head text-3xl font-bold text-stone-900">{data.se.today.toLocaleString("en-IN")}</p>
               <p className="font-['Inter'] text-xs text-stone-500">since midnight IST</p>
             </div>
             <div className={card}>
               <p className={h3}>Last 7 days</p>
-              <p className="mt-1 font-['Merriweather'] text-3xl font-bold text-stone-900">{data.se.last7.toLocaleString("en-IN")}</p>
+              <p className="mt-1 font-head text-3xl font-bold text-stone-900">{data.se.last7.toLocaleString("en-IN")}</p>
               <p className="font-['Inter'] text-xs text-stone-500">sales</p>
             </div>
             <div className={`${card} ${data.se.emailPending > 0 ? "!border-red-300 !bg-red-50" : ""}`}>
               <p className={h3}>PDF email not sent</p>
-              <p className={`mt-1 font-['Merriweather'] text-3xl font-bold ${data.se.emailPending > 0 ? "text-red-700" : "text-stone-900"}`}>
+              <p className={`mt-1 font-head text-3xl font-bold ${data.se.emailPending > 0 ? "text-red-700" : "text-stone-900"}`}>
                 {data.se.emailPending.toLocaleString("en-IN")}
               </p>
               <p className="font-['Inter'] text-xs text-stone-500">
@@ -103,7 +103,7 @@ export default function PaymentsSection() {
       {data && (
         <>
           <div>
-            <h2 className="font-['Merriweather'] text-xl font-bold text-stone-900">Coupon usage</h2>
+            <h2 className="font-head text-xl font-bold text-stone-900">Coupon usage</h2>
             <p className="font-['Inter'] text-xs text-stone-500">
               All time. Upper and lower case count as the same coupon.
               {data.truncated && " Showing the oldest part only."}
@@ -112,15 +112,15 @@ export default function PaymentsSection() {
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <div className={card}>
               <p className={h3}>Total redemptions</p>
-              <p className="mt-1 font-['Merriweather'] text-3xl font-bold text-stone-900">{data.totalRedemptions.toLocaleString("en-IN")}</p>
+              <p className="mt-1 font-head text-3xl font-bold text-stone-900">{data.totalRedemptions.toLocaleString("en-IN")}</p>
             </div>
             <div className={card}>
               <p className={h3}>Different coupons</p>
-              <p className="mt-1 font-['Merriweather'] text-3xl font-bold text-stone-900">{data.coupons.length}</p>
+              <p className="mt-1 font-head text-3xl font-bold text-stone-900">{data.coupons.length}</p>
             </div>
             <div className={`${card} col-span-2 sm:col-span-1`}>
               <p className={h3}>Most used</p>
-              <p className="mt-1 truncate font-['Merriweather'] text-xl font-bold text-stone-900">{data.coupons[0]?.code ?? "—"}</p>
+              <p className="mt-1 truncate font-head text-xl font-bold text-stone-900">{data.coupons[0]?.code ?? "—"}</p>
               {data.coupons[0] && <p className="font-['Inter'] text-xs text-stone-500">{data.coupons[0].count} redemptions</p>}
             </div>
           </div>
@@ -133,7 +133,7 @@ export default function PaymentsSection() {
                 {data.coupons.map((c) => (
                   <div key={c.code} className={card}>
                     <p className="truncate font-['Inter'] text-sm font-semibold text-stone-900" title={c.code}>{c.code}</p>
-                    <p className="mt-1 font-['Merriweather'] text-2xl font-bold text-stone-900">{c.count}</p>
+                    <p className="mt-1 font-head text-2xl font-bold text-stone-900">{c.count}</p>
                     <p className="font-['Inter'] text-xs text-stone-500">redemptions · last used {day(c.lastUsed)}</p>
                     {c.variants.length > 1 && (
                       <p className="mt-2 font-['Inter'] text-[11px] text-stone-400">Merged from: {c.variants.join(", ")}</p>

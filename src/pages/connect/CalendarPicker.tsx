@@ -29,7 +29,7 @@ const CalendarPicker = ({ availableDays, selectedDate, onSelect }: CalendarPicke
           font-size: 0.875rem;
         }
         .rdp-connect .rdp-caption_label {
-          font-family: Merriweather, serif;
+          font-family: Inter, sans-serif;
           font-size: 0.9rem;
           font-weight: 400;
           color: #1c1917;

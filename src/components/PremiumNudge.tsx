@@ -83,7 +83,7 @@ export default function PremiumNudge() {
           <div className="mt-4 flex gap-3">
             <button
               onClick={() => { track("premium_nudge_click"); setVisible(false); setShowPayment(true); }}
-              className="flex-1 bg-[var(--color-ink)] px-4 py-3 text-[15px] font-semibold !text-[var(--color-paper)] shadow-[3px_3px_0_var(--color-accent)] transition-[transform,box-shadow] duration-[120ms] hover:translate-x-px hover:translate-y-px hover:shadow-[2px_2px_0_var(--color-accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-focus)]"
+              className="flex-1 bg-[var(--color-ink)] px-4 py-3 text-[15px] font-semibold !text-[var(--color-paper)] transition-[transform,box-shadow] duration-[120ms] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-focus)] rounded-full"
             >
               See what's included
             </button>

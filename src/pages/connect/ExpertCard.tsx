@@ -158,7 +158,7 @@ const ExpertCard = ({ expert, onBook }: ExpertCardProps) => {
             onClick={() => onBook(expert)}
             disabled={unavailable}
             aria-label={`Book a call with ${expert.name}`}
-            className="inline-flex items-center gap-2 pl-4 pr-3.5 py-2.5 bg-[var(--color-accent)] text-[var(--color-ink)] text-sm font-semibold font-['Inter'] shadow-[3px_3px_0_var(--color-ink)] transition-[transform,box-shadow] duration-[120ms] hover:translate-x-px hover:translate-y-px active:translate-x-[3px] active:translate-y-[3px] active:shadow-none focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--color-ink)] disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none after:absolute after:inset-0 after:content-['']"
+            className="inline-flex items-center gap-2 pl-4 pr-3.5 py-2.5 bg-[var(--color-accent)] text-[var(--color-ink)] text-sm font-semibold font-['Inter'] transition-[transform,box-shadow] duration-[120ms] active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--color-ink)] disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none after:absolute after:inset-0 after:content-[''] rounded-full"
           >
             Book call
             <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />

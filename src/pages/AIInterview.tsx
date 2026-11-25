@@ -111,7 +111,7 @@ const AIInterview = () => {
                             </div>
                         </div>
                         <div className="text-center space-y-3">
-                            <h2 className="text-3xl font-serif text-stone-800">Generating Your Feedback...</h2>
+                            <h2 className="text-5xl font-serif text-stone-900">Generating Your Feedback...</h2>
                             <p className="text-stone-500 font-light">Analysing your improved responses and generating a report.</p>
                             <p className="text-xs text-stone-400 animate-pulse tracking-widest uppercase">This might take a few seconds</p>
                         </div>

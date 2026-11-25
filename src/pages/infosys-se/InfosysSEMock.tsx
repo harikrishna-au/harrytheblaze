@@ -19,11 +19,11 @@ const FOCUS =
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-focus)]";
 const BTN =
   "inline-flex items-center justify-center gap-2 whitespace-nowrap px-5 py-3 text-[15px] font-semibold " +
-  "shadow-[var(--shadow-offset)] transition-[transform,box-shadow] duration-[120ms] hover:translate-x-px hover:translate-y-px " +
-  `hover:shadow-[3px_3px_0_var(--color-ink)] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:pointer-events-none motion-reduce:transition-none ${FOCUS}`;
+  "rounded-full transition-[transform,box-shadow] duration-[120ms] " +
+  `active:scale-[0.97] disabled:opacity-50 disabled:pointer-events-none motion-reduce:transition-none ${FOCUS} rounded-full`;
 const BTN_FLAME = `${BTN} bg-[var(--color-accent)] text-[var(--color-ink)]`;
 const BTN_PAPER = `${BTN} bg-[var(--color-paper-3)] text-[var(--color-ink)]`;
-const BTN_INK = `${BTN} bg-[var(--color-ink)] !text-[var(--color-paper)] !shadow-[4px_4px_0_var(--color-accent)]`;
+const BTN_INK = `${BTN} bg-[var(--color-ink)] !text-[var(--color-paper)]`;
 
 const LETTERS = ["A", "B", "C", "D"];
 const STORAGE_KEY = "se_mock_last_v1";
@@ -214,7 +214,7 @@ export default function InfosysSEMock() {
       {phase === "intro" && (
         <main className={`${WRAP} py-10 sm:py-14`}>
           <p className="inline-block bg-[var(--color-accent)] px-2.5 py-1 text-xs font-semibold">Infosys · System Engineer</p>
-          <h1 className={`${DISPLAY} mt-4 text-[clamp(2.75rem,8vw,6rem)] leading-[0.92]`}>The full SE mock.</h1>
+          <h1 className={`${DISPLAY} mt-4 text-[clamp(2.75rem,8vw,6rem)] leading-[0.92]`}>The full <em>SE mock.</em></h1>
           <p className="mt-5 max-w-[52ch] text-lg leading-snug">
             {totalQs} questions in the real pattern, each section on its own timer. When a section's time runs out it closes, and you
             cannot go back, just like the test.
@@ -315,9 +315,9 @@ export default function InfosysSEMock() {
               <div
                 role="timer"
                 aria-live="off"
-                className={`flex items-center gap-2 px-3.5 py-2 text-xl font-semibold tabular-nums shadow-[3px_3px_0_var(--color-ink)] ${
+                className={`flex items-center gap-2 px-3.5 py-2 text-xl font-semibold tabular-nums  ${
                   remaining <= 60 ? "bg-[var(--color-ink)] text-[var(--color-accent)]" : "bg-[var(--color-accent)]"
-                }`}
+                } rounded-full`}
               >
                 <Clock className="h-5 w-5" aria-hidden /> {fmt(remaining)}
               </div>
@@ -354,9 +354,9 @@ export default function InfosysSEMock() {
                         onClick={() => choose(question, i)}
                         className={`flex items-start gap-3 px-3.5 py-3 text-left text-[16px] leading-snug transition-[transform,box-shadow] duration-[120ms] ${FOCUS} ${
                           on
-                            ? "bg-[var(--color-accent)] shadow-[3px_3px_0_var(--color-ink)]"
+                            ? "bg-[var(--color-accent)] "
                             : "bg-[var(--color-paper)] shadow-[var(--shadow-card)] hover:-translate-y-px hover:bg-[var(--color-paper-2)]"
-                        }`}
+                        } rounded-[20px]`}
                       >
                         <span className={`mt-px flex h-6 w-6 flex-shrink-0 items-center justify-center border-2 border-[var(--color-ink)] text-xs font-bold ${on ? "bg-[var(--color-ink)] text-[var(--color-paper)]" : ""}`}>
                           {LETTERS[i]}

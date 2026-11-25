@@ -73,7 +73,7 @@ export default function BlogPost() {
           </p>
           <button
             onClick={() => navigate('/blog')}
-            className="px-5 py-2.5 text-[15px] font-semibold text-[var(--color-ink)] bg-[var(--color-accent)] shadow-[var(--shadow-offset)] active:translate-x-1 active:translate-y-1 active:shadow-none"
+            className="px-5 py-2.5 text-[15px] font-semibold text-[var(--color-ink)] bg-[var(--color-accent)] rounded-full active:scale-[0.97]"
           >
             Back to Blogs
           </button>
@@ -194,9 +194,9 @@ export default function BlogPost() {
               </span>
               <button
                 onClick={handleShare}
-                className={`ml-auto flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-semibold text-[var(--color-ink)] shadow-[3px_3px_0_var(--color-ink)] transition-[transform,box-shadow] duration-[120ms] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none ${
+                className={`ml-auto flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-semibold text-[var(--color-ink)]  transition-[transform,box-shadow] duration-[120ms] active:scale-[0.97] ${
                   copied ? 'bg-[var(--color-accent)]' : 'bg-[var(--color-paper-3)]'
-                }`}
+                } rounded-full`}
               >
                 {copied ? <Check className="w-3.5 h-3.5" /> : <Share2 className="w-3.5 h-3.5" />}
                 {copied ? 'Copied!' : 'Share'}
@@ -228,7 +228,7 @@ export default function BlogPost() {
                 </button>
                 <Link
                   to="/blog/write"
-                  className="flex items-center gap-2 px-4 py-2.5 font-semibold text-[14px] text-[var(--color-ink)] bg-[var(--color-accent)] shadow-[var(--shadow-offset)] transition-[transform,box-shadow] duration-[120ms] hover:translate-x-px hover:translate-y-px active:translate-x-1 active:translate-y-1 active:shadow-none"
+                  className="flex items-center gap-2 px-4 py-2.5 font-semibold text-[14px] text-[var(--color-ink)] bg-[var(--color-accent)] rounded-full transition-[transform,box-shadow] duration-[120ms] active:scale-[0.97]"
                 >
                   <PenLine className="w-3.5 h-3.5" />
                   Write your own

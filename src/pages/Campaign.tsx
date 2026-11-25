@@ -10,13 +10,11 @@ const SHEET = 'bg-[var(--color-paper-3)] shadow-[var(--shadow-sheet)]';
 const FOCUS = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus)]';
 const BTN =
     'inline-flex items-center justify-center gap-2 whitespace-nowrap px-6 py-3.5 text-[15px] font-semibold text-[var(--color-ink)] ' +
-    'shadow-[var(--shadow-offset)] transition-[transform,box-shadow] duration-[120ms] ease-out ' +
-    'hover:translate-x-px hover:translate-y-px hover:shadow-[3px_3px_0_var(--color-ink)] ' +
-    'active:translate-x-1 active:translate-y-1 active:shadow-none motion-reduce:transition-none ' +
+    'rounded-full transition-transform duration-[120ms] ease-out active:scale-[0.97] motion-reduce:transition-none ' +
     'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-focus)]';
 const BTN_PRIMARY = `${BTN} bg-[var(--color-accent)]`;
 const BTN_SECONDARY = `${BTN} bg-[var(--color-paper-3)]`;
-const BTN_INK = `${BTN} bg-[var(--color-ink)] !text-[var(--color-paper)] shadow-[4px_4px_0_var(--color-accent)]`;
+const BTN_INK = `${BTN} bg-[var(--color-ink)] !text-[var(--color-paper)]`;
 const GHOST =
     'inline-flex items-center gap-2 border border-[var(--color-paper)] px-5 py-3 text-sm font-semibold text-[var(--color-paper)] ' +
     'hover:bg-[var(--color-paper)] hover:text-[var(--color-ink)] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]';
@@ -155,7 +153,7 @@ const Campaign = () => {
                 {/* Hero */}
                 <section className="max-w-4xl pb-16 pt-12 sm:pb-24 sm:pt-16">
                     <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--color-muted)]">{c.eyebrow}</p>
-                    <h1 className={`${DISPLAY} mt-4 text-[clamp(2.75rem,8vw,6.5rem)] leading-[0.95]`}>{c.title}</h1>
+                    <h1 className={`${DISPLAY} mt-4 text-[clamp(2.75rem,6.4vw,5.5rem)] leading-[0.95]`}>{c.title}</h1>
                     <p className="mt-6 max-w-[52ch] text-lg leading-relaxed">{c.body}</p>
 
                     <ul className="mt-7 flex flex-wrap gap-2" aria-label="What students ask about">
@@ -215,14 +213,14 @@ const Campaign = () => {
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
                             rows={5}
-                            className="w-full resize-none border border-[var(--color-paper)] bg-transparent px-4 py-3 text-sm leading-relaxed text-[var(--color-paper)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
+                            className="w-full resize-none rounded-2xl border border-white/40 bg-transparent px-4 py-3 text-sm leading-relaxed text-[var(--color-paper)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
                         />
                         <div className="mt-4 flex flex-wrap gap-4">
                             <a
                                 href={`https://wa.me/?text=${encodeURIComponent(message)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className={`${BTN_PRIMARY} !shadow-[4px_4px_0_var(--color-paper)] active:!shadow-none`}
+                                className={`${BTN_PRIMARY} active:!shadow-none`}
                             >
                                 <MessageCircle className="h-4 w-4" aria-hidden />
                                 WhatsApp

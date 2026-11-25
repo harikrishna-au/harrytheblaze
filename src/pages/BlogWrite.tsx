@@ -62,7 +62,7 @@ export default function BlogWrite() {
   };
 
   return (
-    <div className="min-h-screen relative" style={{ background: '#fcfcf9' }}>
+    <div className="min-h-screen relative" style={{ background: 'var(--color-paper)' }}>
       <SEO
         title="Write a Blog | Harry The Blaze"
         description="Share your campus placement experience with the Harry The Blaze community."
@@ -90,14 +90,14 @@ export default function BlogWrite() {
           <div className="w-14 h-14 rounded-2xl bg-white border border-stone-200 shadow-sm flex items-center justify-center mx-auto mb-5">
             <PenLine className="w-6 h-6 text-stone-500" />
           </div>
-          <h2 className="font-['Merriweather'] font-bold text-stone-800 text-2xl mb-2 tracking-tight">Sign in to write</h2>
+          <h2 className="font-head font-bold text-stone-800 text-2xl mb-2 tracking-tight">Sign in to write</h2>
           <p className="font-['Inter'] text-stone-500 text-[14px] mb-7 font-light leading-relaxed">
             Share your placement experience with the Harry The Blaze community.
           </p>
           <SignInButton mode="modal">
             <button
               className="px-6 py-3 rounded-xl text-[14px] font-semibold font-['Inter'] text-white transition-all hover:opacity-90 active:scale-95"
-              style={{ background: 'linear-gradient(135deg, #1c1c1e 0%, #3d3d40 100%)' }}
+              style={{ background: 'var(--color-ink)' }}
             >
               Sign In to Continue
             </button>
@@ -112,8 +112,8 @@ export default function BlogWrite() {
             <PenLine className="w-2.5 h-2.5" />
             New Post
           </div>
-          <h1 className="font-['Merriweather'] font-black text-stone-900 text-2xl md:text-3xl tracking-tight mb-1.5 leading-tight">
-            Write a blog
+          <h1 className="font-head font-black text-stone-900 text-4xl md:text-5xl tracking-tight mb-1.5 leading-tight">
+            Write a <em>blog</em>
           </h1>
           <p className="font-['Inter'] text-[14px] text-stone-500 font-light leading-relaxed">
             Your post will be reviewed by our team before going live. Usually within 24 hours.
@@ -259,7 +259,7 @@ export default function BlogWrite() {
               <div className="mb-1.5">
                 <BlogTypeTag type={type} size="sm" />
               </div>
-              <p className="font-['Merriweather'] font-bold text-stone-800 text-[0.88rem] leading-snug line-clamp-2">
+              <p className="font-head font-bold text-stone-800 text-[0.88rem] leading-snug line-clamp-2">
                 {title || 'Your blog title will appear here'}
               </p>
               <p className="font-['Inter'] text-[11px] text-stone-400 mt-1 font-light">
@@ -275,7 +275,7 @@ export default function BlogWrite() {
               disabled={submitting || !title.trim() || content.trim().length < 500}
               className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-[14px] font-['Inter'] text-white transition-all duration-200 hover:opacity-90 active:scale-95 disabled:opacity-40"
               style={{
-                background: 'linear-gradient(135deg, #1c1c1e 0%, #3d3d40 100%)',
+                background: 'var(--color-ink)',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
               }}
             >

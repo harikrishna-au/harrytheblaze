@@ -62,8 +62,8 @@ const WRAP = "mx-auto w-full max-w-[1180px] px-4 sm:px-8";
 const SHEET = "bg-[var(--color-paper-3)] shadow-[var(--shadow-sheet)]";
 const BTN =
   "inline-flex items-center justify-center gap-2 whitespace-nowrap px-6 py-3.5 text-[15px] font-semibold text-[var(--color-ink)] " +
-  "shadow-[var(--shadow-offset)] transition-[transform,box-shadow] duration-[120ms] hover:translate-x-px hover:translate-y-px " +
-  "hover:shadow-[3px_3px_0_var(--color-ink)] active:translate-x-1 active:translate-y-1 active:shadow-none " +
+  "rounded-full transition-[transform,box-shadow] duration-[120ms] " +
+  "active:scale-[0.97] rounded-full " +
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-focus)]";
 
 // Falls back to an initial tile if the photo file is missing or broken.
@@ -72,7 +72,7 @@ const AuthorPhoto = () => {
   return failed ? (
     <div
       aria-label="Nalla Harikrishna"
-      className="mx-auto mt-4 flex h-28 w-28 items-center justify-center bg-[var(--color-accent)] font-display text-6xl shadow-[var(--shadow-offset)]"
+      className="mx-auto mt-4 flex h-28 w-28 items-center justify-center bg-[var(--color-accent)] font-display text-6xl shadow-[var(--shadow-offset)] rounded-[20px]"
     >
       N
     </div>
@@ -81,13 +81,13 @@ const AuthorPhoto = () => {
       src="/harry.png"
       alt="Nalla Harikrishna"
       onError={() => setFailed(true)}
-      className="mx-auto mt-4 h-28 w-28 object-cover shadow-[var(--shadow-offset)]"
+      className="mx-auto mt-4 h-28 w-28 object-cover shadow-[var(--shadow-offset)] rounded-[20px]"
     />
   );
 };
 
 const Video = ({ src, title }: { src: string; title: string }) => (
-  <div className="relative bg-[var(--color-ink)] p-1.5 shadow-[var(--shadow-offset)]">
+  <div className="relative bg-[var(--color-ink)] overflow-hidden p-1.5 shadow-[var(--shadow-offset)] rounded-[20px]">
     <div className="aspect-video w-full">
       <iframe
         className="block h-full w-full"
@@ -121,9 +121,9 @@ const HackWithInfyLanding = () => {
         <section className={`${WRAP} grid items-start gap-10 pb-16 pt-28 lg:grid-cols-12 lg:gap-8 lg:pb-24 lg:pt-32`}>
           <div className="lg:col-span-8">
             <p data-intro className="text-base font-medium text-[var(--color-muted)]">All about Infosys</p>
-            <h1 data-intro className={`${DISPLAY} mt-3 text-[clamp(3.25rem,9vw,7.5rem)] leading-[0.92]`}>
+            <h1 data-intro className={`${DISPLAY} mt-3 text-[clamp(2.9rem,7vw,6rem)] leading-[0.92]`}>
               Crack HackWithInfy.
-              <span className="mt-2 block text-[0.6em] text-[var(--color-muted)]">Made by someone who did.</span>
+              <em className="block">Made by someone who did.</em>
             </h1>
             <p data-intro className="mt-6 max-w-[52ch] text-lg leading-snug">
               These resources were curated by <b className="font-semibold">Nalla Harikrishna</b>, selected for the SP role
@@ -264,7 +264,7 @@ const HackWithInfyLanding = () => {
               </p>
             </div>
             <div data-reveal className="flex flex-col gap-5 lg:col-span-4">
-              <Link to="/ai-interview" className={`${BTN} bg-[var(--color-accent)] !shadow-[4px_4px_0_var(--color-paper)] active:!shadow-none`}>
+              <Link to="/ai-interview" className={`${BTN} bg-[var(--color-accent)] active:!shadow-none`}>
                 Start a mock
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>

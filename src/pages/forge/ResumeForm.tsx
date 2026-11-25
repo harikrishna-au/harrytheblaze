@@ -71,7 +71,7 @@ const SectionCard = ({ icon: Icon, title, children }: { icon: any; title: string
       <div className="w-8 h-8 rounded-xl bg-stone-100 flex items-center justify-center">
         <Icon className="w-4 h-4 text-stone-600" />
       </div>
-      <h3 className="font-['Merriweather'] font-bold text-stone-900 text-sm">{title}</h3>
+      <h3 className="font-head font-bold text-stone-900 text-sm">{title}</h3>
     </div>
     {children}
   </div>

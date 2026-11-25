@@ -13,8 +13,8 @@ const FOCUS =
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-focus)]";
 const BTN =
   "inline-flex items-center justify-center gap-2 whitespace-nowrap px-6 py-3.5 text-[15px] font-semibold " +
-  "shadow-[var(--shadow-offset)] transition-[transform,box-shadow] duration-[120ms] hover:translate-x-px hover:translate-y-px " +
-  `hover:shadow-[3px_3px_0_var(--color-ink)] active:translate-x-1 active:translate-y-1 active:shadow-none motion-reduce:transition-none ${FOCUS}`;
+  "rounded-full transition-[transform,box-shadow] duration-[120ms] " +
+  `active:scale-[0.97] motion-reduce:transition-none ${FOCUS}`;
 const BTN_FLAME = `${BTN} bg-[var(--color-accent)] text-[var(--color-ink)]`;
 const BTN_PAPER = `${BTN} bg-[var(--color-paper-3)] text-[var(--color-ink)]`;
 const LETTERS = ["A", "B", "C", "D"];

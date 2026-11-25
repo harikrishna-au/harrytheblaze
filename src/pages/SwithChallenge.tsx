@@ -172,7 +172,7 @@ export default function SwithChallenge() {
   // ── Intro ──────────────────────────────────────────────────────────────────
   if (phase === 'intro') {
     return (
-      <div style={{ background: '#fcfcf9', minHeight: '100vh' }}>
+      <div style={{ background: 'var(--color-paper)', minHeight: '100vh' }}>
         <Header />
         <div className="max-w-sm mx-auto px-4 pt-28 pb-12 text-center">
           <div
@@ -181,7 +181,7 @@ export default function SwithChallenge() {
           >
             🔁
           </div>
-          <h1 className="text-3xl font-serif text-stone-800 mb-3">Mapping Challenge</h1>
+          <h1 className="text-5xl font-serif text-stone-900 mb-3">Mapping Challenge</h1>
           <p className="text-[13px] text-stone-500 font-['Inter'] leading-relaxed mb-1">Power of Logical Thinking</p>
           <p className="text-stone-400 text-[12px] font-['Inter'] leading-relaxed mb-6 max-w-[280px] mx-auto">
             Symbols are shown in a top row (input) and a bottom row (output). Find the number code that maps each output symbol back to its position in the input.
@@ -244,11 +244,11 @@ export default function SwithChallenge() {
   if (phase === 'end') {
     const accuracy = Math.round((correct / TOTAL_ROUNDS) * 100);
     return (
-      <div style={{ background: '#fcfcf9', minHeight: '100vh' }}>
+      <div style={{ background: 'var(--color-paper)', minHeight: '100vh' }}>
         <Header />
         <div className="max-w-sm mx-auto px-4 pt-28 pb-12 text-center">
           <Trophy className="w-14 h-14 mx-auto text-amber-500 mb-4" />
-          <h2 className="text-3xl font-serif text-stone-800 mb-2">Complete!</h2>
+          <h2 className="text-5xl font-serif text-stone-900 mb-2">Complete!</h2>
           <p className="text-stone-400 text-sm font-['Inter'] mb-8">Mapping Challenge — {TOTAL_ROUNDS} questions</p>
           <div className="grid grid-cols-3 gap-3 mb-8">
             {([
@@ -282,7 +282,7 @@ export default function SwithChallenge() {
   const timerColor = timeLeft <= 5 ? '#ef4444' : timeLeft <= 10 ? '#f59e0b' : '#ca8a04';
 
   return (
-    <div style={{ background: '#fcfcf9', minHeight: '100vh' }}>
+    <div style={{ background: 'var(--color-paper)', minHeight: '100vh' }}>
       <Header />
       <div className="max-w-sm mx-auto px-4 pt-20 pb-16">
 

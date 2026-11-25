@@ -20,11 +20,11 @@ const FOCUS =
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-focus)]";
 const BTN =
   "inline-flex items-center justify-center gap-2 whitespace-nowrap px-6 py-3.5 text-[15px] font-semibold " +
-  "shadow-[var(--shadow-offset)] transition-[transform,box-shadow] duration-[120ms] hover:translate-x-px hover:translate-y-px " +
-  `hover:shadow-[3px_3px_0_var(--color-ink)] active:translate-x-1 active:translate-y-1 active:shadow-none motion-reduce:transition-none ${FOCUS}`;
+  "rounded-full transition-[transform,box-shadow] duration-[120ms] " +
+  `active:scale-[0.97] motion-reduce:transition-none ${FOCUS}`;
 const BTN_FLAME = `${BTN} bg-[var(--color-accent)] text-[var(--color-ink)]`;
 const BTN_PAPER = `${BTN} bg-[var(--color-paper-3)] text-[var(--color-ink)]`;
-const BTN_INK = `${BTN} bg-[var(--color-ink)] !text-[var(--color-paper)] !shadow-[4px_4px_0_var(--color-paper)]`;
+const BTN_INK = `${BTN} bg-[var(--color-ink)] !text-[var(--color-paper)]`;
 const ACC_BOX = "bg-[var(--color-paper-3)] px-4 shadow-[var(--shadow-card)] sm:px-5";
 
 const PAGE_URL = "https://www.harrytheblaze.site/infosys-sp-dse";
@@ -39,7 +39,7 @@ const NAV = [
 const SectionHead = ({ id, num, title, lead }: { id: string; num: string; title: string; lead?: string }) => (
   <div id={id} className="scroll-mt-16" data-reveal>
     <div className="flex items-baseline gap-4">
-      <p className={`${DISPLAY} text-5xl leading-none text-[var(--color-accent)] sm:text-6xl`} style={{ WebkitTextStroke: "1.5px var(--color-ink)" }}>
+      <p className={`${DISPLAY} text-5xl leading-none text-[var(--color-accent)] sm:text-6xl`}>
         {num}
       </p>
       <h2 className={`${DISPLAY} text-[clamp(1.9rem,3.6vw,3rem)] leading-[1]`}>{title}</h2>
@@ -130,7 +130,7 @@ export default function InfosysSPDSEPage() {
               <button onClick={signIn} className={`px-2 py-2 text-[15px] font-semibold underline decoration-transparent underline-offset-4 hover:decoration-[var(--color-ink)] ${FOCUS}`}>
                 Sign in
               </button>
-              <button onClick={signUp} className={`${BTN_FLAME} !px-4 !py-2 !shadow-[3px_3px_0_var(--color-ink)]`}>
+              <button onClick={signUp} className={`${BTN_FLAME} !px-4 !py-2`}>
                 Sign up free
               </button>
             </div>
@@ -156,8 +156,8 @@ export default function InfosysSPDSEPage() {
             <p data-intro className="inline-block bg-[var(--color-accent)] px-2.5 py-1 text-xs font-semibold">
               Infosys · Specialist Programmer and Digital Specialist Engineer
             </p>
-            <h1 data-intro className={`${DISPLAY} mt-4 text-[clamp(3.25rem,9vw,7.5rem)] leading-[0.92]`}>
-              Infosys SP and DSE. See how you get hired.
+            <h1 data-intro className={`${DISPLAY} mt-4 text-[clamp(2.9rem,7vw,6rem)] leading-[0.92]`}>
+              Infosys SP and DSE. <em>See how you get hired.</em>
             </h1>
             <p data-intro className="mt-6 max-w-[44ch] text-[clamp(1.125rem,0.35vw+1rem,1.375rem)] leading-snug">
               The rounds, how the coding test is scored, and a 5-minute taster you can sit right now. Then {facts.total} coding questions
@@ -379,7 +379,7 @@ export default function InfosysSPDSEPage() {
                 </Link>
               ) : (
                 <>
-                  <button onClick={unlock} className={`${BTN_FLAME} !shadow-[4px_4px_0_var(--color-paper)]`}>
+                  <button onClick={unlock} className={`${BTN_FLAME}`}>
                     Unlock all {facts.total} <Price /> <ArrowRight className="h-4 w-4" aria-hidden />
                   </button>
                   {!isSignedIn && (
@@ -420,8 +420,8 @@ export default function InfosysSPDSEPage() {
       {!owned && (
         <div className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-[var(--color-ink)] bg-[var(--color-paper)] p-3 pr-[4.75rem] sm:hidden">
           <div className="flex gap-3">
-            <Link to="/coding-questions" className={`${BTN_PAPER} flex-1 !px-3 !py-3 !shadow-[3px_3px_0_var(--color-ink)]`}>Free {facts.free}</Link>
-            <button onClick={unlock} className={`${BTN_FLAME} flex-[1.4] !px-3 !py-3 !shadow-[3px_3px_0_var(--color-ink)]`}>
+            <Link to="/coding-questions" className={`${BTN_PAPER} flex-1 !px-3 !py-3`}>Free {facts.free}</Link>
+            <button onClick={unlock} className={`${BTN_FLAME} flex-[1.4] !px-3 !py-3`}>
               Unlock all · ₹{price}
             </button>
           </div>

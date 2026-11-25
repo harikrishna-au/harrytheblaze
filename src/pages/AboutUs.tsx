@@ -19,7 +19,7 @@ const sections = [
 
 const AboutUs = () => (
   <PageWrapper>
-    <div className="min-h-screen w-full relative overflow-hidden" style={{ background: "#fcfcf9" }}>
+    <div className="min-h-screen w-full relative overflow-hidden" style={{ background: "var(--color-paper)" }}>
       <Header />
 
       {/* Background */}
@@ -49,8 +49,8 @@ const AboutUs = () => (
             About Us
           </div>
           <h1
-            className="font-['Merriweather'] font-black text-stone-900 leading-[1.1] tracking-tight mb-4"
-            style={{ fontSize: "clamp(2rem, 4vw, 3rem)" }}
+            className="font-head font-black text-stone-900 leading-[1.1] tracking-tight mb-4"
+            style={{ fontSize: "clamp(2.6rem, 6vw, 4.5rem)" }}
           >
             Helping students crack
             <br />
@@ -72,7 +72,7 @@ const AboutUs = () => (
                 <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-stone-50 border border-stone-200 font-['Inter'] text-[11px] font-bold text-stone-500 tabular-nums flex-shrink-0 transition-colors duration-300 group-hover:bg-amber-50 group-hover:border-amber-200 group-hover:text-amber-600">
                   0{i + 1}
                 </span>
-                <h2 className="font-['Merriweather'] font-bold text-stone-800 text-[1.05rem]">{title}</h2>
+                <h2 className="font-head font-bold text-stone-800 text-[1.05rem]">{title}</h2>
               </div>
               <p className="font-['Inter'] text-[14px] text-stone-500 leading-relaxed pl-[2.6rem]">{body}</p>
             </div>

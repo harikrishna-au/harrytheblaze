@@ -15,7 +15,7 @@ function Avatar({ name }: { name: string }) {
   return (
     <div className="w-20 h-20 rounded-full border-4 border-white shadow-md flex items-center justify-center shrink-0"
       style={{ background: "linear-gradient(135deg, #292524, #57534e)" }}>
-      <span className="text-white font-['Merriweather'] font-bold text-xl">{initials || "?"}</span>
+      <span className="text-white font-head font-bold text-xl">{initials || "?"}</span>
     </div>
   );
 }
@@ -32,7 +32,7 @@ const Card = ({ icon: Icon, title, children }: { icon: any; title: string; child
   <div className="bg-white rounded-2xl border border-stone-100 shadow-sm overflow-hidden">
     <div className="flex items-center gap-2 px-5 py-3 border-b border-stone-100">
       <Icon className="w-3.5 h-3.5 text-stone-400" />
-      <span className="font-['Merriweather'] font-bold text-stone-800 text-xs tracking-wide uppercase">{title}</span>
+      <span className="font-head font-bold text-stone-800 text-xs tracking-wide uppercase">{title}</span>
     </div>
     <div className="px-5 py-4">{children}</div>
   </div>
@@ -81,12 +81,12 @@ export default function ForgeProfilePage() {
   const p = savedData?.personal;
 
   return (
-    <div className="min-h-screen" style={{ background: "#fcfcf9" }}>
+    <div className="min-h-screen" style={{ background: "var(--color-paper)" }}>
       <Header />
 
       <SignedOut>
         <div className="pt-40 text-center space-y-2 px-4">
-          <p className="font-['Merriweather'] font-bold text-stone-800 text-xl">Sign in to view your profile</p>
+          <p className="font-head font-bold text-stone-800 text-xl">Sign in to view your profile</p>
           <p className="font-['Inter'] text-stone-400 text-sm">Your saved details will appear here.</p>
         </div>
       </SignedOut>
@@ -96,7 +96,7 @@ export default function ForgeProfilePage() {
           <div className="flex justify-center pt-40"><Loader2 className="w-6 h-6 text-stone-400 animate-spin" /></div>
         ) : !savedData ? (
           <div className="pt-40 text-center space-y-4 px-4">
-            <p className="font-['Merriweather'] font-bold text-stone-800 text-xl">No profile yet</p>
+            <p className="font-head font-bold text-stone-800 text-xl">No profile yet</p>
             <p className="font-['Inter'] text-stone-400 text-sm">Build your resume in Forge and it'll show up here.</p>
             <button onClick={() => navigate("/forge")}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-stone-900 text-white text-sm font-semibold font-['Inter'] hover:bg-stone-700 active:scale-95 transition-all">
@@ -124,7 +124,7 @@ export default function ForgeProfilePage() {
                         <Pencil className="w-3 h-3" /> Edit
                       </button>
                     </div>
-                    <h1 className="font-['Merriweather'] font-bold text-stone-900 text-lg leading-tight">
+                    <h1 className="font-head font-bold text-stone-900 text-lg leading-tight">
                       {p?.name || user?.fullName || "Your Name"}
                     </h1>
                     {p?.location && (

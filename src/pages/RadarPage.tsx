@@ -194,7 +194,7 @@ function ScanAnimation() {
         </div>
       </div>
       <div className="text-center">
-        <p className="font-['Merriweather'] font-bold text-stone-800 text-base">Scanning opportunities…</p>
+        <p className="font-head font-bold text-stone-800 text-base">Scanning opportunities…</p>
         <p className="font-['Inter'] text-stone-400 text-sm mt-1">Matching your profile to available roles</p>
       </div>
     </div>
@@ -249,7 +249,7 @@ export default function RadarPage() {
   );
 
   return (
-    <div className="min-h-screen" style={{ background: "#fcfcf9" }}>
+    <div className="min-h-screen" style={{ background: "var(--color-paper)" }}>
       <Header />
 
       <div className="pt-20 pb-16 px-4">
@@ -264,7 +264,7 @@ export default function RadarPage() {
 
         <SignedOut>
           <div className="max-w-2xl mx-auto text-center py-16 space-y-3">
-            <p className="font-['Merriweather'] font-bold text-stone-800 text-xl">Sign in to use Radar</p>
+            <p className="font-head font-bold text-stone-800 text-xl">Sign in to use Radar</p>
             <p className="font-['Inter'] text-stone-400 text-sm">We need your profile to find matching roles.</p>
           </div>
         </SignedOut>
@@ -277,7 +277,7 @@ export default function RadarPage() {
               <div className="w-16 h-16 rounded-2xl bg-white border border-stone-200 shadow-sm flex items-center justify-center mx-auto">
                 <Radar className="w-7 h-7 text-stone-400" />
               </div>
-              <p className="font-['Merriweather'] font-bold text-stone-800 text-xl">No profile to scan</p>
+              <p className="font-head font-bold text-stone-800 text-xl">No profile to scan</p>
               <p className="font-['Inter'] text-stone-400 text-sm max-w-xs mx-auto">
                 Build your resume in Forge first — Radar uses your skills to match you with real openings.
               </p>
@@ -294,7 +294,7 @@ export default function RadarPage() {
                 <motion.div key="idle" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                   className="max-w-2xl mx-auto text-center space-y-6 py-8">
                   <div>
-                    <h1 className="font-['Merriweather'] font-bold text-stone-900 text-2xl mb-2">Find your best-fit roles</h1>
+                    <h1 className="font-head font-bold text-stone-900 text-4xl mb-3">Find your <em>best-fit roles</em></h1>
                     <p className="font-['Inter'] text-stone-400 text-sm max-w-sm mx-auto leading-relaxed">
                       Radar matches your skills and education against real openings and ranks them by how well you fit.
                     </p>
@@ -336,7 +336,7 @@ export default function RadarPage() {
                   {/* Results header */}
                   <div className="flex items-center justify-between mb-6">
                     <div>
-                      <h2 className="font-['Merriweather'] font-bold text-stone-900 text-xl">
+                      <h2 className="font-head font-bold text-stone-900 text-xl">
                         {results.length} {results.length === 1 ? "opening" : "openings"} found
                       </h2>
                       <p className="text-xs font-['Inter'] text-stone-400 mt-0.5">Sorted by match score · Based on your skills</p>
@@ -350,7 +350,7 @@ export default function RadarPage() {
                   {results.length === 0 ? (
                     <div className="text-center py-24 space-y-3">
                       <Zap className="w-10 h-10 text-stone-300 mx-auto" />
-                      <p className="font-['Merriweather'] font-bold text-stone-700 text-lg">No openings yet</p>
+                      <p className="font-head font-bold text-stone-700 text-lg">No openings yet</p>
                       <p className="font-['Inter'] text-stone-400 text-sm">Check back soon — new roles are added regularly.</p>
                     </div>
                   ) : (

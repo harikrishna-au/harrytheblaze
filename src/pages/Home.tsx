@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
 import { useAuth } from "@clerk/clerk-react";
 import { ArrowUpRight } from "lucide-react";
 import SEO from "@/components/SEO";
@@ -87,11 +86,6 @@ export default function Home() {
         title="Harry The Blaze | Placement Practice for Infosys and Accenture"
         description="Practise real placement rounds: cognitive games, communication tests, AI mock interviews and Infosys coding questions. Then book a 1:1 with someone just placed."
       />
-      <Helmet>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono&family=Instrument+Serif:ital@0;1&display=swap" />
-      </Helmet>
 
       <Nav isSignedIn={!!isSignedIn} primaryTo={primaryTo} />
 

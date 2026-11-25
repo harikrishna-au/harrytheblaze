@@ -10,9 +10,9 @@ interface BlogEditorProps {
 function renderMarkdown(md: string): string {
   return md
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/^#{3}\s(.+)/gm, '<h3 style="font-family:Merriweather,serif;font-weight:700;font-size:1.25rem;color:#1c1c1b;margin-top:1.5rem;margin-bottom:0.5rem">$1</h3>')
-    .replace(/^#{2}\s(.+)/gm, '<h2 style="font-family:Merriweather,serif;font-weight:700;font-size:1.5rem;color:#1c1c1b;margin-top:2rem;margin-bottom:0.75rem">$1</h2>')
-    .replace(/^#{1}\s(.+)/gm, '<h1 style="font-family:Merriweather,serif;font-weight:900;font-size:1.75rem;color:#1c1c1b;margin-bottom:1rem">$1</h1>')
+    .replace(/^#{3}\s(.+)/gm, '<h3 style="font-family:Inter,sans-serif;font-weight:700;font-size:1.25rem;color:#1c1c1b;margin-top:1.5rem;margin-bottom:0.5rem">$1</h3>')
+    .replace(/^#{2}\s(.+)/gm, '<h2 style="font-family:Inter,sans-serif;font-weight:700;font-size:1.5rem;color:#1c1c1b;margin-top:2rem;margin-bottom:0.75rem">$1</h2>')
+    .replace(/^#{1}\s(.+)/gm, '<h1 style="font-family:Inter,sans-serif;font-weight:900;font-size:1.75rem;color:#1c1c1b;margin-bottom:1rem">$1</h1>')
     .replace(/\*\*(.+?)\*\*/g, '<strong style="font-weight:700;color:#1c1c1b">$1</strong>')
     .replace(/\*(.+?)\*/g, '<em style="font-style:italic;color:#57534e">$1</em>')
     .replace(/`([^`]+)`/g, '<code style="padding:2px 6px;border-radius:4px;background:#f2efe9;color:#44403c;font-size:13px;font-family:monospace">$1</code>')

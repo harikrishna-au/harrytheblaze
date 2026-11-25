@@ -124,14 +124,14 @@ export default function SwitchChallenge() {
 
   if (phase === 'intro') {
     return (
-      <div style={{ background: '#fcfcf9', minHeight: '100vh' }}>
+      <div style={{ background: 'var(--color-paper)', minHeight: '100vh' }}>
         <Header />
         <div className="max-w-sm mx-auto px-4 pt-28 pb-12 text-center">
           <div className="w-16 h-16 rounded-2xl mx-auto mb-6 flex items-center justify-center text-3xl"
             style={{ background: 'rgba(5,150,105,0.1)', border: '1.5px solid rgba(5,150,105,0.2)' }}>
             🔀
           </div>
-          <h1 className="text-3xl font-serif text-stone-800 mb-3">Switch Challenge</h1>
+          <h1 className="text-5xl font-serif text-stone-900 mb-3">Switch Challenge</h1>
           <p className="text-stone-500 text-sm font-['Inter'] leading-relaxed mb-6 max-w-[270px] mx-auto">
             Two tasks alternate. For <strong className="text-stone-900">numbers</strong>: press Odd or Even.
             For <strong className="text-cyan-600">letters</strong>: press Vowel or Consonant.
@@ -165,11 +165,11 @@ export default function SwitchChallenge() {
       if (taskHistory[i] !== taskHistory[i - 1]) switches++;
     }
     return (
-      <div style={{ background: '#fcfcf9', minHeight: '100vh' }}>
+      <div style={{ background: 'var(--color-paper)', minHeight: '100vh' }}>
         <Header />
         <div className="max-w-sm mx-auto px-4 pt-28 pb-12 text-center">
           <Trophy className="w-14 h-14 mx-auto text-amber-500 mb-4" />
-          <h2 className="text-3xl font-serif text-stone-800 mb-6">Complete!</h2>
+          <h2 className="text-5xl font-serif text-stone-900 mb-6">Complete!</h2>
           <div className="grid grid-cols-3 gap-3 mb-8">
             {[
               [score, 'Score'],
@@ -202,7 +202,7 @@ export default function SwitchChallenge() {
   const taskBg = trial.task === 'number' ? 'rgba(124,58,237,0.08)' : 'rgba(8,145,178,0.08)';
 
   return (
-    <div style={{ background: '#fcfcf9', minHeight: '100vh' }}>
+    <div style={{ background: 'var(--color-paper)', minHeight: '100vh' }}>
       <Header />
       <div className="max-w-sm mx-auto px-4 pt-20 pb-16">
 

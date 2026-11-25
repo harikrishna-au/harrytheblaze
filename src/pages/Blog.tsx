@@ -48,7 +48,7 @@ export default function Blog() {
   };
 
   const BTN =
-    "inline-flex flex-shrink-0 items-center gap-2 self-start bg-[var(--color-accent)] px-5 py-3 text-[15px] font-semibold text-[var(--color-ink)] shadow-[var(--shadow-offset)] transition-[transform,box-shadow] duration-[120ms] hover:translate-x-px hover:translate-y-px hover:shadow-[3px_3px_0_var(--color-ink)] active:translate-x-1 active:translate-y-1 active:shadow-none sm:self-auto";
+    "shrink-0 whitespace-nowrap inline-flex flex-shrink-0 items-center gap-2 self-start bg-[var(--color-accent)] px-5 py-3 text-[15px] font-semibold text-[var(--color-ink)] rounded-full transition-[transform,box-shadow] duration-[120ms] active:scale-[0.97] sm:self-auto";
 
   return (
     <div ref={page} className="relative min-h-screen bg-[var(--color-paper)] text-[var(--color-ink)]">
@@ -68,9 +68,9 @@ export default function Blog() {
             <h1
               data-intro
               className="font-display font-normal uppercase leading-[0.92] tracking-[0.005em]"
-              style={{ fontSize: 'clamp(3rem, 8vw, 6.5rem)' }}
+              style={{ fontSize: 'clamp(2.75rem, 6.4vw, 5.5rem)' }}
             >
-              Placement insights, from students like you.
+              Placement insights, <em>from students like you.</em>
             </h1>
             <p data-intro className="mt-5 max-w-[46ch] text-lg leading-snug">
               Real interview experiences, aptitude strategies, and success stories, shared by the community.

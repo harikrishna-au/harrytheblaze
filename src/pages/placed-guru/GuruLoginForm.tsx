@@ -54,12 +54,12 @@ const GuruLoginForm = ({ onSuccess }: GuruLoginFormProps) => {
 
       <div className="flex-1 flex items-center justify-center px-6">
         <div className="w-full max-w-sm">
-          <div className="bg-[var(--color-paper-3)] rounded-none p-8 shadow-[var(--shadow-sheet)]">
+          <div className="bg-[var(--color-paper-3)] rounded-2xl p-8 shadow-[var(--shadow-sheet)]">
             {/* Icon & title */}
             <div className="flex flex-col items-center mb-8">
               <div className="relative mb-4">
-                <div className="absolute inset-0 bg-[var(--color-paper-2)] rounded-none blur-lg opacity-50" />
-                <div className="relative w-12 h-12 bg-[var(--color-paper-2)] rounded-none flex items-center justify-center">
+                <div className="absolute inset-0 bg-[var(--color-paper-2)] rounded-2xl blur-lg opacity-50" />
+                <div className="relative w-12 h-12 bg-[var(--color-paper-2)] rounded-2xl flex items-center justify-center">
                   <Lock className="w-5 h-5 text-[var(--color-ink)]" />
                 </div>
               </div>
@@ -104,7 +104,7 @@ const GuruLoginForm = ({ onSuccess }: GuruLoginFormProps) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-[var(--color-accent)] text-[var(--color-ink)] shadow-[3px_3px_0_var(--color-ink)] hover:translate-x-px hover:translate-y-px hover:shadow-[2px_2px_0_var(--color-ink)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none rounded-none text-sm font-medium font-['Inter']  transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
+                className="w-full py-3 bg-[var(--color-accent)] text-[var(--color-ink)] active:scale-[0.97] rounded-full text-sm font-medium font-['Inter'] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
               >
                 {loading ? (
                   <><Loader2 className="w-4 h-4 animate-spin" /> {mode === 'signin' ? 'Signing in…' : 'Creating account…'}</>

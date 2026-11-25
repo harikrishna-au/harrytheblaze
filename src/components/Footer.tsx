@@ -14,7 +14,7 @@ const Footer = () => (
     <Separator />
     <div className="container mx-auto flex flex-col items-center justify-between gap-2 px-4 py-4 sm:flex-row sm:px-6">
       <p className="text-xs text-muted-foreground">
-        © 2026 <span className="font-semibold text-foreground">HARRY THE BLAZE</span>
+        © 2026 <span className="font-semibold text-foreground">Harry The Blaze</span>
       </p>
       <nav aria-label="Footer" className="flex flex-wrap items-center justify-center">
         {LINKS.map(({ label, to }) => (

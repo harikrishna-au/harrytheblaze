@@ -42,7 +42,7 @@ function Kpi({ label, value, sub }: { label: string; value: string | number; sub
   return (
     <div className={card}>
       <p className={h3}>{label}</p>
-      <p className="mt-1 font-['Merriweather'] text-3xl font-bold text-stone-900">{value}</p>
+      <p className="mt-1 font-head text-3xl font-bold text-stone-900">{value}</p>
       {sub && <p className="mt-0.5 font-['Inter'] text-xs text-stone-500">{sub}</p>}
     </div>
   );
@@ -74,7 +74,7 @@ function RetentionCell({ title, r }: { title: string; r: Rate }) {
   return (
     <div className="rounded-lg border border-stone-200 p-3">
       <p className={h3}>{title}</p>
-      <p className="mt-1 font-['Merriweather'] text-2xl font-bold text-stone-900">{r.rate === null ? "n/a" : `${r.rate}%`}</p>
+      <p className="mt-1 font-head text-2xl font-bold text-stone-900">{r.rate === null ? "n/a" : `${r.rate}%`}</p>
       <p className="font-['Inter'] text-xs text-stone-500">
         {r.eligible ? `${r.returned} of ${r.eligible} came back` : "too early to tell"}
       </p>
@@ -125,7 +125,7 @@ export default function AnalyticsSection() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="font-['Merriweather'] text-xl font-bold text-stone-900">Site analytics</h2>
+          <h2 className="font-head text-xl font-bold text-stone-900">Site analytics</h2>
           <p className="font-['Inter'] text-xs text-stone-500">
             {data ? `${data.rows.toLocaleString("en-IN")} events read · updated ${new Date(data.generatedAt).toLocaleTimeString()} · days in IST` : "Loading…"}
             {data?.truncated && " · showing the most recent part only"}
@@ -151,7 +151,7 @@ export default function AnalyticsSection() {
 
       {empty && (
         <div className={`${card} text-center`}>
-          <p className="font-['Merriweather'] text-lg font-bold text-stone-800">No events yet</p>
+          <p className="font-head text-lg font-bold text-stone-800">No events yet</p>
           <p className="mt-1 font-['Inter'] text-sm text-stone-500">
             Numbers appear as soon as visitors use the site. Open the site in a normal browser window (not private, with Do Not Track off) and refresh here.
           </p>

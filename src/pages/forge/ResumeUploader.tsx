@@ -145,7 +145,7 @@ export default function ResumeUploader({ onParsed }: Props) {
               <Loader2 className="w-7 h-7 text-stone-500 animate-spin" />
             </div>
             <div className="text-center">
-              <p className="font-['Merriweather'] font-bold text-stone-800 text-sm">
+              <p className="font-head font-bold text-stone-800 text-sm">
                 {stage === "extracting" ? "Reading your resume…" : "Analysing with AI…"}
               </p>
               <p className="font-['Inter'] text-stone-400 text-xs mt-1">
@@ -159,7 +159,7 @@ export default function ResumeUploader({ onParsed }: Props) {
               <FileText className="w-7 h-7 text-emerald-600" />
             </div>
             <div className="text-center">
-              <p className="font-['Merriweather'] font-bold text-stone-800 text-sm">{file.name}</p>
+              <p className="font-head font-bold text-stone-800 text-sm">{file.name}</p>
               <p className="font-['Inter'] text-emerald-600 text-xs mt-1 font-medium">Successfully parsed</p>
             </div>
             <button
@@ -178,7 +178,7 @@ export default function ResumeUploader({ onParsed }: Props) {
               <Upload className="w-7 h-7 text-stone-500" />
             </div>
             <div className="text-center">
-              <p className="font-['Merriweather'] font-bold text-stone-800 text-sm">
+              <p className="font-head font-bold text-stone-800 text-sm">
                 Drop your resume here
               </p>
               <p className="font-['Inter'] text-stone-400 text-xs mt-1">

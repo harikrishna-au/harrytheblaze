@@ -43,7 +43,7 @@ export function InstallPrompt() {
     <div
       role="dialog"
       aria-label="Install the app"
-      className="fixed bottom-4 left-4 right-4 z-[90] mx-auto flex max-w-sm items-start gap-3 border border-[var(--color-ink)] bg-[var(--color-paper-3)] p-3 text-[var(--color-ink)] shadow-[var(--shadow-offset)] animate-in fade-in slide-in-from-bottom-4 sm:left-4 sm:right-auto sm:mx-0"
+      className="fixed bottom-4 left-4 right-4 z-[90] mx-auto flex max-w-sm items-start gap-3 border border-[var(--color-ink)] bg-[var(--color-paper-3)] p-3 text-[var(--color-ink)] shadow-[var(--shadow-offset)] rounded-[20px] animate-in fade-in slide-in-from-bottom-4 sm:left-4 sm:right-auto sm:mx-0"
     >
       <img src="/icons/icon-192.png" alt="" className="h-11 w-11 flex-shrink-0" />
       <div className="min-w-0 flex-1">

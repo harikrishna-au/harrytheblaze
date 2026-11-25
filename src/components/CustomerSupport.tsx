@@ -95,9 +95,9 @@ export default function CustomerSupport() {
             style={{ boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}
           >
             {/* Header */}
-            <div className="px-5 py-4 border-b border-stone-100 flex items-center justify-between" style={{ background: "#fcfcf9" }}>
+            <div className="px-5 py-4 border-b border-stone-100 flex items-center justify-between" style={{ background: "var(--color-paper)" }}>
               <div>
-                <p className="font-['Merriweather'] font-bold text-[14px] text-stone-900">Support</p>
+                <p className="font-head font-bold text-[14px] text-stone-900">Support</p>
                 <p className="font-['Inter'] text-[11px] text-stone-400 mt-0.5">We reply within 24 hours</p>
               </div>
               <span className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-emerald-50 border border-emerald-100">
@@ -119,7 +119,7 @@ export default function CustomerSupport() {
                     <div className="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center mx-auto">
                       <Send className="w-5 h-5 text-emerald-600" />
                     </div>
-                    <p className="font-['Merriweather'] font-bold text-stone-900 text-[15px]">Message sent!</p>
+                    <p className="font-head font-bold text-stone-900 text-[15px]">Message sent!</p>
                     <p className="font-['Inter'] text-[12px] text-stone-500">We'll get back to you at<br /><span className="font-semibold text-stone-700">{email}</span></p>
                     <button
                       onClick={handleClose}

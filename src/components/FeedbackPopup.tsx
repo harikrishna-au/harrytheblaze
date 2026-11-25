@@ -37,14 +37,12 @@ const FEATURE_OPTIONS = [
 
 const DISPLAY = "font-display font-normal uppercase leading-[0.95] tracking-[0.005em] [text-wrap:balance]";
 const fieldLabel = "text-xs font-semibold text-[var(--color-muted)] uppercase tracking-[0.12em]";
-const fieldInput = "h-11 rounded-none bg-[var(--color-paper)] border-[var(--color-ink)] text-[var(--color-ink)]";
-const areaClass = "rounded-none bg-[var(--color-paper)] border-[var(--color-ink)] text-[var(--color-ink)] resize-none";
-const optionBox = "flex items-center space-x-2 border border-[var(--color-ink)] bg-[var(--color-paper)] px-4 py-2 hover:bg-[var(--color-paper-2)] cursor-pointer w-full";
+const fieldInput = "h-11 rounded-2xl bg-[var(--color-paper)] border-[var(--color-ink)] text-[var(--color-ink)]";
+const areaClass = "rounded-2xl bg-[var(--color-paper)] border-[var(--color-ink)] text-[var(--color-ink)] resize-none";
+const optionBox = "flex items-center space-x-2 rounded-2xl border border-[var(--color-ink)] bg-[var(--color-paper)] px-4 py-2 hover:bg-[var(--color-paper-2)] cursor-pointer w-full";
 const SUBMIT =
     "w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 text-[15px] font-semibold text-[var(--color-ink)] bg-[var(--color-accent)] " +
-    "shadow-[var(--shadow-offset)] transition-[transform,box-shadow] duration-[120ms] ease-out " +
-    "hover:translate-x-px hover:translate-y-px hover:shadow-[3px_3px_0_var(--color-ink)] " +
-    "active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-60 disabled:pointer-events-none " +
+    "rounded-full transition-transform duration-[120ms] ease-out active:scale-[0.97] disabled:opacity-60 disabled:pointer-events-none " +
     "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-focus)]";
 
 const Chip = ({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) => (
